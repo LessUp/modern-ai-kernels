@@ -1,0 +1,66 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Source code files
+*.cpp text eol=lf diff=cpp
+*.hpp text eol=lf diff=cpp
+*.c text eol=lf diff=c
+*.h text eol=lf diff=c
+*.cu text eol=lf diff=cpp
+*.cuh text eol=lf diff=cpp
+
+# CMake files
+*.cmake text eol=lf
+CMakeLists.txt text eol=lf
+
+# Configuration files
+*.json text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.xml text eol=lf
+*.toml text eol=lf
+
+# Documentation
+*.md text eol=lf diff=markdown
+*.txt text eol=lf
+*.rst text eol=lf
+
+# Scripts
+*.sh text eol=lf
+*.bash text eol=lf
+*.py text eol=lf diff=python
+
+# Windows scripts
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.tar binary
+*.gz binary
+*.7z binary
+
+# Compiled files
+*.o binary
+*.so binary
+*.a binary
+*.dll binary
+*.exe binary
+*.cubin binary
+*.ptx binary
+*.fatbin binary
+
+# Git configuration
+.gitattributes text eol=lf
+.gitignore text eol=lf
+
+# GitHub linguist overrides
+*.cu linguist-language=CUDA
+*.cuh linguist-language=CUDA

@@ -1,0 +1,33 @@
+{
+    "recommendations": [
+        // C/C++ Development
+        "ms-vscode.cpptools",
+        "ms-vscode.cpptools-extension-pack",
+        // CMake
+        "ms-vscode.cmake-tools",
+        "twxs.cmake",
+        // CUDA Development
+        "nvidia.nsight-vscode-edition",
+        // Code Formatting
+        "xaver.clang-format",
+        // Git
+        "eamodio.gitlens",
+        "mhutchie.git-graph",
+        // Markdown
+        "yzhang.markdown-all-in-one",
+        "davidanson.vscode-markdownlint",
+        // YAML
+        "redhat.vscode-yaml",
+        // EditorConfig
+        "editorconfig.editorconfig",
+        // Code Spell Checker
+        "streetsidesoftware.code-spell-checker",
+        // Better Comments
+        "aaron-bond.better-comments",
+        // Bracket Pair Colorizer
+        "coenraads.bracket-pair-colorizer-2",
+        // Error Lens
+        "usernamehw.errorlens"
+    ],
+    "unwantedRecommendations": []
+}

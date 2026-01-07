@@ -1,0 +1,40 @@
+# CODEOWNERS file for TensorCraft-HPC
+# These owners will be requested for review when someone opens a pull request.
+# Learn more: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owners for everything in the repo
+* @maintainer
+
+# Core kernel implementations
+/include/tensorcraft/kernels/ @maintainer
+/src/ @maintainer
+
+# Memory management
+/include/tensorcraft/memory/ @maintainer
+
+# Core utilities
+/include/tensorcraft/core/ @maintainer
+
+# Python bindings
+/src/python_ops/ @maintainer
+
+# Tests
+/tests/ @maintainer
+
+# Benchmarks
+/benchmarks/ @maintainer
+
+# Documentation
+/docs/ @maintainer
+*.md @maintainer
+
+# Build system
+CMakeLists.txt @maintainer
+CMakePresets.json @maintainer
+/cmake/ @maintainer
+
+# CI/CD
+/.github/ @maintainer
+
+# Examples
+/examples/ @maintainer
