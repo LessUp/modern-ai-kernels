@@ -9,6 +9,10 @@
 
 #include "../core/features.hpp"
 #include <cstddef>
+#include <cstdint>
+
+#include <cuda_fp16.h>
+#include <cuda_bf16.h>
 
 namespace tensorcraft {
 

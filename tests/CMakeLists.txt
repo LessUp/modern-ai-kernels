@@ -10,7 +10,6 @@ add_executable(tensorcraft_tests
 target_link_libraries(tensorcraft_tests PRIVATE
     tensorcraft
     GTest::gtest
-    GTest::gtest_main
     CUDA::cudart
 )
 

@@ -7,6 +7,9 @@
  * at compile time, enabling conditional compilation of optimized code paths.
  */
 
+#include <cuda_runtime.h>
+#include <utility>
+
 // ============================================================================
 // C++ Version Detection
 // ============================================================================
