@@ -8,6 +8,7 @@
 #include "../core/cuda_check.hpp"
 #include "../core/type_traits.hpp"
 #include <cfloat>
+#include <cassert>
 
 namespace tensorcraft {
 namespace kernels {
@@ -410,8 +411,11 @@ void launch_flash_attention(
     constexpr int BLOCK_M = 32;
     constexpr int BLOCK_N = 32;
     constexpr int HEAD_DIM = 64;
-    
-    dim3 block(HEAD_DIM, BLOCK_M);
+
+    static_assert(BLOCK_M * BLOCK_N <= 1024, "FlashAttention block size exceeds CUDA limit");
+    assert(head_dim == HEAD_DIM && "FlashAttention currently supports head_dim == 64");
+
+    dim3 block(BLOCK_N, BLOCK_M);
     dim3 grid((seq_len + BLOCK_M - 1) / BLOCK_M, 1, batch_size * num_heads);
     
     flash_attention_kernel<T, BLOCK_M, BLOCK_N, HEAD_DIM><<<grid, block, 0, stream>>>(
@@ -432,6 +436,7 @@ void launch_rope(
     int start_pos = 0,
     cudaStream_t stream = nullptr) {
     
+    assert(head_dim % 2 == 0 && "RoPE head_dim must be even");
     const int total = batch_size * seq_len * num_heads * (head_dim / 2);
     if (total == 0) return;
     
@@ -455,6 +460,7 @@ inline void precompute_rope_cache(
     float base = 10000.0f,
     cudaStream_t stream = nullptr) {
     
+    assert(head_dim % 2 == 0 && "RoPE head_dim must be even");
     const int total = max_seq_len * (head_dim / 2);
     constexpr int BLOCK_SIZE = 256;
     const int grid_size = (total + BLOCK_SIZE - 1) / BLOCK_SIZE;
@@ -477,6 +483,9 @@ void launch_moe_router(
     cudaStream_t stream = nullptr) {
     
     if (batch_size == 0) return;
+
+    assert(num_experts <= 8 && "MoE router supports up to 8 experts");
+    assert(top_k > 0 && top_k <= num_experts && "top_k must be within [1, num_experts]");
     
     constexpr int BLOCK_SIZE = 256;
     const int grid_size = (batch_size + BLOCK_SIZE - 1) / BLOCK_SIZE;

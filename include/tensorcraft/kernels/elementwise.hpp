@@ -118,6 +118,24 @@ __global__ void elementwise_binary_kernel(
     }
 }
 
+/**
+ * @brief Naive binary elementwise kernel (scalar)
+ */
+template<typename T, typename Func>
+__global__ void elementwise_binary_kernel_naive(
+    const T* TC_RESTRICT input1,
+    const T* TC_RESTRICT input2,
+    T* TC_RESTRICT output,
+    size_t n,
+    Func func) {
+    const size_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    const size_t stride = blockDim.x * gridDim.x;
+
+    for (size_t i = idx; i < n; i += stride) {
+        output[i] = func(input1[i], input2[i]);
+    }
+}
+
 // ============================================================================
 // Activation Function Functors
 // ============================================================================
@@ -378,11 +396,23 @@ void launch_elementwise_binary(
     constexpr int block_size = 256;
     constexpr int vec_size = optimal_vec_size<T>();
     
-    int grid_size = static_cast<int>((n + block_size * vec_size - 1) / (block_size * vec_size));
-    grid_size = std::min(grid_size, 65535);
-    
-    elementwise_binary_kernel<T, Func, vec_size><<<grid_size, block_size, 0, stream>>>(
-        input1, input2, output, n, func);
+    const bool aligned = is_aligned<T, vec_size>(input1)
+        && is_aligned<T, vec_size>(input2)
+        && is_aligned<T, vec_size>(output);
+
+    if (aligned) {
+        int grid_size = static_cast<int>((n + block_size * vec_size - 1) / (block_size * vec_size));
+        grid_size = std::min(grid_size, 65535);
+
+        elementwise_binary_kernel<T, Func, vec_size><<<grid_size, block_size, 0, stream>>>(
+            input1, input2, output, n, func);
+    } else {
+        int grid_size = static_cast<int>((n + block_size - 1) / block_size);
+        grid_size = std::min(grid_size, 65535);
+
+        elementwise_binary_kernel_naive<T, Func><<<grid_size, block_size, 0, stream>>>(
+            input1, input2, output, n, func);
+    }
     
     TC_CUDA_CHECK_LAST();
 }

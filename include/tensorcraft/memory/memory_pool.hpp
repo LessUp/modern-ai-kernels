@@ -55,6 +55,7 @@ public:
         if (!free_list.empty()) {
             void* ptr = free_list.back();
             free_list.pop_back();
+            allocated_sizes_[ptr] = size;
             stats_.cache_hits++;
             return ptr;
         }
