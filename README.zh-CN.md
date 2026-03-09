@@ -4,7 +4,7 @@
 ![CUDA](https://img.shields.io/badge/CUDA-11.0+-76B900?logo=nvidia&logoColor=white)
 ![C++](https://img.shields.io/badge/C%2B%2B-17%2F20-00599C?logo=c%2B%2B&logoColor=white)
 
-简体中文 | [English](README.md)
+[English](README.md) | 简体中文
 
 现代化的、教学友好且工业级的高性能 AI 算子优化库。展示从朴素实现到极致优化的渐进式优化技术。
 
