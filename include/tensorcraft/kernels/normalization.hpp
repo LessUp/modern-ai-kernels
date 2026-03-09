@@ -10,8 +10,8 @@
 #include "../core/features.hpp"
 #include "../core/cuda_check.hpp"
 #include "../core/type_traits.hpp"
+#include "../core/warp_utils.hpp"
 #include "../memory/aligned_vector.hpp"
-#include "softmax.hpp"  // For warp reduction utilities
 
 namespace tensorcraft {
 namespace kernels {
