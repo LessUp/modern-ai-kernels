@@ -9,3 +9,34 @@ lang: zh-CN
 plugins:
   - jekyll-remote-theme
   - jekyll-seo-tag
+
+exclude:
+  - src
+  - include
+  - tests
+  - benchmarks
+  - examples
+  - cmake
+  - .github
+  - .vscode
+  - .kiro
+  - .clang-format
+  - .clang-tidy
+  - .editorconfig
+  - .gitattributes
+  - .gitignore
+  - .pre-commit-config.yaml
+  - CMakeLists.txt
+  - CMakePresets.json
+  - Makefile
+  - "*.o"
+  - "*.so"
+  - "*.a"
+  - "*.cubin"
+  - "*.fatbin"
+  - "*.ptx"
+  - build
+  - cmake-build-*
+  - __pycache__
+  - "*.egg-info"
+  - node_modules

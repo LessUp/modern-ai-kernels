@@ -75,5 +75,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - C++17 compatible compiler
 - pybind11 (for Python bindings)
 
-[Unreleased]: https://github.com/username/tensorcraft-hpc/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/username/tensorcraft-hpc/releases/tag/v1.0.0
+[Unreleased]: https://github.com/LessUp/modern-ai-kernels/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/LessUp/modern-ai-kernels/compare/v1.0.0...v2.0.0
+[1.0.0]: https://github.com/LessUp/modern-ai-kernels/releases/tag/v1.0.0

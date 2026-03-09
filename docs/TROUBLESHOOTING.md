@@ -283,7 +283,7 @@ CUDA error: out of memory
 
 If you're still experiencing issues:
 
-1. **Search existing issues**: Check [GitHub Issues](https://github.com/username/tensorcraft-hpc/issues)
+1. **Search existing issues**: Check [GitHub Issues](https://github.com/LessUp/modern-ai-kernels/issues)
 
 2. **Create a new issue**: Include:
    - Operating system and version

@@ -24,8 +24,8 @@ This guide provides detailed instructions for installing TensorCraft-HPC on vari
 
 ```bash
 # Clone the repository
-git clone https://github.com/username/tensorcraft-hpc.git
-cd tensorcraft-hpc
+git clone https://github.com/LessUp/modern-ai-kernels.git
+cd modern-ai-kernels
 
 # Configure and build
 cmake -B build -DCMAKE_BUILD_TYPE=Release
@@ -70,8 +70,8 @@ export LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH
 #### 4. Build TensorCraft-HPC
 
 ```bash
-git clone https://github.com/username/tensorcraft-hpc.git
-cd tensorcraft-hpc
+git clone https://github.com/LessUp/modern-ai-kernels.git
+cd modern-ai-kernels
 
 # Using CMake presets (recommended)
 cmake --preset release
@@ -129,8 +129,8 @@ Follow the same build steps as Ubuntu.
 Open "x64 Native Tools Command Prompt for VS":
 
 ```cmd
-git clone https://github.com/username/tensorcraft-hpc.git
-cd tensorcraft-hpc
+git clone https://github.com/LessUp/modern-ai-kernels.git
+cd modern-ai-kernels
 
 cmake -B build -G "Visual Studio 17 2022" -A x64 ^
     -DCMAKE_BUILD_TYPE=Release
@@ -244,7 +244,7 @@ See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for common issues and solutions.
 ## Updating
 
 ```bash
-cd tensorcraft-hpc
+cd modern-ai-kernels
 git pull origin main
 cmake --build build --parallel
 ```
