@@ -5,16 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-
-### Added
-- Project polish: code quality tools, CI/CD, documentation
-
-### Changed
-- Nothing yet
+## [2.0.0] - 2026-03-09
 
 ### Fixed
-- Nothing yet
+- **MemoryPool lifecycle bug**: `clear()` was erasing tracking for in-use blocks; `deallocate()` left stale entries
+- **atomicMin/atomicMax for negative floats**: `compute_quant_params_kernel` gave incorrect results for negative values; replaced with CAS-based atomic float min/max
+
+### Added
+- `core/warp_utils.hpp`: Shared warp-level reduction primitives (`warp_reduce_max/sum/min`, `warp_broadcast`, `block_reduce_sum/max`)
+- `detail::fill_kernel`: GPU-side fill kernel for `Tensor::fill` on non-byte types
+
+### Changed
+- **FlashAttention kernel rewrite**: Moved output accumulator from per-thread registers to shared memory, reducing register pressure from 256 bytes/thread; cooperative tile loading; reduced default block sizes
+- `normalization.hpp` no longer depends on `softmax.hpp` (uses `warp_utils.hpp` directly)
+- `Tensor::fill` now uses a GPU kernel instead of host-memory roundtrip for non-byte types
+
+## [Unreleased]
 
 ## [1.0.0] - 2024-01-01
 

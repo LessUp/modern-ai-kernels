@@ -55,6 +55,8 @@ public:
         if (!free_list.empty()) {
             void* ptr = free_list.back();
             free_list.pop_back();
+            // Move from free set back to active set
+            freed_sizes_.erase(ptr);
             allocated_sizes_[ptr] = size;
             stats_.cache_hits++;
             return ptr;
@@ -81,13 +83,20 @@ public:
         
         auto it = allocated_sizes_.find(ptr);
         if (it != allocated_sizes_.end()) {
-            free_blocks_[it->second].push_back(ptr);
+            size_t size = it->second;
+            free_blocks_[size].push_back(ptr);
+            // Move from active set to free set
+            allocated_sizes_.erase(it);
+            freed_sizes_[ptr] = size;
             stats_.deallocations++;
         }
     }
     
     /**
-     * @brief Free all cached memory
+     * @brief Free all cached (inactive) memory blocks
+     * 
+     * Only frees blocks that have been returned to the pool via deallocate().
+     * In-use blocks are not affected.
      */
     void clear() {
         std::lock_guard<std::mutex> lock(mutex_);
@@ -95,11 +104,11 @@ public:
         for (auto& [size, blocks] : free_blocks_) {
             for (void* ptr : blocks) {
                 cudaFree(ptr);
+                freed_sizes_.erase(ptr);
                 stats_.total_freed += size;
             }
         }
         free_blocks_.clear();
-        allocated_sizes_.clear();
     }
     
     /**
@@ -131,10 +140,7 @@ public:
                 void* ptr = blocks.back();
                 blocks.pop_back();
                 
-                auto it = allocated_sizes_.find(ptr);
-                if (it != allocated_sizes_.end()) {
-                    allocated_sizes_.erase(it);
-                }
+                freed_sizes_.erase(ptr);
                 
                 cudaFree(ptr);
                 cached_bytes -= max_size;
@@ -187,7 +193,8 @@ private:
     
     mutable std::mutex mutex_;
     std::unordered_map<size_t, std::vector<void*>> free_blocks_;
-    std::unordered_map<void*, size_t> allocated_sizes_;
+    std::unordered_map<void*, size_t> allocated_sizes_;  // Currently in-use blocks
+    std::unordered_map<void*, size_t> freed_sizes_;      // Blocks returned to pool
     Stats stats_;
 };
 

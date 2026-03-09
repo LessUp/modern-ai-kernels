@@ -5,6 +5,8 @@ add_executable(tensorcraft_tests
     test_softmax.cpp
     test_normalization.cpp
     test_gemm.cpp
+    test_conv2d.cpp
+    test_fusion.cpp
 )
 
 target_link_libraries(tensorcraft_tests PRIVATE
@@ -31,6 +33,8 @@ set_source_files_properties(
     test_softmax.cpp
     test_normalization.cpp
     test_gemm.cpp
+    test_conv2d.cpp
+    test_fusion.cpp
     PROPERTIES LANGUAGE CUDA
 )
 

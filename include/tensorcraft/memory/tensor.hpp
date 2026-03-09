@@ -16,6 +16,19 @@
 
 namespace tensorcraft {
 
+namespace detail {
+
+/// GPU kernel to fill memory with a typed value
+template<typename T>
+__global__ void fill_kernel(T* data, T value, size_t n) {
+    size_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < n) {
+        data[idx] = value;
+    }
+}
+
+} // namespace detail
+
 /**
  * @brief GPU Tensor with RAII memory management
  * 
@@ -218,15 +231,17 @@ public:
     // ========================================================================
     
     /**
-     * @brief Fill tensor with value
+     * @brief Fill tensor with value (uses GPU kernel for all types)
      */
     void fill(T value) {
+        if (size_ == 0 || !data_) return;
         if constexpr (sizeof(T) == 1) {
             TC_CUDA_CHECK(cudaMemset(data_, static_cast<int>(value), bytes()));
         } else {
-            // For larger types, need to use a kernel
-            std::vector<T> host_data(size_, value);
-            copy_from_host(host_data);
+            constexpr int block = 256;
+            int grid = static_cast<int>((size_ + block - 1) / block);
+            detail::fill_kernel<<<grid, block>>>(data_, value, size_);
+            TC_CUDA_CHECK(cudaGetLastError());
         }
     }
     

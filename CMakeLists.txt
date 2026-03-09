@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 project(TensorCraft-HPC
-    VERSION 1.0.0
+    VERSION 2.0.0
     DESCRIPTION "High-Performance AI Kernels with Modern C++ & CUDA"
     LANGUAGES CXX
 )

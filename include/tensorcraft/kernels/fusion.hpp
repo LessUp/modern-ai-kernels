@@ -171,6 +171,33 @@ __global__ void dequantize_int8_kernel(
     output[idx] = from_float<T>(val);
 }
 
+/// Atomic min for float (correct for all sign combinations)
+__device__ inline void atomicMinFloat(float* addr, float val) {
+    // CAS loop: keep trying until we successfully store the min
+    int* addr_as_int = reinterpret_cast<int*>(addr);
+    int old = *addr_as_int;
+    int expected;
+    do {
+        expected = old;
+        float old_f = __int_as_float(expected);
+        if (val >= old_f) break;  // Current value is already smaller
+        old = atomicCAS(addr_as_int, expected, __float_as_int(val));
+    } while (old != expected);
+}
+
+/// Atomic max for float (correct for all sign combinations)
+__device__ inline void atomicMaxFloat(float* addr, float val) {
+    int* addr_as_int = reinterpret_cast<int*>(addr);
+    int old = *addr_as_int;
+    int expected;
+    do {
+        expected = old;
+        float old_f = __int_as_float(expected);
+        if (val <= old_f) break;  // Current value is already larger
+        old = atomicCAS(addr_as_int, expected, __float_as_int(val));
+    } while (old != expected);
+}
+
 /// Compute quantization parameters (min-max)
 template<typename T>
 __global__ void compute_quant_params_kernel(
@@ -208,8 +235,8 @@ __global__ void compute_quant_params_kernel(
     }
     
     if (tid == 0) {
-        atomicMin(reinterpret_cast<int*>(min_val), __float_as_int(s_min[0]));
-        atomicMax(reinterpret_cast<int*>(max_val), __float_as_int(s_max[0]));
+        atomicMinFloat(min_val, s_min[0]);
+        atomicMaxFloat(max_val, s_max[0]);
     }
 }
 

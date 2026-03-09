@@ -22,8 +22,11 @@ namespace kernels {
  * 
  * Computes: O = softmax(Q @ K^T / sqrt(d)) @ V
  * Uses tiling and online softmax for memory efficiency.
+ * 
+ * Thread mapping: each row of Q is handled by BLOCK_N threads cooperatively.
+ * Output accumulator lives in shared memory to avoid excessive register pressure.
  */
-template<typename T, int BLOCK_M = 64, int BLOCK_N = 64, int HEAD_DIM = 64>
+template<typename T, int BLOCK_M = 32, int BLOCK_N = 32, int HEAD_DIM = 64>
 __global__ void flash_attention_kernel(
     const T* TC_RESTRICT Q,   // [batch, heads, seq_len, head_dim]
     const T* TC_RESTRICT K,   // [batch, heads, seq_len, head_dim]
@@ -34,11 +37,14 @@ __global__ void flash_attention_kernel(
     int seq_len,
     float scale) {
     
-    // Shared memory for Q, K, V tiles
+    // Shared memory layout
     __shared__ float Qs[BLOCK_M][HEAD_DIM];
     __shared__ float Ks[BLOCK_N][HEAD_DIM];
     __shared__ float Vs[BLOCK_N][HEAD_DIM];
-    __shared__ float scores[BLOCK_M][BLOCK_N];
+    __shared__ float S[BLOCK_M][BLOCK_N];    // QK^T scores
+    __shared__ float O_acc[BLOCK_M][HEAD_DIM]; // Output accumulator (moved from registers)
+    __shared__ float row_m[BLOCK_M];  // Per-row running max
+    __shared__ float row_l[BLOCK_M];  // Per-row running sum(exp)
     
     const int batch_head = blockIdx.z;
     const int batch_idx = batch_head / num_heads;
@@ -48,6 +54,7 @@ __global__ void flash_attention_kernel(
     const int tx = threadIdx.x;
     const int ty = threadIdx.y;
     const int tid = ty * blockDim.x + tx;
+    const int num_threads = blockDim.x * blockDim.y;
     
     // Offset pointers for this batch/head
     const int offset = (batch_idx * num_heads + head_idx) * seq_len * HEAD_DIM;
@@ -58,19 +65,23 @@ __global__ void flash_attention_kernel(
     
     const int m_start = m_block * BLOCK_M;
     
-    // Initialize output accumulators and running statistics
-    float o_acc[HEAD_DIM];
-    #pragma unroll
-    for (int d = 0; d < HEAD_DIM; ++d) {
-        o_acc[d] = 0.0f;
+    // Initialize shared accumulators (cooperative across all threads)
+    for (int i = tid; i < BLOCK_M * HEAD_DIM; i += num_threads) {
+        int r = i / HEAD_DIM;
+        int d = i % HEAD_DIM;
+        O_acc[r][d] = 0.0f;
     }
-    float m_prev = -FLT_MAX;  // Running max
-    float l_prev = 0.0f;       // Running sum of exp
+    if (tid < BLOCK_M) {
+        row_m[tid] = -FLT_MAX;
+        row_l[tid] = 0.0f;
+    }
     
     // Load Q tile (persistent across K/V blocks)
-    for (int d = tx; d < HEAD_DIM; d += blockDim.x) {
-        const int m_idx = m_start + ty;
-        Qs[ty][d] = (m_idx < seq_len) ? to_float(q_ptr[m_idx * HEAD_DIM + d]) : 0.0f;
+    for (int i = tid; i < BLOCK_M * HEAD_DIM; i += num_threads) {
+        int r = i / HEAD_DIM;
+        int d = i % HEAD_DIM;
+        int m_idx = m_start + r;
+        Qs[r][d] = (m_idx < seq_len) ? to_float(q_ptr[m_idx * HEAD_DIM + d]) : 0.0f;
     }
     __syncthreads();
     
@@ -80,68 +91,73 @@ __global__ void flash_attention_kernel(
     for (int n_block = 0; n_block < num_kv_blocks; ++n_block) {
         const int n_start = n_block * BLOCK_N;
         
-        // Load K, V tiles
-        for (int d = tx; d < HEAD_DIM; d += blockDim.x) {
-            const int n_idx = n_start + ty;
-            Ks[ty][d] = (n_idx < seq_len) ? to_float(k_ptr[n_idx * HEAD_DIM + d]) : 0.0f;
-            Vs[ty][d] = (n_idx < seq_len) ? to_float(v_ptr[n_idx * HEAD_DIM + d]) : 0.0f;
+        // Load K, V tiles cooperatively
+        for (int i = tid; i < BLOCK_N * HEAD_DIM; i += num_threads) {
+            int r = i / HEAD_DIM;
+            int d = i % HEAD_DIM;
+            int n_idx = n_start + r;
+            Ks[r][d] = (n_idx < seq_len) ? to_float(k_ptr[n_idx * HEAD_DIM + d]) : 0.0f;
+            Vs[r][d] = (n_idx < seq_len) ? to_float(v_ptr[n_idx * HEAD_DIM + d]) : 0.0f;
         }
         __syncthreads();
         
-        // Compute QK^T for this block
+        // Compute QK^T: S[m][n] = sum_d(Q[m][d] * K[n][d]) * scale
         if (ty < BLOCK_M && tx < BLOCK_N) {
             float qk = 0.0f;
             #pragma unroll
             for (int d = 0; d < HEAD_DIM; ++d) {
                 qk += Qs[ty][d] * Ks[tx][d];
             }
-            scores[ty][tx] = qk * scale;
+            S[ty][tx] = qk * scale;
         }
         __syncthreads();
         
-        // Online softmax update (per row)
-        if (ty < BLOCK_M && m_start + ty < seq_len) {
-            // Find max in this block
-            float m_curr = m_prev;
+        // Online softmax + weighted V accumulation (per row, using thread ty)
+        if (ty < BLOCK_M && (m_start + ty) < seq_len) {
+            float m_old = row_m[ty];
+            float l_old = row_l[ty];
+            
+            // Find max in this block's scores
+            float m_new = m_old;
             for (int n = 0; n < BLOCK_N && (n_start + n) < seq_len; ++n) {
-                m_curr = fmaxf(m_curr, scores[ty][n]);
+                m_new = fmaxf(m_new, S[ty][n]);
             }
             
-            // Compute new sum with rescaling
-            float l_curr = l_prev * expf(m_prev - m_curr);
+            // Compute rescaled sum
+            float l_new = l_old * expf(m_old - m_new);
             for (int n = 0; n < BLOCK_N && (n_start + n) < seq_len; ++n) {
-                l_curr += expf(scores[ty][n] - m_curr);
+                l_new += expf(S[ty][n] - m_new);
             }
             
-            // Rescale previous output accumulator
-            float scale_prev = (l_prev > 0.0f) ? (l_prev * expf(m_prev - m_curr) / l_curr) : 0.0f;
-            float scale_curr = 1.0f / l_curr;
+            // Rescale previous accumulator and add new contributions
+            float rescale = (l_old > 0.0f) ? (l_old * expf(m_old - m_new) / l_new) : 0.0f;
+            float inv_l = 1.0f / l_new;
             
-            // Update output accumulator
-            #pragma unroll
-            for (int d = 0; d < HEAD_DIM; ++d) {
-                o_acc[d] *= scale_prev;
-            }
-            
-            for (int n = 0; n < BLOCK_N && (n_start + n) < seq_len; ++n) {
-                float p = expf(scores[ty][n] - m_curr) * scale_curr;
-                #pragma unroll
-                for (int d = 0; d < HEAD_DIM; ++d) {
-                    o_acc[d] += p * Vs[n][d];
+            for (int d = tx; d < HEAD_DIM; d += blockDim.x) {
+                float o_val = O_acc[ty][d] * rescale;
+                
+                for (int n = 0; n < BLOCK_N && (n_start + n) < seq_len; ++n) {
+                    o_val += expf(S[ty][n] - m_new) * inv_l * Vs[n][d];
                 }
+                
+                O_acc[ty][d] = o_val;
             }
             
-            m_prev = m_curr;
-            l_prev = l_curr;
+            if (tx == 0) {
+                row_m[ty] = m_new;
+                row_l[ty] = l_new;
+            }
         }
         __syncthreads();
     }
     
-    // Write output
-    const int m_idx = m_start + ty;
-    if (m_idx < seq_len && ty < BLOCK_M) {
-        for (int d = tx; d < HEAD_DIM; d += blockDim.x) {
-            o_ptr[m_idx * HEAD_DIM + d] = from_float<T>(o_acc[d]);
+    // Write output cooperatively
+    for (int i = tid; i < BLOCK_M * HEAD_DIM; i += num_threads) {
+        int r = i / HEAD_DIM;
+        int d = i % HEAD_DIM;
+        int m_idx = m_start + r;
+        if (m_idx < seq_len) {
+            o_ptr[m_idx * HEAD_DIM + d] = from_float<T>(O_acc[r][d]);
         }
     }
 }
