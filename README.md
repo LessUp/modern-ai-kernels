@@ -1,9 +1,12 @@
 # TensorCraft-HPC
 
+English | [简体中文](README.zh-CN.md)
+
 <p align="center">
   <strong>Demystifying High-Performance AI Kernels with Modern C++ & CUDA</strong>
 </p>
 
+[![Docs](https://img.shields.io/badge/Docs-GitHub%20Pages-blue?logo=github)](https://lessup.github.io/modern-ai-kernels/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![CUDA](https://img.shields.io/badge/CUDA-11.0+-76B900?logo=nvidia&logoColor=white)
 ![C++](https://img.shields.io/badge/C%2B%2B-17/20-00599C?logo=c%2B%2B&logoColor=white)
