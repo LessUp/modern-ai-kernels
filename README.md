@@ -6,6 +6,7 @@ English | [简体中文](README.zh-CN.md)
   <strong>Demystifying High-Performance AI Kernels with Modern C++ & CUDA</strong>
 </p>
 
+[![CI](https://github.com/LessUp/modern-ai-kernels/actions/workflows/ci.yml/badge.svg)](https://github.com/LessUp/modern-ai-kernels/actions/workflows/ci.yml)
 [![Docs](https://img.shields.io/badge/Docs-GitHub%20Pages-blue?logo=github)](https://lessup.github.io/modern-ai-kernels/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![CUDA](https://img.shields.io/badge/CUDA-11.0+-76B900?logo=nvidia&logoColor=white)
@@ -69,8 +70,8 @@ TensorCraft-HPC 是一个现代化的、教学友好且工业级的高性能 AI 
 
 ```bash
 # 克隆仓库
-git clone https://github.com/your-username/tensorcraft-hpc.git
-cd tensorcraft-hpc
+git clone https://github.com/LessUp/modern-ai-kernels.git
+cd modern-ai-kernels
 
 # 使用 CMake Presets 配置（推荐）
 cmake --preset release
