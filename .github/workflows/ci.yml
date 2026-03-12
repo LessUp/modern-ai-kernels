@@ -47,6 +47,7 @@ jobs:
 
   build-cuda11:
     name: Build (CUDA 11.8)
+    if: false  # Disabled: requires GPU runner not available on GitHub-hosted runners
     runs-on: ubuntu-latest
     container:
       image: nvidia/cuda:11.8.0-devel-ubuntu22.04
@@ -70,6 +71,7 @@ jobs:
 
   build-cuda12:
     name: Build (CUDA 12.2)
+    if: false  # Disabled: requires GPU runner not available on GitHub-hosted runners
     runs-on: ubuntu-latest
     container:
       image: nvidia/cuda:12.2.0-devel-ubuntu22.04
@@ -93,6 +95,7 @@ jobs:
 
   test:
     name: Tests
+    if: false  # Disabled: requires GPU runner not available on GitHub-hosted runners
     runs-on: ubuntu-latest
     needs: [build-cuda12]
     container:
