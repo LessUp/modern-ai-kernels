@@ -1,119 +1,70 @@
 ---
 layout: default
-title: TensorCraft-HPC — 现代化高性能 AI 算子库
+title: TensorCraft-HPC — 文档入口
+description: 现代 C++ / CUDA AI 算子库的文档首页：项目定位、阅读路径与核心文档导航
 ---
 
 # TensorCraft-HPC
 
-**Demystifying High-Performance AI Kernels with Modern C++ & CUDA**
-
-现代化的、教学友好且工业级的高性能 AI 算子优化库。展示从朴素实现到极致优化的渐进式优化技术，涵盖 LLM 和深度学习中最关键的算子。
-
+[![GitHub Pages](https://github.com/LessUp/modern-ai-kernels/actions/workflows/pages.yml/badge.svg)](https://github.com/LessUp/modern-ai-kernels/actions/workflows/pages.yml)
 [![CI](https://github.com/LessUp/modern-ai-kernels/actions/workflows/ci.yml/badge.svg)](https://github.com/LessUp/modern-ai-kernels/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![CUDA](https://img.shields.io/badge/CUDA-11.0+-76B900?logo=nvidia&logoColor=white)
 ![C++](https://img.shields.io/badge/C%2B%2B-17%2F20%2F23-00599C?logo=c%2B%2B&logoColor=white)
 
----
+TensorCraft-HPC 面向“理解并实践现代 AI 算子如何从可读实现演进到高性能版本”的学习与工程场景，覆盖 Elementwise、Normalization、GEMM、Attention、Conv2D、Sparse、Fusion 与 Quantization 等核心模块。
 
-## 架构总览
+## 项目定位
 
-```
-tensorcraft/
-├── core/               ← 基础设施 (错误检查、特性检测、类型系统)
-├── memory/             ← 内存管理 (Tensor RAII、内存池、向量化加载)
-└── kernels/            ← 算子实现 (8 大类 30+ 算子)
-    ├── elementwise     ← ReLU, GeLU, SiLU, Sigmoid, Tanh …
-    ├── normalization   ← LayerNorm, RMSNorm, BatchNorm
-    ├── gemm            ← Naive → Tiled → Double Buffer → Tensor Core
-    ├── attention       ← FlashAttention, RoPE, PagedAttention, MoE
-    ├── conv2d          ← Conv2D, Im2Col, Depthwise, Pointwise
-    ├── sparse          ← CSR/CSC SpMV, SpMM
-    ├── fusion          ← Bias+GeLU, Bias+ReLU (Epilogue 模式)
-    └── quantization    ← INT8, FP8 (CUDA 12.0+)
-```
+这是一个把现代 C++/CUDA 编程、AI kernel 设计模式与工程化验证流程放在一起的学习型仓库。`README` 现在只保留仓库级入口，这个页面负责告诉你项目适合谁、从哪里开始，以及文档之间如何组织。
 
-## 算子矩阵
+## 适合谁
 
-| 类别 | 算子 | 优化技术 |
-|------|------|----------|
-| **Elementwise** | ReLU, SiLU, GeLU, Sigmoid, Tanh, Softplus | 向量化加载 (128-bit)、Functor 模式 |
-| **Normalization** | LayerNorm, RMSNorm, BatchNorm | Warp Shuffle 归约、Welford 算法 |
-| **GEMM** | 矩阵乘法 (4 级优化) | Shared Memory → Double Buffer → WMMA Tensor Core |
-| **Attention** | FlashAttention, RoPE, PagedAttention, MoE | Online Softmax、Tiled I/O、KV Cache |
-| **Convolution** | Conv2D, Im2Col, Depthwise, Pointwise | Im2Col + GEMM、Shared Memory |
-| **Sparse** | CSR/CSC SpMV, SpMM, 格式转换 | 向量化 SpMV、Warp 协作 |
-| **Fusion** | Bias+GeLU, Bias+ReLU | Epilogue Functor 模式 |
-| **Quantization** | INT8, FP8 (E4M3) | CAS-based Atomic Min/Max |
+- 想系统浏览现代 C++ / CUDA AI kernel 设计与优化模式的开发者
+- 想按主题阅读安装、架构、API、优化与问题排查文档的工程师
+- 需要快速进入测试、贡献流程和版本演进记录的维护者
 
-## 核心特性
+## 从哪里开始
 
-| 特性 | 详情 |
-|------|------|
-| **现代 C++** | C++17 基础，C++20 Concepts / C++23 可选 |
-| **多架构** | Volta (SM 70) → Turing (75) → Ampere (80/86) → Ada (89) → Hopper (90) |
-| **Header-Only** | 纯头文件设计，`#include` 即可使用 |
-| **Python 绑定** | pybind11 提供 NumPy 互操作接口 |
-| **渐进式优化** | 每个算子提供 Naive → 极致优化的多个版本 |
-| **完整测试** | GoogleTest 单元测试 + Google Benchmark 性能基准 |
-| **CUDA 兼容** | CUDA 11.0 ~ 13.1，FP8 需 CUDA 12.0+ |
+1. 先看 [README](README.md)，完成最小构建、测试与 Python 安装。
+2. 再看 [安装指南](docs/INSTALL.md) 和 [架构设计](docs/architecture.md)，建立环境与模块边界认知。
+3. 想深入实现细节时，继续阅读 [优化指南](docs/optimization_guide.md)、[API 参考](docs/api_reference.md) 与 [Modern C++ in CUDA](docs/modern_cpp_cuda.md)。
 
-## 快速开始
+## 推荐阅读路径
 
-```bash
-git clone https://github.com/LessUp/modern-ai-kernels.git
-cd modern-ai-kernels
+### 我只想先编译并跑测试
 
-# CMake Presets 构建 (推荐)
-cmake --preset release
-cmake --build build/release -j$(nproc)
+- [README](README.md)
+- [安装指南](docs/INSTALL.md)
+- [问题排查](docs/TROUBLESHOOTING.md)
 
-# 运行测试
-ctest --test-dir build/release --output-on-failure
+### 我想先理解架构与模块划分
 
-# Python 绑定
-pip install -e .
-```
+- [架构设计](docs/architecture.md)
+- [API 参考](docs/api_reference.md)
+- [Modern C++ in CUDA](docs/modern_cpp_cuda.md)
 
-```cpp
-#include "tensorcraft/kernels/gemm.hpp"
-#include "tensorcraft/kernels/attention.hpp"
+### 我准备做优化或继续维护
 
-using namespace tensorcraft::kernels;
+- [优化指南](docs/optimization_guide.md)
+- [CONTRIBUTING](CONTRIBUTING.md)
+- [CHANGELOG](CHANGELOG.md)
+- [changelog/](changelog/)
 
-// GEMM — 选择优化级别
-launch_gemm(A, B, C, M, N, K, 1.0f, 0.0f, GemmVersion::TensorCore);
+## 核心文档
 
-// FlashAttention
-launch_flash_attention(Q, K, V, O, batch, heads, seq_len, head_dim, scale);
-```
+| 类别 | 页面 | 说明 |
+|------|------|------|
+| 概览 | [README](README.md) | 仓库定位、最小构建命令与文档链接 |
+| 快速开始 | [安装指南](docs/INSTALL.md) | 环境准备、平台差异与安装步骤 |
+| 架构设计 | [架构设计](docs/architecture.md) | 模块边界、目录结构与设计思路 |
+| 使用指南 | [优化指南](docs/optimization_guide.md) | GEMM / Attention / Kernel 优化路线 |
+| 参考 | [API 参考](docs/api_reference.md) | C++ / Python 接口说明 |
+| 开发指南 | [CONTRIBUTING](CONTRIBUTING.md) | 贡献流程、测试要求与代码规范 |
+| 归档 | [CHANGELOG](CHANGELOG.md) / [changelog/](changelog/) | 版本记录与 Pages / 工作流调整记录 |
 
-## GPU 架构支持
+## 相关入口
 
-| 架构 | SM | 代表 GPU | CUDA 最低版本 |
-|------|------|----------|---------------|
-| Volta | 70 | V100 | 11.0 |
-| Turing | 75 | RTX 2080, T4 | 11.0 |
-| Ampere | 80, 86 | A100, RTX 3090 | 11.0 |
-| Ada Lovelace | 89 | RTX 4090, L40 | 11.8 |
-| Hopper | 90 | H100 | 12.0 |
-
-## 文档导航
-
-| 文档 | 说明 |
-|------|------|
-| [README](README.md) | 项目概述、完整使用示例 |
-| [安装指南](docs/INSTALL.md) | 多平台环境搭建 (Linux / Windows / macOS) |
-| [API 参考](docs/api_reference.md) | 完整的 C++ & Python API 文档 |
-| [架构设计](docs/architecture.md) | 模块架构、设计模式、扩展指南 |
-| [优化指南](docs/optimization_guide.md) | GEMM / Softmax / Attention 优化技术详解 |
-| [Modern C++ in CUDA](docs/modern_cpp_cuda.md) | C++17/20/23 在 CUDA 中的最佳实践 |
-| [问题排查](docs/TROUBLESHOOTING.md) | 常见构建 & 运行时问题 |
-| [CHANGELOG](CHANGELOG.md) | 版本变更记录 |
-| [CONTRIBUTING](CONTRIBUTING.md) | 贡献指南 |
-
-## 项目链接
-
-- [GitHub 仓库](https://github.com/LessUp/modern-ai-kernels)
-- [问题反馈](https://github.com/LessUp/modern-ai-kernels/issues)
-- [README (English)](README.md) ｜ [README (中文)](README.zh-CN.md)
+- GitHub 仓库：`https://github.com/LessUp/modern-ai-kernels`
+- 在线文档：`https://lessup.github.io/modern-ai-kernels/`
+- Issues：`https://github.com/LessUp/modern-ai-kernels/issues`
