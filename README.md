@@ -5,7 +5,7 @@ English | [简体中文](README.zh-CN.md) | [Docs](https://lessup.github.io/mode
 [![CI](https://github.com/LessUp/modern-ai-kernels/actions/workflows/ci.yml/badge.svg)](https://github.com/LessUp/modern-ai-kernels/actions/workflows/ci.yml)
 [![Docs](https://img.shields.io/badge/Docs-GitHub%20Pages-blue?logo=github)](https://lessup.github.io/modern-ai-kernels/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-![CUDA](https://img.shields.io/badge/CUDA-10.1%2B-76B900?logo=nvidia&logoColor=white)
+![CUDA](https://img.shields.io/badge/CUDA-12.8-76B900?logo=nvidia&logoColor=white)
 ![C++](https://img.shields.io/badge/C%2B%2B-17-00599C?logo=c%2B%2B&logoColor=white)
 ![CMake](https://img.shields.io/badge/CMake-3.20+-064F8C?logo=cmake&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3.8+-3776AB?logo=python&logoColor=white)
@@ -41,8 +41,8 @@ python -c "import tensorcraft_ops as tc; print(tc.__version__)"
 
 ## Build Notes
 
-- Minimum supported CUDA toolkit is `10.1`
-- CUDA `11.x`/`12.x` unlock more optimized feature paths than CUDA `10.x`
+- This repository targets the local CUDA `12.8` toolkit at `/usr/local/cuda/bin/nvcc`
+- CMake presets and Python builds pin `CMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc`
 - If CUDA is unavailable, CMake disables tests, benchmarks, and Python bindings automatically
 - If build pressure is high, prefer `dev`/`python-dev`, keep `--parallel` low, and set a single `CMAKE_CUDA_ARCHITECTURES` value for your GPU
 

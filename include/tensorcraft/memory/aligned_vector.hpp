@@ -137,15 +137,12 @@ TC_HOST_DEVICE_INLINE bool is_aligned(const T* ptr) {
  * Returns the largest vector size that fits in 16 bytes (LDS.128)
  */
 template<typename T>
-struct optimal_vec_size_value : std::integral_constant<int,
-    (sizeof(T) == 1 ? 8 :
-     sizeof(T) == 2 ? 8 :
-     sizeof(T) == 4 ? 4 :
-     sizeof(T) == 8 ? 2 : 1)> {};
-
-template<typename T>
 constexpr int optimal_vec_size() {
-    return optimal_vec_size_value<T>::value;
+    if constexpr (sizeof(T) == 1) return 8;
+    else if constexpr (sizeof(T) == 2) return 8;
+    else if constexpr (sizeof(T) == 4) return 4;
+    else if constexpr (sizeof(T) == 8) return 2;
+    else return 1;
 }
 
 // ============================================================================

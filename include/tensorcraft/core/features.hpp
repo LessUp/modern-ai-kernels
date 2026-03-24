@@ -23,10 +23,8 @@
     #define TC_CPP17 1
 #elif __cplusplus >= 201703L
     #define TC_CPP17 1
-#elif defined(__CUDACC__) && (__CUDACC_VER_MAJOR__ < 11) && (__cplusplus >= 201402L)
-    #define TC_CUDA_LEGACY_CXX 1
 #else
-    #error "TensorCraft requires C++17 or later (CUDA 10.x device code may use C++14)"
+    #error "TensorCraft requires C++17 or later"
 #endif
 
 // ============================================================================
@@ -49,10 +47,8 @@
     #elif __CUDACC_VER_MAJOR__ >= 11
         #define TC_CUDA_11 1
         #define TC_CUDA_10 1
-    #elif __CUDACC_VER_MAJOR__ >= 10
-        #define TC_CUDA_10 1
     #else
-        #error "TensorCraft requires CUDA 10.1 or later"
+        #error "TensorCraft requires CUDA 12.8 or later"
     #endif
 
     // Feature availability based on CUDA version
