@@ -8,12 +8,12 @@
 #include <pybind11/stl.h>
 
 #include "tensorcraft/core/cuda_check.hpp"
-#include "tensorcraft/memory/tensor.hpp"
 #include "tensorcraft/kernels/elementwise.hpp"
 #include "tensorcraft/kernels/softmax.hpp"
 #include "tensorcraft/kernels/normalization.hpp"
 #include "tensorcraft/kernels/gemm.hpp"
-#include "tensorcraft/kernels/attention.hpp"
+#include <stdexcept>
+#include <string>
 
 namespace py = pybind11;
 using namespace tensorcraft;
@@ -47,95 +47,232 @@ template<typename T>
 struct DeviceArray {
     T* ptr = nullptr;
     size_t size = 0;
-    
+
     DeviceArray(py::array_t<T> arr) {
         ptr = numpy_to_device(arr, size);
     }
-    
+
     ~DeviceArray() {
         if (ptr) cudaFree(ptr);
     }
-    
+
     DeviceArray(const DeviceArray&) = delete;
     DeviceArray& operator=(const DeviceArray&) = delete;
 };
+
+template<typename T>
+struct DeviceBuffer {
+    T* ptr = nullptr;
+    size_t size = 0;
+
+    explicit DeviceBuffer(size_t count) : size(count) {
+        TC_CUDA_CHECK(cudaMalloc(&ptr, size * sizeof(T)));
+    }
+
+    ~DeviceBuffer() {
+        if (ptr) cudaFree(ptr);
+    }
+
+    DeviceBuffer(const DeviceBuffer&) = delete;
+    DeviceBuffer& operator=(const DeviceBuffer&) = delete;
+};
+
+py::array_t<float> copy_float_output(const DeviceBuffer<float>& output,
+                                     const std::vector<ssize_t>& shape) {
+    return device_to_numpy(output.ptr, shape);
+}
+
+py::array_t<float> copy_float_output(const DeviceBuffer<float>& output,
+                                     std::initializer_list<ssize_t> shape) {
+    return device_to_numpy(output.ptr, std::vector<ssize_t>(shape));
+}
+
+void sync_cuda() {
+    TC_CUDA_CHECK(cudaDeviceSynchronize());
+}
+
+std::vector<ssize_t> array_shape(const py::buffer_info& buf) {
+    return std::vector<ssize_t>(buf.shape.begin(), buf.shape.end());
+}
+
+size_t array_size(const py::buffer_info& buf) {
+    return static_cast<size_t>(buf.size);
+}
+
+void require_same_shape(const py::buffer_info& lhs, const py::buffer_info& rhs, const char* message) {
+    if (lhs.ndim != rhs.ndim || lhs.shape != rhs.shape) {
+        throw std::invalid_argument(message);
+    }
+}
+
+void require_non_empty_last_dim(const py::buffer_info& buf, const char* message) {
+    if (buf.ndim == 0 || buf.shape[buf.ndim - 1] <= 0) {
+        throw std::invalid_argument(message);
+    }
+}
+
+void require_vector_size(const py::buffer_info& buf, ssize_t expected, const char* name) {
+    if (buf.size != expected) {
+        throw std::invalid_argument(std::string(name) + " must contain exactly " + std::to_string(expected) + " elements");
+    }
+}
+
+size_t matrix_output_size(int rows, int cols) {
+    return static_cast<size_t>(rows) * static_cast<size_t>(cols);
+}
+
+// Helper to parse the GEMM version string once in one place.
+kernels::GemmVersion parse_gemm_version(const std::string& version) {
+    if (version == "naive") return kernels::GemmVersion::Naive;
+    if (version == "tiled") return kernels::GemmVersion::Tiled;
+    if (version == "double_buffer") return kernels::GemmVersion::DoubleBuffer;
+    throw std::invalid_argument("Unsupported GEMM version: " + version);
+}
+
+template<typename Launcher>
+py::array_t<float> run_shape_preserving_float_op(py::array_t<float> input, Launcher&& launch) {
+    py::buffer_info buf = input.request();
+    DeviceArray<float> d_input(input);
+    DeviceBuffer<float> d_output(array_size(buf));
+
+    launch(d_input.ptr, d_output.ptr, array_size(buf));
+    sync_cuda();
+    return copy_float_output(d_output, array_shape(buf));
+}
+
+template<typename Launcher>
+py::array_t<float> run_binary_float_op(py::array_t<float> a,
+                                       py::array_t<float> b,
+                                       Launcher&& launch) {
+    py::buffer_info buf_a = a.request();
+    py::buffer_info buf_b = b.request();
+
+    require_same_shape(buf_a, buf_b, "Input arrays must have the same shape");
+
+    DeviceArray<float> d_a(a);
+    DeviceArray<float> d_b(b);
+    DeviceBuffer<float> d_output(array_size(buf_a));
+
+    launch(d_a.ptr, d_b.ptr, d_output.ptr, array_size(buf_a));
+    sync_cuda();
+    return copy_float_output(d_output, array_shape(buf_a));
+}
+
+template<typename Launcher>
+py::array_t<float> run_matrix_float_op(py::array_t<float> input, Launcher&& launch) {
+    py::buffer_info buf = input.request();
+
+    if (buf.ndim != 2) {
+        throw std::runtime_error("Input must be a 2D matrix");
+    }
+
+    int rows = buf.shape[0];
+    int cols = buf.shape[1];
+    DeviceArray<float> d_input(input);
+    DeviceBuffer<float> d_output(matrix_output_size(rows, cols));
+
+    launch(d_input.ptr, d_output.ptr, rows, cols);
+    sync_cuda();
+    return copy_float_output(d_output, {cols, rows});
+}
+
+template<typename Launcher>
+py::array_t<float> run_last_dim_float_op(py::array_t<float> input, Launcher&& launch) {
+    py::buffer_info buf = input.request();
+
+    require_non_empty_last_dim(buf, "Input must have at least 1 dimension with a non-empty last axis");
+
+    int cols = buf.shape[buf.ndim - 1];
+    int rows = buf.size / cols;
+    DeviceArray<float> d_input(input);
+    DeviceBuffer<float> d_output(array_size(buf));
+
+    launch(d_input.ptr, d_output.ptr, rows, cols);
+    sync_cuda();
+    return copy_float_output(d_output, array_shape(buf));
+}
+
+template<typename Launcher>
+py::array_t<float> run_norm_float_op(py::array_t<float> input,
+                                     Launcher&& launch) {
+    py::buffer_info buf = input.request();
+
+    if (buf.ndim < 2) {
+        throw std::invalid_argument("Input must have at least 2 dimensions");
+    }
+    require_non_empty_last_dim(buf, "Input must have a non-empty hidden dimension");
+
+    int hidden_size = buf.shape[buf.ndim - 1];
+    int batch_size = buf.size / hidden_size;
+    DeviceArray<float> d_input(input);
+    DeviceBuffer<float> d_output(array_size(buf));
+
+    launch(d_input.ptr, d_output.ptr, batch_size, hidden_size);
+    sync_cuda();
+    return copy_float_output(d_output, array_shape(buf));
+}
+
+template<typename Launcher>
+py::array_t<float> run_gemm_float_op(py::array_t<float> A,
+                                     py::array_t<float> B,
+                                     Launcher&& launch) {
+    py::buffer_info buf_a = A.request();
+    py::buffer_info buf_b = B.request();
+
+    if (buf_a.ndim != 2 || buf_b.ndim != 2) {
+        throw std::runtime_error("A and B must be 2D matrices");
+    }
+
+    int M = buf_a.shape[0];
+    int K = buf_a.shape[1];
+    int N = buf_b.shape[1];
+
+    if (buf_b.shape[0] != K) {
+        throw std::runtime_error("Matrix dimensions don't match for multiplication");
+    }
+
+    DeviceArray<float> d_A(A);
+    DeviceArray<float> d_B(B);
+    DeviceBuffer<float> d_C(matrix_output_size(M, N));
+    TC_CUDA_CHECK(cudaMemset(d_C.ptr, 0, matrix_output_size(M, N) * sizeof(float)));
+
+    launch(d_A.ptr, d_B.ptr, d_C.ptr, M, N, K);
+    sync_cuda();
+    return copy_float_output(d_C, {M, N});
+}
 
 // ============================================================================
 // Elementwise Operations
 // ============================================================================
 
 py::array_t<float> py_relu(py::array_t<float> input) {
-    py::buffer_info buf = input.request();
-    size_t n = buf.size;
-    
-    DeviceArray<float> d_input(input);
-    float* d_output;
-    TC_CUDA_CHECK(cudaMalloc(&d_output, n * sizeof(float)));
-    
-    kernels::relu(d_input.ptr, d_output, n);
-    TC_CUDA_CHECK(cudaDeviceSynchronize());
-    
-    std::vector<ssize_t> shape(buf.shape.begin(), buf.shape.end());
-    auto result = device_to_numpy(d_output, shape);
-    cudaFree(d_output);
-    return result;
+    return run_shape_preserving_float_op(input, [](const float* in, float* out, size_t n) {
+        kernels::relu(in, out, n);
+    });
 }
 
 py::array_t<float> py_silu(py::array_t<float> input) {
-    py::buffer_info buf = input.request();
-    size_t n = buf.size;
-    
-    DeviceArray<float> d_input(input);
-    float* d_output;
-    TC_CUDA_CHECK(cudaMalloc(&d_output, n * sizeof(float)));
-    
-    kernels::silu(d_input.ptr, d_output, n);
-    TC_CUDA_CHECK(cudaDeviceSynchronize());
-    
-    std::vector<ssize_t> shape(buf.shape.begin(), buf.shape.end());
-    auto result = device_to_numpy(d_output, shape);
-    cudaFree(d_output);
-    return result;
+    return run_shape_preserving_float_op(input, [](const float* in, float* out, size_t n) {
+        kernels::silu(in, out, n);
+    });
 }
 
 py::array_t<float> py_gelu(py::array_t<float> input) {
-    py::buffer_info buf = input.request();
-    size_t n = buf.size;
-    
-    DeviceArray<float> d_input(input);
-    float* d_output;
-    TC_CUDA_CHECK(cudaMalloc(&d_output, n * sizeof(float)));
-    
-    kernels::gelu(d_input.ptr, d_output, n);
-    TC_CUDA_CHECK(cudaDeviceSynchronize());
-    
-    std::vector<ssize_t> shape(buf.shape.begin(), buf.shape.end());
-    auto result = device_to_numpy(d_output, shape);
-    cudaFree(d_output);
-    return result;
+    return run_shape_preserving_float_op(input, [](const float* in, float* out, size_t n) {
+        kernels::gelu(in, out, n);
+    });
+}
+
+py::array_t<float> py_sigmoid(py::array_t<float> input) {
+    return run_shape_preserving_float_op(input, [](const float* in, float* out, size_t n) {
+        kernels::sigmoid(in, out, n);
+    });
 }
 
 py::array_t<float> py_vector_add(py::array_t<float> a, py::array_t<float> b) {
-    py::buffer_info buf_a = a.request();
-    py::buffer_info buf_b = b.request();
-    
-    if (buf_a.size != buf_b.size) {
-        throw std::runtime_error("Input arrays must have the same size");
-    }
-    
-    size_t n = buf_a.size;
-    DeviceArray<float> d_a(a);
-    DeviceArray<float> d_b(b);
-    float* d_c;
-    TC_CUDA_CHECK(cudaMalloc(&d_c, n * sizeof(float)));
-    
-    kernels::vector_add(d_a.ptr, d_b.ptr, d_c, n);
-    TC_CUDA_CHECK(cudaDeviceSynchronize());
-    
-    std::vector<ssize_t> shape(buf_a.shape.begin(), buf_a.shape.end());
-    auto result = device_to_numpy(d_c, shape);
-    cudaFree(d_c);
-    return result;
+    return run_binary_float_op(a, b, [](const float* lhs, const float* rhs, float* out, size_t n) {
+        kernels::vector_add(lhs, rhs, out, n);
+    });
 }
 
 // ============================================================================
@@ -143,26 +280,9 @@ py::array_t<float> py_vector_add(py::array_t<float> a, py::array_t<float> b) {
 // ============================================================================
 
 py::array_t<float> py_softmax(py::array_t<float> input) {
-    py::buffer_info buf = input.request();
-    
-    if (buf.ndim < 1) {
-        throw std::runtime_error("Input must have at least 1 dimension");
-    }
-    
-    int cols = buf.shape[buf.ndim - 1];
-    int rows = buf.size / cols;
-    
-    DeviceArray<float> d_input(input);
-    float* d_output;
-    TC_CUDA_CHECK(cudaMalloc(&d_output, buf.size * sizeof(float)));
-    
-    kernels::softmax(d_input.ptr, d_output, rows, cols);
-    TC_CUDA_CHECK(cudaDeviceSynchronize());
-    
-    std::vector<ssize_t> shape(buf.shape.begin(), buf.shape.end());
-    auto result = device_to_numpy(d_output, shape);
-    cudaFree(d_output);
-    return result;
+    return run_last_dim_float_op(input, [](const float* in, float* out, int rows, int cols) {
+        kernels::softmax(in, out, rows, cols);
+    });
 }
 
 // ============================================================================
@@ -174,57 +294,32 @@ py::array_t<float> py_layernorm(
     py::array_t<float> gamma,
     py::array_t<float> beta,
     float eps = 1e-5f) {
-    
-    py::buffer_info buf = input.request();
-    if (buf.ndim < 2) {
-        throw std::runtime_error("Input must have at least 2 dimensions");
-    }
-    
-    int hidden_size = buf.shape[buf.ndim - 1];
-    int batch_size = buf.size / hidden_size;
-    
-    DeviceArray<float> d_input(input);
+    py::buffer_info input_buf = input.request();
+    require_non_empty_last_dim(input_buf, "Input must have a non-empty hidden dimension");
+    ssize_t hidden_size = input_buf.shape[input_buf.ndim - 1];
+    require_vector_size(gamma.request(), hidden_size, "gamma");
+    require_vector_size(beta.request(), hidden_size, "beta");
+
     DeviceArray<float> d_gamma(gamma);
     DeviceArray<float> d_beta(beta);
-    float* d_output;
-    TC_CUDA_CHECK(cudaMalloc(&d_output, buf.size * sizeof(float)));
-    
-    kernels::layernorm(d_input.ptr, d_gamma.ptr, d_beta.ptr, d_output,
-                       batch_size, hidden_size, eps);
-    TC_CUDA_CHECK(cudaDeviceSynchronize());
-    
-    std::vector<ssize_t> shape(buf.shape.begin(), buf.shape.end());
-    auto result = device_to_numpy(d_output, shape);
-    cudaFree(d_output);
-    return result;
+    return run_norm_float_op(input, [&](const float* in, float* out, int batch_size, int hidden_size_int) {
+        kernels::layernorm(in, d_gamma.ptr, d_beta.ptr, out, batch_size, hidden_size_int, eps);
+    });
 }
 
 py::array_t<float> py_rmsnorm(
     py::array_t<float> input,
     py::array_t<float> weight,
     float eps = 1e-6f) {
-    
-    py::buffer_info buf = input.request();
-    if (buf.ndim < 2) {
-        throw std::runtime_error("Input must have at least 2 dimensions");
-    }
-    
-    int hidden_size = buf.shape[buf.ndim - 1];
-    int batch_size = buf.size / hidden_size;
-    
-    DeviceArray<float> d_input(input);
+    py::buffer_info input_buf = input.request();
+    require_non_empty_last_dim(input_buf, "Input must have a non-empty hidden dimension");
+    ssize_t hidden_size = input_buf.shape[input_buf.ndim - 1];
+    require_vector_size(weight.request(), hidden_size, "weight");
+
     DeviceArray<float> d_weight(weight);
-    float* d_output;
-    TC_CUDA_CHECK(cudaMalloc(&d_output, buf.size * sizeof(float)));
-    
-    kernels::rmsnorm(d_input.ptr, d_weight.ptr, d_output,
-                     batch_size, hidden_size, eps);
-    TC_CUDA_CHECK(cudaDeviceSynchronize());
-    
-    std::vector<ssize_t> shape(buf.shape.begin(), buf.shape.end());
-    auto result = device_to_numpy(d_output, shape);
-    cudaFree(d_output);
-    return result;
+    return run_norm_float_op(input, [&](const float* in, float* out, int batch_size, int hidden_size_int) {
+        kernels::rmsnorm(in, d_weight.ptr, out, batch_size, hidden_size_int, eps);
+    });
 }
 
 // ============================================================================
@@ -237,38 +332,16 @@ py::array_t<float> py_gemm(
     float alpha = 1.0f,
     float beta = 0.0f,
     const std::string& version = "tiled") {
-    
-    py::buffer_info buf_a = A.request();
-    py::buffer_info buf_b = B.request();
-    
-    if (buf_a.ndim != 2 || buf_b.ndim != 2) {
-        throw std::runtime_error("A and B must be 2D matrices");
-    }
-    
-    int M = buf_a.shape[0];
-    int K = buf_a.shape[1];
-    int N = buf_b.shape[1];
-    
-    if (buf_b.shape[0] != K) {
-        throw std::runtime_error("Matrix dimensions don't match for multiplication");
-    }
-    
-    DeviceArray<float> d_A(A);
-    DeviceArray<float> d_B(B);
-    float* d_C;
-    TC_CUDA_CHECK(cudaMalloc(&d_C, M * N * sizeof(float)));
-    TC_CUDA_CHECK(cudaMemset(d_C, 0, M * N * sizeof(float)));
-    
-    kernels::GemmVersion ver = kernels::GemmVersion::Tiled;
-    if (version == "naive") ver = kernels::GemmVersion::Naive;
-    else if (version == "double_buffer") ver = kernels::GemmVersion::DoubleBuffer;
-    
-    kernels::launch_gemm(d_A.ptr, d_B.ptr, d_C, M, N, K, alpha, beta, ver);
-    TC_CUDA_CHECK(cudaDeviceSynchronize());
-    
-    auto result = device_to_numpy(d_C, {M, N});
-    cudaFree(d_C);
-    return result;
+    auto gemm_version = parse_gemm_version(version);
+    return run_gemm_float_op(A, B, [&](const float* lhs, const float* rhs, float* out, int M, int N, int K) {
+        kernels::launch_gemm(lhs, rhs, out, M, N, K, alpha, beta, gemm_version);
+    });
+}
+
+py::array_t<float> py_transpose(py::array_t<float> input) {
+    return run_matrix_float_op(input, [](const float* in, float* out, int rows, int cols) {
+        kernels::transpose(in, out, rows, cols);
+    });
 }
 
 // ============================================================================
@@ -284,6 +357,8 @@ PYBIND11_MODULE(tensorcraft_ops, m) {
     m.def("silu", &py_silu, "SiLU (Swish) activation",
           py::arg("input"));
     m.def("gelu", &py_gelu, "GeLU activation",
+          py::arg("input"));
+    m.def("sigmoid", &py_sigmoid, "Sigmoid activation",
           py::arg("input"));
     m.def("vector_add", &py_vector_add, "Element-wise vector addition",
           py::arg("a"), py::arg("b"));
@@ -305,7 +380,9 @@ PYBIND11_MODULE(tensorcraft_ops, m) {
           py::arg("A"), py::arg("B"),
           py::arg("alpha") = 1.0f, py::arg("beta") = 0.0f,
           py::arg("version") = "tiled");
-    
+    m.def("transpose", &py_transpose, "Matrix transpose",
+          py::arg("input"));
+
     // Version info
     m.attr("__version__") = "0.1.0";
 }

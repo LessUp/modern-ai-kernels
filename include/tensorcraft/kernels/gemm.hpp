@@ -14,6 +14,7 @@
 #include "../core/cuda_check.hpp"
 #include "../core/type_traits.hpp"
 #include <algorithm>
+#include <stdexcept>
 
 #ifdef TC_HAS_WMMA
 #include <mma.h>
@@ -368,7 +369,10 @@ void launch_gemm(
             gemm_double_buffer_kernel<T, TILE_SIZE><<<grid, block, 0, stream>>>(
                 A, B, C, M, N, K, alpha, beta);
             break;
-            
+
+        case GemmVersion::TensorCore:
+            throw std::invalid_argument("GemmVersion::TensorCore is not supported by launch_gemm; use launch_gemm_wmma for Tensor Core GEMM.");
+
         case GemmVersion::Auto:
         default:
             // Default to tiled version

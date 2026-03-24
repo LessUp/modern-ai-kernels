@@ -81,7 +81,7 @@ template<typename T> concept FloatingPoint;
 ```cpp
 #include "tensorcraft/memory/aligned_vector.hpp"
 
-namespace tensorcraft::memory {
+namespace tensorcraft {
 
 template<typename T, int N>
 struct alignas(sizeof(T) * N) AlignedVector {
@@ -103,34 +103,36 @@ RAII 风格的 Tensor 封装。
 ```cpp
 #include "tensorcraft/memory/tensor.hpp"
 
-namespace tensorcraft::memory {
+namespace tensorcraft {
 
 template<typename T>
 class Tensor {
 public:
-    // 构造函数
     explicit Tensor(const std::vector<size_t>& shape);
-    Tensor(const std::vector<size_t>& shape, const T* host_data);
-    
+    Tensor(std::initializer_list<size_t> shape);
+
     // 移动语义
     Tensor(Tensor&& other) noexcept;
     Tensor& operator=(Tensor&& other) noexcept;
-    
+
     // 访问器
     T* data();
     const T* data() const;
     size_t size() const;
+    size_t bytes() const;
     const std::vector<size_t>& shape() const;
+    const std::vector<size_t>& strides() const;
     size_t ndim() const;
-    
+
     // 数据传输
     void copy_from_host(const T* host_data);
     void copy_to_host(T* host_data) const;
-    std::vector<T> to_vector() const;
-    
+    std::vector<T> to_host() const;
+
     // 填充
     void fill(T value);
     void zero();
+    Tensor clone() const;
 };
 }
 ```
@@ -142,18 +144,16 @@ CUDA 内存池管理。
 ```cpp
 #include "tensorcraft/memory/memory_pool.hpp"
 
-namespace tensorcraft::memory {
+namespace tensorcraft {
 
 class MemoryPool {
 public:
     static MemoryPool& instance();
-    
+
     void* allocate(size_t bytes);
     void deallocate(void* ptr);
-    void release_all();
-    
-    size_t allocated_bytes() const;
-    size_t cached_bytes() const;
+    void clear();
+    void trim(size_t max_cached_bytes = 0);
 };
 }
 ```
@@ -217,20 +217,13 @@ template<typename T> struct LeakyReLU { T alpha; };
 
 namespace tensorcraft::kernels {
 
-// Softmax
 template<typename T>
-void softmax(const T* input, T* output, int batch_size, int dim, 
+void launch_softmax(const T* input, T* output, int rows, int cols,
+                    cudaStream_t stream = 0);
+
+template<typename T>
+void softmax(const T* input, T* output, size_t batch_size, size_t dim,
              cudaStream_t stream = 0);
-
-// Log Softmax
-template<typename T>
-void log_softmax(const T* input, T* output, int batch_size, int dim,
-                 cudaStream_t stream = 0);
-
-// 带温度的 Softmax
-template<typename T>
-void softmax_with_temperature(const T* input, T* output, int batch_size, 
-                              int dim, float temperature, cudaStream_t stream = 0);
 }
 ```
 
@@ -244,19 +237,19 @@ namespace tensorcraft::kernels {
 // LayerNorm: y = gamma * (x - mean) / sqrt(var + eps) + beta
 template<typename T>
 void layernorm(const T* input, const T* gamma, const T* beta, T* output,
-               int batch_size, int hidden_size, float eps = 1e-5f,
+               size_t batch_size, size_t hidden_size, float eps = 1e-5f,
                cudaStream_t stream = 0);
 
 // RMSNorm: y = x / RMS(x) * weight
 template<typename T>
 void rmsnorm(const T* input, const T* weight, T* output,
-             int batch_size, int hidden_size, float eps = 1e-5f,
+             size_t batch_size, size_t hidden_size, float eps = 1e-6f,
              cudaStream_t stream = 0);
 
-// BatchNorm (推理模式)
+// BatchNorm inference launcher
 template<typename T>
 void launch_batchnorm(const T* input, const T* gamma, const T* beta,
-                      const T* running_mean, const T* running_var, T* output,
+                      const float* running_mean, const float* running_var, T* output,
                       int N, int C, int H, int W, float eps = 1e-5f,
                       bool fuse_relu = false, cudaStream_t stream = 0);
 }
@@ -269,40 +262,36 @@ void launch_batchnorm(const T* input, const T* gamma, const T* beta,
 
 namespace tensorcraft::kernels {
 
-// GEMM 版本枚举
 enum class GemmVersion {
-    Naive,        // 朴素实现
-    Tiled,        // 共享内存分块
-    DoubleBuffer, // 双缓冲
-    TensorCore    // WMMA Tensor Core
+    Naive,
+    Tiled,
+    DoubleBuffer,
+    TensorCore,
+    Auto
 };
+// Note: launch_gemm currently supports Naive / Tiled / DoubleBuffer directly.
+// Use launch_gemm_wmma for Tensor Core GEMM.
 
-// 通用 GEMM: C = alpha * A * B + beta * C
 template<typename T>
-void gemm(const T* A, const T* B, T* C, int M, int N, int K,
-          float alpha = 1.0f, float beta = 0.0f, cudaStream_t stream = 0);
+void gemm(const T* A, const T* B, T* C,
+          size_t M, size_t N, size_t K,
+          T alpha = T(1), T beta = T(0), cudaStream_t stream = 0);
 
-// 指定版本的 GEMM
 template<typename T>
-void launch_gemm(const T* A, const T* B, T* C, int M, int N, int K,
-                 float alpha, float beta, GemmVersion version,
+void launch_gemm(const T* A, const T* B, T* C,
+                 int M, int N, int K,
+                 T alpha, T beta, GemmVersion version,
                  cudaStream_t stream = 0);
 
-// WMMA Tensor Core GEMM (half -> float)
-void launch_gemm_wmma(const __half* A, const __half* B, float* C,
-                      int M, int N, int K, cudaStream_t stream = 0);
+void launch_gemm_wmma(const half* A, const half* B, float* C,
+                      int M, int N, int K,
+                      float alpha = 1.0f, float beta = 0.0f,
+                      cudaStream_t stream = 0);
 
-// 矩阵转置
 template<typename T>
-void transpose(const T* input, T* output, int rows, int cols,
+void transpose(const T* input, T* output,
+               size_t rows, size_t cols,
                cudaStream_t stream = 0);
-
-// 批量 GEMM
-template<typename T>
-void batched_gemm(const T* const* A, const T* const* B, T** C,
-                  int M, int N, int K, int batch_size,
-                  float alpha = 1.0f, float beta = 0.0f,
-                  cudaStream_t stream = 0);
 }
 ```
 
@@ -313,48 +302,45 @@ void batched_gemm(const T* const* A, const T* const* B, T** C,
 
 namespace tensorcraft::kernels {
 
-// FlashAttention 风格的注意力计算
+// FlashAttention 风格的注意力计算（当前仅支持 head_dim == 64）
 template<typename T>
 void launch_flash_attention(const T* Q, const T* K, const T* V, T* O,
                             int batch_size, int num_heads, int seq_len,
                             int head_dim, float scale,
-                            const T* mask = nullptr,
                             cudaStream_t stream = 0);
 
-// 标准多头注意力
-template<typename T>
-void launch_multihead_attention(const T* Q, const T* K, const T* V, T* O,
-                                int batch_size, int num_heads, int seq_len,
-                                int head_dim, float scale,
-                                cudaStream_t stream = 0);
-
 // RoPE 位置编码
+// 注意：当前 launcher 只校验 head_dim 为偶数和 start_pos 非负，cache 边界需要调用方保证。
 template<typename T>
-void precompute_rope_cache(T* cos_cache, T* sin_cache,
+void launch_rope(T* x, const float* cos_cache, const float* sin_cache,
+                 int batch_size, int seq_len, int num_heads, int head_dim,
+                 int start_pos = 0, cudaStream_t stream = 0);
+
+void precompute_rope_cache(float* cos_cache, float* sin_cache,
                            int max_seq_len, int head_dim,
                            float base = 10000.0f,
                            cudaStream_t stream = 0);
 
-template<typename T>
-void launch_rope(T* x, const T* cos_cache, const T* sin_cache,
-                 int batch_size, int seq_len, int num_heads, int head_dim,
-                 int start_pos = 0, cudaStream_t stream = 0);
-
-// PagedAttention (用于 KV Cache)
-template<typename T>
-void launch_paged_attention(const T* Q, const T* K_cache, const T* V_cache,
-                            T* O, const int* block_tables,
-                            const int* context_lens,
-                            int batch_size, int num_heads, int head_dim,
-                            int block_size, int max_blocks,
-                            float scale, cudaStream_t stream = 0);
-
-// MoE 路由
+// MoE 路由（最多 8 个 experts，top_k 必须位于 [1, num_experts]）
 template<typename T>
 void launch_moe_router(const T* gate_logits, int* expert_indices,
-                       T* expert_weights, int batch_size,
+                       float* expert_weights, int batch_size,
                        int num_experts, int top_k,
                        cudaStream_t stream = 0);
+
+// Convenience wrappers
+template<typename T>
+void flash_attention(const T* Q, const T* K, const T* V, T* O,
+                     size_t batch_size, size_t num_heads, size_t seq_len, size_t head_dim,
+                     cudaStream_t stream = 0);
+
+template<typename T>
+void rope(T* x, const float* cos_cache, const float* sin_cache,
+          size_t batch_size, size_t seq_len, size_t num_heads, size_t head_dim,
+          int start_pos = 0, cudaStream_t stream = 0);
+
+当前 `attention.hpp` 的公共 launcher 仅覆盖 FlashAttention、RoPE 和 MoE router。
+`paged_attention_kernel` 存在，但 `launch_paged_attention` / `launch_multihead_attention` 还未作为稳定公共接口暴露。
 }
 ```
 
@@ -497,13 +483,13 @@ tc.silu(input: np.ndarray) -> np.ndarray
 tc.sigmoid(input: np.ndarray) -> np.ndarray
 
 # Softmax
-tc.softmax(input: np.ndarray, dim: int = -1) -> np.ndarray
+tc.softmax(input: np.ndarray) -> np.ndarray
 
 # Normalization
 tc.layernorm(input: np.ndarray, gamma: np.ndarray, beta: np.ndarray, 
              eps: float = 1e-5) -> np.ndarray
-tc.rmsnorm(input: np.ndarray, weight: np.ndarray, 
-           eps: float = 1e-5) -> np.ndarray
+tc.rmsnorm(input: np.ndarray, weight: np.ndarray,
+           eps: float = 1e-6) -> np.ndarray
 
 # GEMM
 tc.gemm(A: np.ndarray, B: np.ndarray, 

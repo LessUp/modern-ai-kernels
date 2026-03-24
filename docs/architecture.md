@@ -203,7 +203,7 @@ __global__ void elementwise_kernel(const T* in, T* out, size_t n, Func func) {
 通过枚举选择优化级别：
 
 ```cpp
-enum class GemmVersion { Naive, Tiled, DoubleBuffer, TensorCore };
+enum class GemmVersion { Naive, Tiled, DoubleBuffer, TensorCore, Auto };
 
 template<typename T>
 void launch_gemm(const T* A, const T* B, T* C, int M, int N, int K,
@@ -215,7 +215,12 @@ void launch_gemm(const T* A, const T* B, T* C, int M, int N, int K,
         case GemmVersion::Tiled:
             gemm_tiled<<<grid, block, smem>>>(A, B, C, M, N, K);
             break;
-        // ...
+        case GemmVersion::TensorCore:
+            // 当前通过专用 WMMA 入口 launch_gemm_wmma 使用 Tensor Core
+            break;
+        case GemmVersion::Auto:
+            // 默认回退到稳定实现
+            break;
     }
 }
 ```
