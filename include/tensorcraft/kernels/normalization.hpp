@@ -337,15 +337,10 @@ void launch_layernorm(
     if (batch_size == 0 || hidden_size == 0) return;
     
     constexpr int BLOCK_SIZE = 256;
-    
-    if (gamma && beta) {
-        layernorm_kernel<T, BLOCK_SIZE><<<batch_size, BLOCK_SIZE, 0, stream>>>(
-            input, gamma, beta, output, hidden_size, eps);
-    } else {
-        layernorm_no_affine_kernel<T, BLOCK_SIZE><<<batch_size, BLOCK_SIZE, 0, stream>>>(
-            input, output, hidden_size, eps);
-    }
-    
+
+    layernorm_kernel<T, BLOCK_SIZE><<<batch_size, BLOCK_SIZE, 0, stream>>>(
+        input, gamma, beta, output, hidden_size, eps);
+
     TC_CUDA_CHECK_LAST();
 }
 

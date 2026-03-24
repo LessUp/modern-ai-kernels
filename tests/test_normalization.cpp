@@ -96,56 +96,153 @@ TEST_F(NormalizationTest, LayerNormWithAffine) {
     const int batch_size = 16;
     const int hidden_size = 128;
     const float eps = 1e-5f;
-    
+
     auto h_input = random_vector(batch_size * hidden_size);
     auto h_gamma = random_vector(hidden_size);
     auto h_beta = random_vector(hidden_size);
     std::vector<float> h_output(batch_size * hidden_size);
-    
+
     float *d_input, *d_gamma, *d_beta, *d_output;
     TC_CUDA_CHECK(cudaMalloc(&d_input, batch_size * hidden_size * sizeof(float)));
     TC_CUDA_CHECK(cudaMalloc(&d_gamma, hidden_size * sizeof(float)));
     TC_CUDA_CHECK(cudaMalloc(&d_beta, hidden_size * sizeof(float)));
     TC_CUDA_CHECK(cudaMalloc(&d_output, batch_size * hidden_size * sizeof(float)));
-    
+
     TC_CUDA_CHECK(cudaMemcpy(d_input, h_input.data(), batch_size * hidden_size * sizeof(float), cudaMemcpyHostToDevice));
     TC_CUDA_CHECK(cudaMemcpy(d_gamma, h_gamma.data(), hidden_size * sizeof(float), cudaMemcpyHostToDevice));
     TC_CUDA_CHECK(cudaMemcpy(d_beta, h_beta.data(), hidden_size * sizeof(float), cudaMemcpyHostToDevice));
-    
+
     layernorm(d_input, d_gamma, d_beta, d_output, batch_size, hidden_size, eps);
     TC_CUDA_CHECK(cudaDeviceSynchronize());
-    
+
     TC_CUDA_CHECK(cudaMemcpy(h_output.data(), d_output, batch_size * hidden_size * sizeof(float), cudaMemcpyDeviceToHost));
-    
+
     // Verify against reference implementation
     for (int b = 0; b < batch_size; ++b) {
-        // Compute mean
         float mean = 0.0f;
         for (int h = 0; h < hidden_size; ++h) {
             mean += h_input[b * hidden_size + h];
         }
         mean /= hidden_size;
-        
-        // Compute variance
+
         float var = 0.0f;
         for (int h = 0; h < hidden_size; ++h) {
             float diff = h_input[b * hidden_size + h] - mean;
             var += diff * diff;
         }
         var /= hidden_size;
-        
+
         float inv_std = 1.0f / std::sqrt(var + eps);
-        
-        // Check output
+
         for (int h = 0; h < hidden_size; ++h) {
             float normalized = (h_input[b * hidden_size + h] - mean) * inv_std;
             float expected = normalized * h_gamma[h] + h_beta[h];
             EXPECT_NEAR(h_output[b * hidden_size + h], expected, 1e-4f);
         }
     }
-    
+
     cudaFree(d_input);
     cudaFree(d_gamma);
+    cudaFree(d_beta);
+    cudaFree(d_output);
+}
+
+TEST_F(NormalizationTest, LayerNormGammaOnly) {
+    const int batch_size = 8;
+    const int hidden_size = 64;
+    const float eps = 1e-5f;
+
+    auto h_input = random_vector(batch_size * hidden_size);
+    auto h_gamma = random_vector(hidden_size);
+    std::vector<float> h_output(batch_size * hidden_size);
+
+    float *d_input, *d_gamma, *d_output;
+    TC_CUDA_CHECK(cudaMalloc(&d_input, batch_size * hidden_size * sizeof(float)));
+    TC_CUDA_CHECK(cudaMalloc(&d_gamma, hidden_size * sizeof(float)));
+    TC_CUDA_CHECK(cudaMalloc(&d_output, batch_size * hidden_size * sizeof(float)));
+
+    TC_CUDA_CHECK(cudaMemcpy(d_input, h_input.data(), batch_size * hidden_size * sizeof(float), cudaMemcpyHostToDevice));
+    TC_CUDA_CHECK(cudaMemcpy(d_gamma, h_gamma.data(), hidden_size * sizeof(float), cudaMemcpyHostToDevice));
+
+    layernorm(d_input, d_gamma, nullptr, d_output, batch_size, hidden_size, eps);
+    TC_CUDA_CHECK(cudaDeviceSynchronize());
+
+    TC_CUDA_CHECK(cudaMemcpy(h_output.data(), d_output, batch_size * hidden_size * sizeof(float), cudaMemcpyDeviceToHost));
+
+    for (int b = 0; b < batch_size; ++b) {
+        float mean = 0.0f;
+        for (int h = 0; h < hidden_size; ++h) {
+            mean += h_input[b * hidden_size + h];
+        }
+        mean /= hidden_size;
+
+        float var = 0.0f;
+        for (int h = 0; h < hidden_size; ++h) {
+            float diff = h_input[b * hidden_size + h] - mean;
+            var += diff * diff;
+        }
+        var /= hidden_size;
+
+        float inv_std = 1.0f / std::sqrt(var + eps);
+
+        for (int h = 0; h < hidden_size; ++h) {
+            float normalized = (h_input[b * hidden_size + h] - mean) * inv_std;
+            float expected = normalized * h_gamma[h];
+            EXPECT_NEAR(h_output[b * hidden_size + h], expected, 1e-4f);
+        }
+    }
+
+    cudaFree(d_input);
+    cudaFree(d_gamma);
+    cudaFree(d_output);
+}
+
+TEST_F(NormalizationTest, LayerNormBetaOnly) {
+    const int batch_size = 8;
+    const int hidden_size = 64;
+    const float eps = 1e-5f;
+
+    auto h_input = random_vector(batch_size * hidden_size);
+    auto h_beta = random_vector(hidden_size);
+    std::vector<float> h_output(batch_size * hidden_size);
+
+    float *d_input, *d_beta, *d_output;
+    TC_CUDA_CHECK(cudaMalloc(&d_input, batch_size * hidden_size * sizeof(float)));
+    TC_CUDA_CHECK(cudaMalloc(&d_beta, hidden_size * sizeof(float)));
+    TC_CUDA_CHECK(cudaMalloc(&d_output, batch_size * hidden_size * sizeof(float)));
+
+    TC_CUDA_CHECK(cudaMemcpy(d_input, h_input.data(), batch_size * hidden_size * sizeof(float), cudaMemcpyHostToDevice));
+    TC_CUDA_CHECK(cudaMemcpy(d_beta, h_beta.data(), hidden_size * sizeof(float), cudaMemcpyHostToDevice));
+
+    layernorm(d_input, nullptr, d_beta, d_output, batch_size, hidden_size, eps);
+    TC_CUDA_CHECK(cudaDeviceSynchronize());
+
+    TC_CUDA_CHECK(cudaMemcpy(h_output.data(), d_output, batch_size * hidden_size * sizeof(float), cudaMemcpyDeviceToHost));
+
+    for (int b = 0; b < batch_size; ++b) {
+        float mean = 0.0f;
+        for (int h = 0; h < hidden_size; ++h) {
+            mean += h_input[b * hidden_size + h];
+        }
+        mean /= hidden_size;
+
+        float var = 0.0f;
+        for (int h = 0; h < hidden_size; ++h) {
+            float diff = h_input[b * hidden_size + h] - mean;
+            var += diff * diff;
+        }
+        var /= hidden_size;
+
+        float inv_std = 1.0f / std::sqrt(var + eps);
+
+        for (int h = 0; h < hidden_size; ++h) {
+            float normalized = (h_input[b * hidden_size + h] - mean) * inv_std;
+            float expected = normalized + h_beta[h];
+            EXPECT_NEAR(h_output[b * hidden_size + h], expected, 1e-4f);
+        }
+    }
+
+    cudaFree(d_input);
     cudaFree(d_beta);
     cudaFree(d_output);
 }

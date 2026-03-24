@@ -9,6 +9,7 @@
 #include "../core/type_traits.hpp"
 #include <cfloat>
 #include <cassert>
+#include <stdexcept>
 
 namespace tensorcraft {
 namespace kernels {
@@ -420,23 +421,28 @@ void launch_flash_attention(
     int batch_size, int num_heads, int seq_len, int head_dim,
     float scale,
     cudaStream_t stream = nullptr) {
-    
+
     if (batch_size == 0 || seq_len == 0) return;
-    
+
     // Use fixed head_dim=64 for now
     constexpr int BLOCK_M = 32;
     constexpr int BLOCK_N = 32;
     constexpr int HEAD_DIM = 64;
 
     static_assert(BLOCK_M * BLOCK_N <= 1024, "FlashAttention block size exceeds CUDA limit");
-    assert(head_dim == HEAD_DIM && "FlashAttention currently supports head_dim == 64");
+    if (head_dim != HEAD_DIM) {
+        throw std::invalid_argument("FlashAttention currently supports head_dim == 64");
+    }
+    if (num_heads <= 0) {
+        throw std::invalid_argument("FlashAttention requires num_heads > 0");
+    }
 
     dim3 block(BLOCK_N, BLOCK_M);
     dim3 grid((seq_len + BLOCK_M - 1) / BLOCK_M, 1, batch_size * num_heads);
-    
+
     flash_attention_kernel<T, BLOCK_M, BLOCK_N, HEAD_DIM><<<grid, block, 0, stream>>>(
         Q, K, V, O, batch_size, num_heads, seq_len, scale);
-    
+
     TC_CUDA_CHECK_LAST();
 }
 
@@ -451,17 +457,22 @@ void launch_rope(
     int batch_size, int seq_len, int num_heads, int head_dim,
     int start_pos = 0,
     cudaStream_t stream = nullptr) {
-    
-    assert(head_dim % 2 == 0 && "RoPE head_dim must be even");
+
+    if (head_dim % 2 != 0) {
+        throw std::invalid_argument("RoPE head_dim must be even");
+    }
+    if (start_pos < 0) {
+        throw std::invalid_argument("RoPE start_pos must be non-negative");
+    }
     const int total = batch_size * seq_len * num_heads * (head_dim / 2);
     if (total == 0) return;
-    
+
     constexpr int BLOCK_SIZE = 256;
     const int grid_size = (total + BLOCK_SIZE - 1) / BLOCK_SIZE;
-    
+
     rope_kernel<T><<<grid_size, BLOCK_SIZE, 0, stream>>>(
         x, cos_cache, sin_cache, batch_size, seq_len, num_heads, head_dim, start_pos);
-    
+
     TC_CUDA_CHECK_LAST();
 }
 
@@ -475,15 +486,20 @@ inline void precompute_rope_cache(
     int head_dim,
     float base = 10000.0f,
     cudaStream_t stream = nullptr) {
-    
-    assert(head_dim % 2 == 0 && "RoPE head_dim must be even");
+
+    if (head_dim % 2 != 0) {
+        throw std::invalid_argument("RoPE head_dim must be even");
+    }
+    if (max_seq_len < 0) {
+        throw std::invalid_argument("RoPE max_seq_len must be non-negative");
+    }
     const int total = max_seq_len * (head_dim / 2);
     constexpr int BLOCK_SIZE = 256;
     const int grid_size = (total + BLOCK_SIZE - 1) / BLOCK_SIZE;
-    
+
     rope_precompute_cache_kernel<<<grid_size, BLOCK_SIZE, 0, stream>>>(
         cos_cache, sin_cache, max_seq_len, head_dim, base);
-    
+
     TC_CUDA_CHECK_LAST();
 }
 
@@ -497,18 +513,21 @@ void launch_moe_router(
     float* expert_weights,
     int batch_size, int num_experts, int top_k,
     cudaStream_t stream = nullptr) {
-    
-    if (batch_size == 0) return;
 
-    assert(num_experts <= 8 && "MoE router supports up to 8 experts");
-    assert(top_k > 0 && top_k <= num_experts && "top_k must be within [1, num_experts]");
-    
+    if (batch_size == 0) return;
+    if (num_experts <= 0 || num_experts > 8) {
+        throw std::invalid_argument("MoE router supports num_experts within [1, 8]");
+    }
+    if (top_k <= 0 || top_k > num_experts) {
+        throw std::invalid_argument("MoE router requires top_k within [1, num_experts]");
+    }
+
     constexpr int BLOCK_SIZE = 256;
     const int grid_size = (batch_size + BLOCK_SIZE - 1) / BLOCK_SIZE;
-    
+
     moe_router_kernel<T, 8><<<grid_size, BLOCK_SIZE, 0, stream>>>(
         gate_logits, expert_indices, expert_weights, batch_size, num_experts, top_k);
-    
+
     TC_CUDA_CHECK_LAST();
 }
 
