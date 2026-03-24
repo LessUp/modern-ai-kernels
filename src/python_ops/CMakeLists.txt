@@ -16,6 +16,25 @@ set_target_properties(tensorcraft_ops PROPERTIES
 )
 
 # Install Python module
+if(DEFINED SKBUILD_PLATLIB_DIR)
+    set(TC_PYTHON_INSTALL_DIR "${SKBUILD_PLATLIB_DIR}")
+else()
+    set(TC_PYTHON_INSTALL_DIR ".")
+endif()
+
 install(TARGETS tensorcraft_ops
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/python
+    LIBRARY DESTINATION ${TC_PYTHON_INSTALL_DIR}
+    RUNTIME DESTINATION ${TC_PYTHON_INSTALL_DIR}
 )
+
+if(TC_BUILD_TESTS)
+    find_package(Python3 COMPONENTS Interpreter REQUIRED)
+
+    add_test(
+        NAME tensorcraft_python_smoke
+        COMMAND ${CMAKE_COMMAND} -E env
+            PYTHONPATH=$<TARGET_FILE_DIR:tensorcraft_ops>
+            ${Python3_EXECUTABLE}
+            ${CMAKE_SOURCE_DIR}/tests/test_python_bindings.py
+    )
+endif()

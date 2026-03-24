@@ -63,6 +63,20 @@
                 "TC_BUILD_BENCHMARKS": "ON",
                 "TC_BUILD_PYTHON": "OFF"
             }
+        },
+        {
+            "name": "cpu-smoke",
+            "displayName": "CPU Smoke",
+            "description": "CPU-only configure/install smoke validation",
+            "inherits": "default",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "TC_ENABLE_CUDA": "OFF",
+                "TC_BUILD_TESTS": "OFF",
+                "TC_BUILD_BENCHMARKS": "OFF",
+                "TC_BUILD_PYTHON": "OFF",
+                "TC_BUILD_DOCS": "OFF"
+            }
         }
     ],
     "buildPresets": [
@@ -81,6 +95,10 @@
         {
             "name": "ci",
             "configurePreset": "ci"
+        },
+        {
+            "name": "cpu-smoke",
+            "configurePreset": "cpu-smoke"
         }
     ],
     "testPresets": [

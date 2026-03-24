@@ -11,6 +11,10 @@ This guide covers common issues and their solutions when building or using Tenso
 CMake Error: Could not find CUDA
 ```
 
+**What happens in this repository:**
+
+When CUDA is unavailable, `CMakeLists.txt` keeps the configure step working but forces `TC_BUILD_TESTS=OFF`, `TC_BUILD_BENCHMARKS=OFF`, and `TC_BUILD_PYTHON=OFF`.
+
 **Solutions:**
 
 1. Ensure CUDA Toolkit is installed:
@@ -28,6 +32,13 @@ CMake Error: Could not find CUDA
    export CUDA_HOME=/usr/local/cuda
    export PATH=$CUDA_HOME/bin:$PATH
    ```
+
+4. If you only need to validate headers/install rules on a CPU-only machine, use the dedicated smoke preset:
+   ```bash
+   cmake --preset cpu-smoke
+   ```
+
+   In this mode, Python bindings are not built.
 
 ### Unsupported GPU Architecture
 
@@ -137,6 +148,27 @@ CUDA driver version is insufficient for CUDA runtime version
    nvidia-smi  # Shows driver version
    nvcc --version  # Shows CUDA toolkit version
    ```
+
+### Python Module Not Found
+
+**Error:**
+```
+ModuleNotFoundError: No module named 'tensorcraft_ops'
+```
+
+**Solutions:**
+
+1. Install the editable package from the repository root:
+   ```bash
+   pip install -e .
+   ```
+
+2. Verify the expected import name:
+   ```bash
+   python -c "import tensorcraft_ops as tc; print(tc.__version__)"
+   ```
+
+3. Ensure CUDA is available before building Python bindings. If CMake falls back to `TC_ENABLE_CUDA=OFF`, it disables `TC_BUILD_PYTHON` automatically.
 
 ### GPU Not Detected
 

@@ -1,0 +1,33 @@
+[build-system]
+requires = ["scikit-build-core>=0.10", "pybind11>=2.11"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "tensorcraft-ops"
+version = "0.1.0"
+description = "Python bindings for TensorCraft-HPC"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+authors = [
+  { name = "LessUp" }
+]
+classifiers = [
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: C++",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence"
+]
+dependencies = [
+  "numpy>=1.24"
+]
+
+[tool.scikit-build]
+cmake.source-dir = "."
+build-dir = "build/{wheel_tag}"
+
+[tool.scikit-build.cmake.define]
+TC_ENABLE_CUDA = "ON"
+TC_BUILD_PYTHON = "ON"
+TC_BUILD_TESTS = "OFF"
+TC_BUILD_BENCHMARKS = "OFF"
