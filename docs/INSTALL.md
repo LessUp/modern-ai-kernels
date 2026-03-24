@@ -6,7 +6,8 @@ This guide documents the current recommended build paths for TensorCraft-HPC.
 
 ### Required
 
-- **CUDA Toolkit**: `10.1` or later
+- **CUDA Toolkit**: `12.8`
+- **nvcc path**: `/usr/local/cuda/bin/nvcc`
 - **CMake**: `3.20` or later
 - **C++ Compiler**: C++17-capable host compiler
 - **NVIDIA GPU**: recommended for tests and Python bindings
@@ -101,9 +102,9 @@ Adjust `CMAKE_CUDA_ARCHITECTURES` to match your GPU.
 
 ## Compatibility Notes
 
-- TensorCraft-HPC now supports CUDA `10.1+`
-- On CUDA `10.x`, device compilation uses a CUDA-compatible dialect while host code remains on C++17
-- CUDA `11.x` and `12.x` enable newer feature paths beyond the CUDA `10.x` compatibility path
+- TensorCraft-HPC now targets CUDA `12.8`
+- The repository defaults to `/usr/local/cuda/bin/nvcc`
+- The codebase assumes full C++17 support in both host and CUDA compilation paths
 
 ## Verification
 

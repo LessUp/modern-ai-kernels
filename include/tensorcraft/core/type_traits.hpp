@@ -85,8 +85,8 @@ constexpr bool is_fp8_v = false;
  * @brief Type trait to check if T is any floating point type (including half)
  */
 template<typename T>
-struct is_floating : std::integral_constant<bool,
-    std::is_floating_point<T>::value || is_half_v<T> || is_fp8_v<T>
+struct is_floating : std::bool_constant<
+    std::is_floating_point_v<T> || is_half_v<T> || is_fp8_v<T>
 > {};
 
 template<typename T>
@@ -209,40 +209,36 @@ constexpr size_t type_bits_v = type_bits<T>::value;
  */
 template<typename T>
 TC_HOST_DEVICE_INLINE float to_float(T val) {
-    return static_cast<float>(val);
-}
-
-template<>
-TC_HOST_DEVICE_INLINE float to_float<__half>(__half val) {
-    return __half2float(val);
-}
-
+    if constexpr (std::is_same_v<T, __half>) {
+        return __half2float(val);
+    }
 #if defined(TC_HAS_BF16)
-template<>
-TC_HOST_DEVICE_INLINE float to_float<__nv_bfloat16>(__nv_bfloat16 val) {
-    return __bfloat162float(val);
-}
+    else if constexpr (std::is_same_v<T, __nv_bfloat16>) {
+        return __bfloat162float(val);
+    }
 #endif
+    else {
+        return static_cast<float>(val);
+    }
+}
 
 /**
  * @brief Convert float to target type
  */
 template<typename T>
 TC_HOST_DEVICE_INLINE T from_float(float val) {
-    return static_cast<T>(val);
-}
-
-template<>
-TC_HOST_DEVICE_INLINE __half from_float<__half>(float val) {
-    return __float2half(val);
-}
-
+    if constexpr (std::is_same_v<T, __half>) {
+        return __float2half(val);
+    }
 #if defined(TC_HAS_BF16)
-template<>
-TC_HOST_DEVICE_INLINE __nv_bfloat16 from_float<__nv_bfloat16>(float val) {
-    return __float2bfloat16(val);
-}
+    else if constexpr (std::is_same_v<T, __nv_bfloat16>) {
+        return __float2bfloat16(val);
+    }
 #endif
+    else {
+        return static_cast<T>(val);
+    }
+}
 
 // ============================================================================
 // Data Type Enumeration
@@ -266,45 +262,26 @@ enum class DataType {
  * @brief Get DataType enum from C++ type
  */
 template<typename T>
-struct dtype_of {
-    static constexpr DataType value = DataType::FP32;
-};
-
-template<>
-struct dtype_of<float> {
-    static constexpr DataType value = DataType::FP32;
-};
-
-template<>
-struct dtype_of<__half> {
-    static constexpr DataType value = DataType::FP16;
-};
-
-#if defined(TC_HAS_BF16)
-template<>
-struct dtype_of<__nv_bfloat16> {
-    static constexpr DataType value = DataType::BF16;
-};
-#endif
-
-template<>
-struct dtype_of<int8_t> {
-    static constexpr DataType value = DataType::INT8;
-};
-
-template<>
-struct dtype_of<int32_t> {
-    static constexpr DataType value = DataType::INT32;
-};
-
-template<>
-struct dtype_of<int64_t> {
-    static constexpr DataType value = DataType::INT64;
-};
-
-template<typename T>
 constexpr DataType get_dtype() {
-    return dtype_of<T>::value;
+    if constexpr (std::is_same_v<T, float>) {
+        return DataType::FP32;
+    } else if constexpr (std::is_same_v<T, __half>) {
+        return DataType::FP16;
+    }
+#if defined(TC_HAS_BF16)
+    else if constexpr (std::is_same_v<T, __nv_bfloat16>) {
+        return DataType::BF16;
+    }
+#endif
+    else if constexpr (std::is_same_v<T, int8_t>) {
+        return DataType::INT8;
+    } else if constexpr (std::is_same_v<T, int32_t>) {
+        return DataType::INT32;
+    } else if constexpr (std::is_same_v<T, int64_t>) {
+        return DataType::INT64;
+    } else {
+        return DataType::FP32;
+    }
 }
 
 /**

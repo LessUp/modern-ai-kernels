@@ -30,7 +30,7 @@ cmake --preset cpu-smoke
 If you do need CUDA, point CMake to the toolkit explicitly:
 
 ```bash
-cmake -B build -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc
+cmake -B build -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc -DCUDAToolkit_ROOT=/usr/local/cuda
 ```
 
 ## Unsupported GPU architecture
@@ -126,14 +126,14 @@ TensorCraft can still build successfully, but you may want to clean that environ
 
 ## CUDA version compatibility
 
-| Capability | Minimum CUDA |
-|------------|--------------|
-| Basic kernels and core build | 10.1 |
-| BF16-related paths | 11.x |
-| FP8-related paths | 12.x |
-| Hopper-specific features | 12.x |
+| Capability | Required CUDA |
+|------------|---------------|
+| Basic kernels and core build | 12.8 |
+| BF16-related paths | 12.8 |
+| FP8-related paths | 12.8 |
+| Hopper-specific features | 12.8 |
 
-If you are on CUDA `10.x`, prefer the compatibility path and avoid assuming newer CUDA features are available.
+This repository now assumes the local CUDA `12.8` toolchain and no longer carries a CUDA 10.x compatibility path.
 
 ## GPU runtime path vs CI
 
