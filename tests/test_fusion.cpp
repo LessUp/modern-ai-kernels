@@ -10,10 +10,10 @@
 #include <cfloat>
 
 #include "tensorcraft/core/cuda_check.hpp"
-#include "tensorcraft/kernels/fusion.hpp"
+#include "cuda_test_ops.hpp"
 
 using namespace tensorcraft;
-using namespace tensorcraft::kernels;
+using namespace tensorcraft::tests;
 
 class FusionTest : public ::testing::Test {
 protected:

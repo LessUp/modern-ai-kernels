@@ -40,6 +40,34 @@
             }
         },
         {
+            "name": "dev",
+            "displayName": "Dev",
+            "description": "Faster single-architecture CUDA development build",
+            "inherits": "default",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+                "CMAKE_CUDA_ARCHITECTURES": "75",
+                "CMAKE_CUDA_FLAGS": "-lineinfo -Xcompiler -O2",
+                "TC_BUILD_TESTS": "ON",
+                "TC_BUILD_BENCHMARKS": "OFF",
+                "TC_BUILD_PYTHON": "ON"
+            }
+        },
+        {
+            "name": "python-dev",
+            "displayName": "Python Dev",
+            "description": "Single-architecture CUDA build focused on Python bindings",
+            "inherits": "default",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+                "CMAKE_CUDA_ARCHITECTURES": "75",
+                "CMAKE_CUDA_FLAGS": "-lineinfo -Xcompiler -O2",
+                "TC_BUILD_TESTS": "OFF",
+                "TC_BUILD_BENCHMARKS": "OFF",
+                "TC_BUILD_PYTHON": "ON"
+            }
+        },
+        {
             "name": "profile",
             "displayName": "Profile",
             "description": "Release build with profiling symbols for Nsight",
@@ -89,6 +117,14 @@
             "configurePreset": "release"
         },
         {
+            "name": "dev",
+            "configurePreset": "dev"
+        },
+        {
+            "name": "python-dev",
+            "configurePreset": "python-dev"
+        },
+        {
             "name": "profile",
             "configurePreset": "profile"
         },
@@ -113,6 +149,13 @@
         {
             "name": "release",
             "configurePreset": "release",
+            "output": {
+                "outputOnFailure": true
+            }
+        },
+        {
+            "name": "dev",
+            "configurePreset": "dev",
             "output": {
                 "outputOnFailure": true
             }

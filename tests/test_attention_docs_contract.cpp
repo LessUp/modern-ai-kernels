@@ -1,10 +1,9 @@
 #include <gtest/gtest.h>
 #include <stdexcept>
 
-#include "tensorcraft/kernels/attention.hpp"
-#include "tensorcraft/kernels/gemm.hpp"
+#include "cuda_test_ops.hpp"
 
-using namespace tensorcraft::kernels;
+using namespace tensorcraft::tests;
 
 TEST(GemmContractTest, TensorCoreVersionThrowsInLaunchGemm) {
     float* null_ptr = nullptr;

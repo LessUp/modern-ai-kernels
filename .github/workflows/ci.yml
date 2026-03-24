@@ -29,8 +29,8 @@ jobs:
           check-path: 'include src tests benchmarks examples'
           exclude-regex: '(^|/)(build|\.git)(/|$)'
 
-  configure-cpu:
-    name: Configure CPU Build
+  configure-cpu-smoke:
+    name: CPU Configure And Install Smoke
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -43,7 +43,7 @@ jobs:
         run: cmake --install build/cpu-smoke --prefix "$RUNNER_TEMP/tensorcraft-install"
 
   python-package-smoke:
-    name: Python Package Smoke Test
+    name: Python Packaging Smoke (No CUDA)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -67,6 +67,27 @@ jobs:
             -DTC_BUILD_TESTS=OFF
             -DTC_BUILD_BENCHMARKS=OFF
             -DTC_BUILD_PYTHON=OFF
+
       - name: Verify wheel artifact exists
         run: |
           test -n "$(ls dist/*.whl)"
+
+  ci-note:
+    name: CI Coverage Note
+    runs-on: ubuntu-latest
+    steps:
+      - name: Report current CI scope
+        run: |
+          echo "This workflow validates CPU-only configure/install smoke and Python packaging smoke."
+          echo "It does not validate the real CUDA build/test path on a GPU runner."
+          echo "Use the local dev preset on a CUDA machine for primary validation:"
+          echo "  cmake --preset dev"
+          echo "  cmake --build --preset dev --parallel 2"
+          echo "  ctest --preset dev --output-on-failure"
+          echo "  python -m pip install -e ."
+          echo "  python -c 'import tensorcraft_ops as tc; print(tc.__version__)'"
+          echo "GitHub-hosted runners in this workflow do not cover that CUDA path."
+
+  # Note: Real CUDA validation is not covered here because this workflow does not
+  # run on GPU-equipped runners. Local validation on a CUDA machine remains the
+  # primary verification path for the dev preset.

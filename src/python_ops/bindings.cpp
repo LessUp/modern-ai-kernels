@@ -3,17 +3,17 @@
  * @brief Python bindings for TensorCraft-HPC using pybind11
  */
 
-#include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
+#include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-#include "tensorcraft/core/cuda_check.hpp"
-#include "tensorcraft/kernels/elementwise.hpp"
-#include "tensorcraft/kernels/softmax.hpp"
-#include "tensorcraft/kernels/normalization.hpp"
-#include "tensorcraft/kernels/gemm.hpp"
+#include <initializer_list>
 #include <stdexcept>
 #include <string>
+#include <vector>
+
+#include "cuda_ops.hpp"
+#include "tensorcraft/core/cuda_check.hpp"
 
 namespace py = pybind11;
 using namespace tensorcraft;
@@ -22,9 +22,9 @@ using namespace tensorcraft;
 template<typename T>
 T* numpy_to_device(py::array_t<T> arr, size_t& size) {
     py::buffer_info buf = arr.request();
-    size = buf.size;
-    
-    T* d_ptr;
+    size = static_cast<size_t>(buf.size);
+
+    T* d_ptr = nullptr;
     TC_CUDA_CHECK(cudaMalloc(&d_ptr, size * sizeof(T)));
     TC_CUDA_CHECK(cudaMemcpy(d_ptr, buf.ptr, size * sizeof(T), cudaMemcpyHostToDevice));
     return d_ptr;
@@ -34,8 +34,8 @@ T* numpy_to_device(py::array_t<T> arr, size_t& size) {
 template<typename T>
 py::array_t<T> device_to_numpy(T* d_ptr, const std::vector<ssize_t>& shape) {
     size_t size = 1;
-    for (auto s : shape) size *= s;
-    
+    for (auto s : shape) size *= static_cast<size_t>(s);
+
     py::array_t<T> result(shape);
     py::buffer_info buf = result.request();
     TC_CUDA_CHECK(cudaMemcpy(buf.ptr, d_ptr, size * sizeof(T), cudaMemcpyDeviceToHost));
@@ -48,7 +48,7 @@ struct DeviceArray {
     T* ptr = nullptr;
     size_t size = 0;
 
-    DeviceArray(py::array_t<T> arr) {
+    explicit DeviceArray(py::array_t<T> arr) {
         ptr = numpy_to_device(arr, size);
     }
 
@@ -121,14 +121,6 @@ size_t matrix_output_size(int rows, int cols) {
     return static_cast<size_t>(rows) * static_cast<size_t>(cols);
 }
 
-// Helper to parse the GEMM version string once in one place.
-kernels::GemmVersion parse_gemm_version(const std::string& version) {
-    if (version == "naive") return kernels::GemmVersion::Naive;
-    if (version == "tiled") return kernels::GemmVersion::Tiled;
-    if (version == "double_buffer") return kernels::GemmVersion::DoubleBuffer;
-    throw std::invalid_argument("Unsupported GEMM version: " + version);
-}
-
 template<typename Launcher>
 py::array_t<float> run_shape_preserving_float_op(py::array_t<float> input, Launcher&& launch) {
     py::buffer_info buf = input.request();
@@ -166,8 +158,8 @@ py::array_t<float> run_matrix_float_op(py::array_t<float> input, Launcher&& laun
         throw std::runtime_error("Input must be a 2D matrix");
     }
 
-    int rows = buf.shape[0];
-    int cols = buf.shape[1];
+    int rows = static_cast<int>(buf.shape[0]);
+    int cols = static_cast<int>(buf.shape[1]);
     DeviceArray<float> d_input(input);
     DeviceBuffer<float> d_output(matrix_output_size(rows, cols));
 
@@ -182,8 +174,8 @@ py::array_t<float> run_last_dim_float_op(py::array_t<float> input, Launcher&& la
 
     require_non_empty_last_dim(buf, "Input must have at least 1 dimension with a non-empty last axis");
 
-    int cols = buf.shape[buf.ndim - 1];
-    int rows = buf.size / cols;
+    int cols = static_cast<int>(buf.shape[buf.ndim - 1]);
+    int rows = static_cast<int>(buf.size / cols);
     DeviceArray<float> d_input(input);
     DeviceBuffer<float> d_output(array_size(buf));
 
@@ -193,8 +185,7 @@ py::array_t<float> run_last_dim_float_op(py::array_t<float> input, Launcher&& la
 }
 
 template<typename Launcher>
-py::array_t<float> run_norm_float_op(py::array_t<float> input,
-                                     Launcher&& launch) {
+py::array_t<float> run_norm_float_op(py::array_t<float> input, Launcher&& launch) {
     py::buffer_info buf = input.request();
 
     if (buf.ndim < 2) {
@@ -202,8 +193,8 @@ py::array_t<float> run_norm_float_op(py::array_t<float> input,
     }
     require_non_empty_last_dim(buf, "Input must have a non-empty hidden dimension");
 
-    int hidden_size = buf.shape[buf.ndim - 1];
-    int batch_size = buf.size / hidden_size;
+    int hidden_size = static_cast<int>(buf.shape[buf.ndim - 1]);
+    int batch_size = static_cast<int>(buf.size / hidden_size);
     DeviceArray<float> d_input(input);
     DeviceBuffer<float> d_output(array_size(buf));
 
@@ -223,11 +214,11 @@ py::array_t<float> run_gemm_float_op(py::array_t<float> A,
         throw std::runtime_error("A and B must be 2D matrices");
     }
 
-    int M = buf_a.shape[0];
-    int K = buf_a.shape[1];
-    int N = buf_b.shape[1];
+    int M = static_cast<int>(buf_a.shape[0]);
+    int K = static_cast<int>(buf_a.shape[1]);
+    int N = static_cast<int>(buf_b.shape[1]);
 
-    if (buf_b.shape[0] != K) {
+    if (static_cast<int>(buf_b.shape[0]) != K) {
         throw std::runtime_error("Matrix dimensions don't match for multiplication");
     }
 
@@ -241,53 +232,41 @@ py::array_t<float> run_gemm_float_op(py::array_t<float> A,
     return copy_float_output(d_C, {M, N});
 }
 
-// ============================================================================
-// Elementwise Operations
-// ============================================================================
-
 py::array_t<float> py_relu(py::array_t<float> input) {
     return run_shape_preserving_float_op(input, [](const float* in, float* out, size_t n) {
-        kernels::relu(in, out, n);
+        python_ops::relu(in, out, n);
     });
 }
 
 py::array_t<float> py_silu(py::array_t<float> input) {
     return run_shape_preserving_float_op(input, [](const float* in, float* out, size_t n) {
-        kernels::silu(in, out, n);
+        python_ops::silu(in, out, n);
     });
 }
 
 py::array_t<float> py_gelu(py::array_t<float> input) {
     return run_shape_preserving_float_op(input, [](const float* in, float* out, size_t n) {
-        kernels::gelu(in, out, n);
+        python_ops::gelu(in, out, n);
     });
 }
 
 py::array_t<float> py_sigmoid(py::array_t<float> input) {
     return run_shape_preserving_float_op(input, [](const float* in, float* out, size_t n) {
-        kernels::sigmoid(in, out, n);
+        python_ops::sigmoid(in, out, n);
     });
 }
 
 py::array_t<float> py_vector_add(py::array_t<float> a, py::array_t<float> b) {
     return run_binary_float_op(a, b, [](const float* lhs, const float* rhs, float* out, size_t n) {
-        kernels::vector_add(lhs, rhs, out, n);
+        python_ops::vector_add(lhs, rhs, out, n);
     });
 }
-
-// ============================================================================
-// Softmax
-// ============================================================================
 
 py::array_t<float> py_softmax(py::array_t<float> input) {
     return run_last_dim_float_op(input, [](const float* in, float* out, int rows, int cols) {
-        kernels::softmax(in, out, rows, cols);
+        python_ops::softmax(in, out, rows, cols);
     });
 }
-
-// ============================================================================
-// Normalization
-// ============================================================================
 
 py::array_t<float> py_layernorm(
     py::array_t<float> input,
@@ -303,7 +282,7 @@ py::array_t<float> py_layernorm(
     DeviceArray<float> d_gamma(gamma);
     DeviceArray<float> d_beta(beta);
     return run_norm_float_op(input, [&](const float* in, float* out, int batch_size, int hidden_size_int) {
-        kernels::layernorm(in, d_gamma.ptr, d_beta.ptr, out, batch_size, hidden_size_int, eps);
+        python_ops::layernorm(in, d_gamma.ptr, d_beta.ptr, out, batch_size, hidden_size_int, eps);
     });
 }
 
@@ -318,13 +297,9 @@ py::array_t<float> py_rmsnorm(
 
     DeviceArray<float> d_weight(weight);
     return run_norm_float_op(input, [&](const float* in, float* out, int batch_size, int hidden_size_int) {
-        kernels::rmsnorm(in, d_weight.ptr, out, batch_size, hidden_size_int, eps);
+        python_ops::rmsnorm(in, d_weight.ptr, out, batch_size, hidden_size_int, eps);
     });
 }
-
-// ============================================================================
-// GEMM
-// ============================================================================
 
 py::array_t<float> py_gemm(
     py::array_t<float> A,
@@ -332,57 +307,34 @@ py::array_t<float> py_gemm(
     float alpha = 1.0f,
     float beta = 0.0f,
     const std::string& version = "tiled") {
-    auto gemm_version = parse_gemm_version(version);
     return run_gemm_float_op(A, B, [&](const float* lhs, const float* rhs, float* out, int M, int N, int K) {
-        kernels::launch_gemm(lhs, rhs, out, M, N, K, alpha, beta, gemm_version);
+        python_ops::gemm(lhs, rhs, out, M, N, K, alpha, beta, version.c_str());
     });
 }
 
 py::array_t<float> py_transpose(py::array_t<float> input) {
     return run_matrix_float_op(input, [](const float* in, float* out, int rows, int cols) {
-        kernels::transpose(in, out, rows, cols);
+        python_ops::transpose(in, out, rows, cols);
     });
 }
 
-// ============================================================================
-// Module Definition
-// ============================================================================
-
 PYBIND11_MODULE(tensorcraft_ops, m) {
     m.doc() = "TensorCraft-HPC: High-Performance AI Kernels";
-    
-    // Elementwise operations
-    m.def("relu", &py_relu, "ReLU activation",
-          py::arg("input"));
-    m.def("silu", &py_silu, "SiLU (Swish) activation",
-          py::arg("input"));
-    m.def("gelu", &py_gelu, "GeLU activation",
-          py::arg("input"));
-    m.def("sigmoid", &py_sigmoid, "Sigmoid activation",
-          py::arg("input"));
-    m.def("vector_add", &py_vector_add, "Element-wise vector addition",
-          py::arg("a"), py::arg("b"));
-    
-    // Softmax
-    m.def("softmax", &py_softmax, "Softmax along last dimension",
-          py::arg("input"));
-    
-    // Normalization
-    m.def("layernorm", &py_layernorm, "Layer normalization",
-          py::arg("input"), py::arg("gamma"), py::arg("beta"),
-          py::arg("eps") = 1e-5f);
-    m.def("rmsnorm", &py_rmsnorm, "RMS normalization",
-          py::arg("input"), py::arg("weight"),
-          py::arg("eps") = 1e-6f);
-    
-    // GEMM
-    m.def("gemm", &py_gemm, "General matrix multiplication",
-          py::arg("A"), py::arg("B"),
-          py::arg("alpha") = 1.0f, py::arg("beta") = 0.0f,
-          py::arg("version") = "tiled");
-    m.def("transpose", &py_transpose, "Matrix transpose",
-          py::arg("input"));
 
-    // Version info
+    m.def("relu", &py_relu, "ReLU activation", py::arg("input"));
+    m.def("silu", &py_silu, "SiLU (Swish) activation", py::arg("input"));
+    m.def("gelu", &py_gelu, "GeLU activation", py::arg("input"));
+    m.def("sigmoid", &py_sigmoid, "Sigmoid activation", py::arg("input"));
+    m.def("vector_add", &py_vector_add, "Element-wise vector addition", py::arg("a"), py::arg("b"));
+    m.def("softmax", &py_softmax, "Softmax along last dimension", py::arg("input"));
+    m.def("layernorm", &py_layernorm, "Layer normalization",
+          py::arg("input"), py::arg("gamma"), py::arg("beta"), py::arg("eps") = 1e-5f);
+    m.def("rmsnorm", &py_rmsnorm, "RMS normalization",
+          py::arg("input"), py::arg("weight"), py::arg("eps") = 1e-6f);
+    m.def("gemm", &py_gemm, "General matrix multiplication",
+          py::arg("A"), py::arg("B"), py::arg("alpha") = 1.0f, py::arg("beta") = 0.0f,
+          py::arg("version") = "tiled");
+    m.def("transpose", &py_transpose, "Matrix transpose", py::arg("input"));
+
     m.attr("__version__") = "0.1.0";
 }

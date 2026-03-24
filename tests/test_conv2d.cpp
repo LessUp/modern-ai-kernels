@@ -9,10 +9,10 @@
 #include <random>
 
 #include "tensorcraft/core/cuda_check.hpp"
-#include "tensorcraft/kernels/conv2d.hpp"
+#include "cuda_test_ops.hpp"
 
 using namespace tensorcraft;
-using namespace tensorcraft::kernels;
+using namespace tensorcraft::tests;
 
 class Conv2DTest : public ::testing::Test {
 protected:
