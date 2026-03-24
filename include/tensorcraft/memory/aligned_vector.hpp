@@ -12,7 +12,9 @@
 #include <cstdint>
 
 #include <cuda_fp16.h>
+#if defined(TC_HAS_BF16)
 #include <cuda_bf16.h>
+#endif
 
 namespace tensorcraft {
 
@@ -90,9 +92,11 @@ using half4_t = Vec4<__half>;
 using half8_t = Vec8<__half>;
 
 // BFloat16 vectors
+#if defined(TC_HAS_BF16)
 using bfloat2_t = Vec2<__nv_bfloat16>;
 using bfloat4_t = Vec4<__nv_bfloat16>;
 using bfloat8_t = Vec8<__nv_bfloat16>;
+#endif
 
 // Integer vectors
 using int2_t = Vec2<int>;
@@ -133,12 +137,15 @@ TC_HOST_DEVICE_INLINE bool is_aligned(const T* ptr) {
  * Returns the largest vector size that fits in 16 bytes (LDS.128)
  */
 template<typename T>
+struct optimal_vec_size_value : std::integral_constant<int,
+    (sizeof(T) == 1 ? 8 :
+     sizeof(T) == 2 ? 8 :
+     sizeof(T) == 4 ? 4 :
+     sizeof(T) == 8 ? 2 : 1)> {};
+
+template<typename T>
 constexpr int optimal_vec_size() {
-    if constexpr (sizeof(T) == 1) return 8;      // 8 x 1 byte = 8 bytes
-    else if constexpr (sizeof(T) == 2) return 8; // 8 x 2 bytes = 16 bytes
-    else if constexpr (sizeof(T) == 4) return 4; // 4 x 4 bytes = 16 bytes
-    else if constexpr (sizeof(T) == 8) return 2; // 2 x 8 bytes = 16 bytes
-    else return 1;
+    return optimal_vec_size_value<T>::value;
 }
 
 // ============================================================================

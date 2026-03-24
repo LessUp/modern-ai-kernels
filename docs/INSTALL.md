@@ -1,274 +1,122 @@
 # Installation Guide
 
-This guide provides detailed instructions for installing TensorCraft-HPC on various platforms.
+This guide documents the current recommended build paths for TensorCraft-HPC.
 
 ## Prerequisites
 
 ### Required
 
-- **CUDA Toolkit**: 11.0 or later (12.x recommended for best performance)
-- **CMake**: 3.20 or later
-- **C++ Compiler**: C++17 compatible
-  - GCC 9+ (Linux)
-  - Clang 10+ (Linux/macOS)
-  - MSVC 2019+ (Windows)
-- **NVIDIA GPU**: Compute Capability 7.0+ (Volta, Turing, Ampere, Hopper)
+- **CUDA Toolkit**: `10.1` or later
+- **CMake**: `3.20` or later
+- **C++ Compiler**: C++17-capable host compiler
+- **NVIDIA GPU**: recommended for tests and Python bindings
 
 ### Optional
 
-- **Ninja**: For faster builds
-- **pybind11**: For Python bindings
-- **Python**: 3.8+ (for Python bindings)
-- **NumPy**: Installed automatically for the `tensorcraft-ops` Python package
+- **Python**: `3.8+` for `tensorcraft_ops`
+- **Ninja**: recommended generator for faster builds
 
-## Quick Start
+## Recommended Build Flows
+
+### 1. CUDA development flow
+
+Use this for normal development on a CUDA machine.
 
 ```bash
-# Clone the repository
-git clone https://github.com/LessUp/modern-ai-kernels.git
-cd modern-ai-kernels
+cmake --preset dev
+cmake --build --preset dev --parallel 2
+ctest --preset dev --output-on-failure
+```
 
-# Configure and build
-cmake --preset release
-cmake --build build/release --parallel
+### 2. Python-only / lighter CUDA flow
 
-# Run tests
-ctest --test-dir build/release --output-on-failure
+Use this when you mainly care about the Python extension.
 
-# Build and install Python bindings
-pip install -e .
+```bash
+cmake --preset python-dev
+cmake --build --preset python-dev --parallel 2
+python -m pip install -e .
 python -c "import tensorcraft_ops as tc; print(tc.__version__)"
 ```
 
-Python bindings currently require CUDA. If CUDA is unavailable, CMake disables tests, benchmarks, and Python bindings automatically.
+### 3. Heavier full build
 
-## Platform-Specific Instructions
-
-### Linux (Ubuntu/Debian)
-
-#### 1. Install CUDA Toolkit
+Use this when you want the more complete release-style path, including benchmarks.
 
 ```bash
-# Add NVIDIA package repository
-wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb
-sudo dpkg -i cuda-keyring_1.1-1_all.deb
-sudo apt-get update
-
-# Install CUDA (choose your version)
-sudo apt-get install cuda-toolkit-12-2
-```
-
-#### 2. Install Build Tools
-
-```bash
-sudo apt-get install build-essential cmake ninja-build git
-```
-
-#### 3. Set Environment Variables
-
-Add to your `~/.bashrc`:
-
-```bash
-export CUDA_HOME=/usr/local/cuda
-export PATH=$CUDA_HOME/bin:$PATH
-export LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH
-```
-
-#### 4. Build TensorCraft-HPC
-
-```bash
-git clone https://github.com/LessUp/modern-ai-kernels.git
-cd modern-ai-kernels
-
-# Using CMake presets (recommended)
 cmake --preset release
-cmake --build build/release --parallel
-
-# Or manual configuration
-cmake -B build -G Ninja \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_CUDA_ARCHITECTURES="70;75;80;86;89;90"
-cmake --build build --parallel
-```
-
-### Linux (CentOS/RHEL)
-
-#### 1. Install CUDA Toolkit
-
-```bash
-# Add NVIDIA repository
-sudo yum-config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/cuda-rhel8.repo
-
-# Install CUDA
-sudo yum install cuda-toolkit-12-2
-```
-
-#### 2. Install Build Tools
-
-```bash
-sudo yum groupinstall "Development Tools"
-sudo yum install cmake3 ninja-build git
-
-# Use cmake3 instead of cmake on older systems
-alias cmake=cmake3
-```
-
-#### 3. Build
-
-Follow the same build steps as Ubuntu.
-
-### Windows
-
-#### 1. Install CUDA Toolkit
-
-1. Download CUDA Toolkit from [NVIDIA Developer](https://developer.nvidia.com/cuda-downloads)
-2. Run the installer and follow the prompts
-3. Ensure Visual Studio integration is selected
-
-#### 2. Install Build Tools
-
-1. Install [Visual Studio 2019/2022](https://visualstudio.microsoft.com/) with C++ workload
-2. Install [CMake](https://cmake.org/download/) (or use the one bundled with VS)
-3. Install [Git for Windows](https://git-scm.com/download/win)
-
-#### 3. Build TensorCraft-HPC
-
-Open "x64 Native Tools Command Prompt for VS":
-
-```cmd
-git clone https://github.com/LessUp/modern-ai-kernels.git
-cd modern-ai-kernels
-
-cmake -B build -G "Visual Studio 17 2022" -A x64 ^
-    -DCMAKE_BUILD_TYPE=Release
-
-cmake --build build --config Release --parallel
-```
-
-Or using Ninja:
-
-```cmd
-cmake -B build -G Ninja ^
-    -DCMAKE_BUILD_TYPE=Release ^
-    -DCMAKE_CUDA_COMPILER="C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.2/bin/nvcc.exe"
-
-cmake --build build --parallel
-```
-
-### macOS (Apple Silicon with External GPU)
-
-> Note: Native CUDA support on macOS is limited. Consider using Linux or Windows for best results.
-
-For development without GPU:
-
-```bash
-# Install Xcode Command Line Tools
-xcode-select --install
-
-# Install CMake via Homebrew
-brew install cmake ninja
-
-# Build (CPU-only configuration for docs/install-rule validation)
-cmake --preset cpu-smoke
-cmake --build build/cpu-smoke --parallel
-```
-
-## CMake Options
-
-| Option | Default | Description |
-|--------|---------|-------------|
-| `CMAKE_BUILD_TYPE` | `Release` | Build type (Debug, Release, RelWithDebInfo) |
-| `CMAKE_CUDA_ARCHITECTURES` | `70;75;80;86;89;90` | Target GPU architectures |
-| `TC_ENABLE_CUDA` | `ON` | Enable CUDA language support and CUDA-dependent targets |
-| `TC_BUILD_TESTS` | `ON` | Build CUDA unit tests |
-| `TC_BUILD_BENCHMARKS` | `ON` | Build CUDA benchmarks |
-| `TC_BUILD_PYTHON` | `ON` | Build pybind11 Python bindings |
-| `TC_BUILD_DOCS` | `OFF` | Reserved documentation build toggle |
-
-### Example Configurations
-
-```bash
-# Debug build with tests
-cmake --preset debug
-
-# Release build with Python bindings
-cmake --preset release -DTC_BUILD_PYTHON=ON
-
-# Specific GPU architectures
-cmake --preset release -DCMAKE_CUDA_ARCHITECTURES="80;86;89"
-```
-
-## GPU Architecture Reference
-
-| Architecture | Compute Capability | GPUs |
-|--------------|-------------------|------|
-| Volta | 70 | V100 |
-| Turing | 75 | RTX 2080, T4 |
-| Ampere | 80, 86 | A100, RTX 3090 |
-| Ada Lovelace | 89 | RTX 4090, L40 |
-| Hopper | 90 | H100 |
-
-## Python Bindings
-
-### Installation
-
-```bash
-# Editable install from repository root
-pip install -e .
-```
-
-This builds and installs the current pybind11 extension module as `tensorcraft_ops`.
-
-### Usage
-
-```python
-import numpy as np
-import tensorcraft_ops as tc
-
-x = np.array([[1.0, 2.0], [3.0, 4.0]], dtype=np.float32)
-y = tc.softmax(x)
-z = tc.transpose(x)
-```
-
-## Verification
-
-After installation, verify everything works:
-
-```bash
-# Run tests
+cmake --build --preset release --parallel
 ctest --test-dir build/release --output-on-failure
-
-# Run a benchmark
-./build/release/benchmarks/gemm_benchmark
-
-# Check Python module import
-python -c "import tensorcraft_ops as tc; print(tc.__version__)"
 ```
 
-On systems without CUDA, validate configure/install behavior instead:
+### 4. CPU-only smoke validation
+
+Use this on machines without CUDA when you only need to validate configure/install behavior.
 
 ```bash
 cmake --preset cpu-smoke
 cmake --install build/cpu-smoke --prefix /tmp/tensorcraft-install
 ```
 
-Tests, benchmarks, and Python bindings are intentionally disabled in that mode.
+In this mode, tests, benchmarks, and Python bindings are intentionally disabled.
+
+## Presets Summary
+
+| Preset | Purpose |
+|--------|---------|
+| `dev` | Recommended CUDA development preset |
+| `python-dev` | Lighter CUDA build focused on Python bindings |
+| `release` | Heavier release build with benchmarks |
+| `debug` | Debug-oriented CUDA build |
+| `cpu-smoke` | CPU-only configure/install smoke path |
+
+## Python Bindings
+
+Install from the repository root:
+
+```bash
+python -m pip install -e .
+python -c "import tensorcraft_ops as tc; print(tc.__version__)"
+```
+
+The import name is `tensorcraft_ops`.
+
+## Manual Configuration
+
+If you prefer not to use presets, start from a single-architecture CUDA build:
+
+```bash
+cmake -B build/manual -G Ninja \
+  -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+  -DCMAKE_CUDA_ARCHITECTURES=75 \
+  -DTC_BUILD_TESTS=ON \
+  -DTC_BUILD_BENCHMARKS=OFF \
+  -DTC_BUILD_PYTHON=ON
+
+cmake --build build/manual --parallel 2
+ctest --test-dir build/manual --output-on-failure
+```
+
+Adjust `CMAKE_CUDA_ARCHITECTURES` to match your GPU.
+
+## Compatibility Notes
+
+- TensorCraft-HPC now supports CUDA `10.1+`
+- On CUDA `10.x`, device compilation uses a CUDA-compatible dialect while host code remains on C++17
+- CUDA `11.x` and `12.x` enable newer feature paths beyond the CUDA `10.x` compatibility path
+
+## Verification
+
+Recommended validation on a CUDA machine:
+
+```bash
+cmake --preset dev
+cmake --build --preset dev --parallel 2
+ctest --preset dev --output-on-failure
+python -m pip install -e .
+python -c "import tensorcraft_ops as tc; print(tc.__version__)"
+```
 
 ## Troubleshooting
 
-See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for common issues and solutions.
-
-## Updating
-
-```bash
-cd modern-ai-kernels
-git pull origin main
-cmake --build build --parallel
-```
-
-## Uninstallation
-
-TensorCraft-HPC ships headers plus an optional Python extension. To uninstall:
-
-1. Remove the cloned repository
-2. Remove any installed Python package: `pip uninstall tensorcraft-ops`
+See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for build failures, architecture issues, editable install issues, and CUDA environment problems.

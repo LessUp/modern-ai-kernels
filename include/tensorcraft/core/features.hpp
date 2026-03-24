@@ -23,8 +23,10 @@
     #define TC_CPP17 1
 #elif __cplusplus >= 201703L
     #define TC_CPP17 1
+#elif defined(__CUDACC__) && (__CUDACC_VER_MAJOR__ < 11) && (__cplusplus >= 201402L)
+    #define TC_CUDA_LEGACY_CXX 1
 #else
-    #error "TensorCraft requires C++17 or later"
+    #error "TensorCraft requires C++17 or later (CUDA 10.x device code may use C++14)"
 #endif
 
 // ============================================================================
@@ -34,27 +36,32 @@
 #if defined(__CUDACC__)
     // CUDA compiler version
     #define TC_CUDA_VERSION (__CUDACC_VER_MAJOR__ * 1000 + __CUDACC_VER_MINOR__ * 10)
-    
+
     #if __CUDACC_VER_MAJOR__ >= 13
         #define TC_CUDA_13 1
         #define TC_CUDA_12 1
         #define TC_CUDA_11 1
+        #define TC_CUDA_10 1
     #elif __CUDACC_VER_MAJOR__ >= 12
         #define TC_CUDA_12 1
         #define TC_CUDA_11 1
+        #define TC_CUDA_10 1
     #elif __CUDACC_VER_MAJOR__ >= 11
         #define TC_CUDA_11 1
+        #define TC_CUDA_10 1
+    #elif __CUDACC_VER_MAJOR__ >= 10
+        #define TC_CUDA_10 1
     #else
-        #error "TensorCraft requires CUDA 11.0 or later"
+        #error "TensorCraft requires CUDA 10.1 or later"
     #endif
-    
+
     // Feature availability based on CUDA version
     #if defined(TC_CUDA_12)
         #define TC_HAS_TMA 1      // Tensor Memory Accelerator (Hopper+)
         #define TC_HAS_WGMMA 1    // Warp Group MMA (Hopper+)
         #define TC_HAS_FP8 1      // FP8 data types
     #endif
-    
+
     #if defined(TC_CUDA_11)
         #define TC_HAS_WMMA 1     // Warp Matrix Multiply-Accumulate (Volta+)
         #define TC_HAS_BF16 1     // BFloat16 support
@@ -191,16 +198,16 @@ inline std::pair<int, int> get_compute_capability(int device = 0) {
  * @brief Check if Tensor Cores are available on current device
  */
 inline bool has_tensor_cores(int device = 0) {
-    auto [major, minor] = get_compute_capability(device);
-    return major >= 7;  // Volta and later
+    const std::pair<int, int> capability = get_compute_capability(device);
+    return capability.first >= 7;  // Volta and later
 }
 
 /**
  * @brief Check if TMA is available on current device
  */
 inline bool has_tma(int device = 0) {
-    auto [major, minor] = get_compute_capability(device);
-    return major >= 9;  // Hopper and later
+    const std::pair<int, int> capability = get_compute_capability(device);
+    return capability.first >= 9;  // Hopper and later
 }
 
 } // namespace tensorcraft

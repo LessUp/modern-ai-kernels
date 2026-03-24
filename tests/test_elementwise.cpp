@@ -9,10 +9,10 @@
 #include <random>
 
 #include "tensorcraft/core/cuda_check.hpp"
-#include "tensorcraft/kernels/elementwise.hpp"
+#include "cuda_test_ops.hpp"
 
 using namespace tensorcraft;
-using namespace tensorcraft::kernels;
+using namespace tensorcraft::tests;
 
 class ElementwiseTest : public ::testing::Test {
 protected:

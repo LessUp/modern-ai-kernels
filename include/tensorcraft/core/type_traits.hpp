@@ -13,7 +13,9 @@
 
 // CUDA half-precision types
 #include <cuda_fp16.h>
+#if defined(TC_HAS_BF16)
 #include <cuda_bf16.h>
+#endif
 
 #if defined(TC_HAS_FP8)
 #include <cuda_fp8.h>
@@ -37,14 +39,19 @@ struct is_half<__half> : std::true_type {};
 template<>
 struct is_half<__half2> : std::true_type {};
 
+#if defined(TC_HAS_BF16)
 template<>
 struct is_half<__nv_bfloat16> : std::true_type {};
 
 template<>
 struct is_half<__nv_bfloat162> : std::true_type {};
+#endif
 
 template<typename T>
-inline constexpr bool is_half_v = is_half<T>::value;
+struct is_half_value : std::integral_constant<bool, is_half<T>::value> {};
+
+template<typename T>
+constexpr bool is_half_v = is_half_value<T>::value;
 
 // ============================================================================
 // FP8 Type Traits (CUDA 12.0+)
@@ -61,13 +68,13 @@ template<>
 struct is_fp8<__nv_fp8_e5m2> : std::true_type {};
 
 template<typename T>
-inline constexpr bool is_fp8_v = is_fp8<T>::value;
+constexpr bool is_fp8_v = is_fp8<T>::value;
 #else
 template<typename T>
 struct is_fp8 : std::false_type {};
 
 template<typename T>
-inline constexpr bool is_fp8_v = false;
+constexpr bool is_fp8_v = false;
 #endif
 
 // ============================================================================
@@ -78,12 +85,12 @@ inline constexpr bool is_fp8_v = false;
  * @brief Type trait to check if T is any floating point type (including half)
  */
 template<typename T>
-struct is_floating : std::bool_constant<
-    std::is_floating_point_v<T> || is_half_v<T> || is_fp8_v<T>
+struct is_floating : std::integral_constant<bool,
+    std::is_floating_point<T>::value || is_half_v<T> || is_fp8_v<T>
 > {};
 
 template<typename T>
-inline constexpr bool is_floating_v = is_floating<T>::value;
+constexpr bool is_floating_v = is_floating<T>::value;
 
 // ============================================================================
 // Numeric Type Traits
@@ -93,12 +100,12 @@ inline constexpr bool is_floating_v = is_floating<T>::value;
  * @brief Type trait to check if T is a numeric type (arithmetic or half)
  */
 template<typename T>
-struct is_numeric : std::bool_constant<
-    std::is_arithmetic_v<T> || is_half_v<T> || is_fp8_v<T>
+struct is_numeric : std::integral_constant<bool,
+    std::is_arithmetic<T>::value || is_half_v<T> || is_fp8_v<T>
 > {};
 
 template<typename T>
-inline constexpr bool is_numeric_v = is_numeric<T>::value;
+constexpr bool is_numeric_v = is_numeric<T>::value;
 
 // ============================================================================
 // C++20 Concepts (with C++17 SFINAE fallback)
@@ -177,8 +184,10 @@ struct type_bits : std::integral_constant<size_t, sizeof(T) * 8> {};
 template<>
 struct type_bits<__half> : std::integral_constant<size_t, 16> {};
 
+#if defined(TC_HAS_BF16)
 template<>
 struct type_bits<__nv_bfloat16> : std::integral_constant<size_t, 16> {};
+#endif
 
 #if defined(TC_HAS_FP8)
 template<>
@@ -189,7 +198,7 @@ struct type_bits<__nv_fp8_e5m2> : std::integral_constant<size_t, 8> {};
 #endif
 
 template<typename T>
-inline constexpr size_t type_bits_v = type_bits<T>::value;
+constexpr size_t type_bits_v = type_bits<T>::value;
 
 // ============================================================================
 // Type Conversion Utilities
@@ -200,28 +209,40 @@ inline constexpr size_t type_bits_v = type_bits<T>::value;
  */
 template<typename T>
 TC_HOST_DEVICE_INLINE float to_float(T val) {
-    if constexpr (std::is_same_v<T, __half>) {
-        return __half2float(val);
-    } else if constexpr (std::is_same_v<T, __nv_bfloat16>) {
-        return __bfloat162float(val);
-    } else {
-        return static_cast<float>(val);
-    }
+    return static_cast<float>(val);
 }
+
+template<>
+TC_HOST_DEVICE_INLINE float to_float<__half>(__half val) {
+    return __half2float(val);
+}
+
+#if defined(TC_HAS_BF16)
+template<>
+TC_HOST_DEVICE_INLINE float to_float<__nv_bfloat16>(__nv_bfloat16 val) {
+    return __bfloat162float(val);
+}
+#endif
 
 /**
  * @brief Convert float to target type
  */
 template<typename T>
 TC_HOST_DEVICE_INLINE T from_float(float val) {
-    if constexpr (std::is_same_v<T, __half>) {
-        return __float2half(val);
-    } else if constexpr (std::is_same_v<T, __nv_bfloat16>) {
-        return __float2bfloat16(val);
-    } else {
-        return static_cast<T>(val);
-    }
+    return static_cast<T>(val);
 }
+
+template<>
+TC_HOST_DEVICE_INLINE __half from_float<__half>(float val) {
+    return __float2half(val);
+}
+
+#if defined(TC_HAS_BF16)
+template<>
+TC_HOST_DEVICE_INLINE __nv_bfloat16 from_float<__nv_bfloat16>(float val) {
+    return __float2bfloat16(val);
+}
+#endif
 
 // ============================================================================
 // Data Type Enumeration
@@ -245,22 +266,45 @@ enum class DataType {
  * @brief Get DataType enum from C++ type
  */
 template<typename T>
+struct dtype_of {
+    static constexpr DataType value = DataType::FP32;
+};
+
+template<>
+struct dtype_of<float> {
+    static constexpr DataType value = DataType::FP32;
+};
+
+template<>
+struct dtype_of<__half> {
+    static constexpr DataType value = DataType::FP16;
+};
+
+#if defined(TC_HAS_BF16)
+template<>
+struct dtype_of<__nv_bfloat16> {
+    static constexpr DataType value = DataType::BF16;
+};
+#endif
+
+template<>
+struct dtype_of<int8_t> {
+    static constexpr DataType value = DataType::INT8;
+};
+
+template<>
+struct dtype_of<int32_t> {
+    static constexpr DataType value = DataType::INT32;
+};
+
+template<>
+struct dtype_of<int64_t> {
+    static constexpr DataType value = DataType::INT64;
+};
+
+template<typename T>
 constexpr DataType get_dtype() {
-    if constexpr (std::is_same_v<T, float>) {
-        return DataType::FP32;
-    } else if constexpr (std::is_same_v<T, __half>) {
-        return DataType::FP16;
-    } else if constexpr (std::is_same_v<T, __nv_bfloat16>) {
-        return DataType::BF16;
-    } else if constexpr (std::is_same_v<T, int8_t>) {
-        return DataType::INT8;
-    } else if constexpr (std::is_same_v<T, int32_t>) {
-        return DataType::INT32;
-    } else if constexpr (std::is_same_v<T, int64_t>) {
-        return DataType::INT64;
-    } else {
-        return DataType::FP32;  // Default
-    }
+    return dtype_of<T>::value;
 }
 
 /**

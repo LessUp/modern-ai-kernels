@@ -1,30 +1,38 @@
 # TensorCraft-HPC Python Bindings
 pybind11_add_module(tensorcraft_ops
     bindings.cpp
+    cuda_ops.cu
 )
-
-set_source_files_properties(bindings.cpp PROPERTIES LANGUAGE CUDA)
 
 target_link_libraries(tensorcraft_ops PRIVATE
     tensorcraft
     CUDA::cudart
 )
 
+set_source_files_properties(bindings.cpp PROPERTIES LANGUAGE CXX)
+set_source_files_properties(cuda_ops.cu PROPERTIES LANGUAGE CUDA)
+
 set_target_properties(tensorcraft_ops PROPERTIES
-    CUDA_SEPARABLE_COMPILATION ON
-    LINKER_LANGUAGE CUDA
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED ON
+    CUDA_STANDARD ${CMAKE_CUDA_STANDARD}
+    CUDA_STANDARD_REQUIRED ON
+    CUDA_SEPARABLE_COMPILATION OFF
+    CUDA_RESOLVE_DEVICE_SYMBOLS OFF
+    POSITION_INDEPENDENT_CODE ON
+    CUDA_ARCHITECTURES "${CMAKE_CUDA_ARCHITECTURES}"
+    CUDA_RUNTIME_LIBRARY Shared
 )
 
-# Install Python module
-if(DEFINED SKBUILD_PLATLIB_DIR)
-    set(TC_PYTHON_INSTALL_DIR "${SKBUILD_PLATLIB_DIR}")
-else()
-    set(TC_PYTHON_INSTALL_DIR ".")
-endif()
+target_include_directories(tensorcraft_ops PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+target_compile_features(tensorcraft_ops PRIVATE cxx_std_17)
 
 install(TARGETS tensorcraft_ops
-    LIBRARY DESTINATION ${TC_PYTHON_INSTALL_DIR}
-    RUNTIME DESTINATION ${TC_PYTHON_INSTALL_DIR}
+    LIBRARY DESTINATION .
+    RUNTIME DESTINATION .
 )
 
 if(TC_BUILD_TESTS)

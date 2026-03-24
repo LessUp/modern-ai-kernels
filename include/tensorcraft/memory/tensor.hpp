@@ -235,14 +235,7 @@ public:
      */
     void fill(T value) {
         if (size_ == 0 || !data_) return;
-        if constexpr (sizeof(T) == 1) {
-            TC_CUDA_CHECK(cudaMemset(data_, static_cast<int>(value), bytes()));
-        } else {
-            constexpr int block = 256;
-            int grid = static_cast<int>((size_ + block - 1) / block);
-            detail::fill_kernel<<<grid, block>>>(data_, value, size_);
-            TC_CUDA_CHECK(cudaGetLastError());
-        }
+        fill_impl(value, std::integral_constant<bool, sizeof(T) == 1>{});
     }
     
     /**
@@ -315,6 +308,17 @@ public:
     }
 
 private:
+    void fill_impl(T value, std::true_type) {
+        TC_CUDA_CHECK(cudaMemset(data_, static_cast<int>(value), bytes()));
+    }
+
+    void fill_impl(T value, std::false_type) {
+        constexpr int block = 256;
+        int grid = static_cast<int>((size_ + block - 1) / block);
+        detail::fill_kernel<<<grid, block>>>(data_, value, size_);
+        TC_CUDA_CHECK(cudaGetLastError());
+    }
+
     static size_type compute_size(const shape_type& shape) {
         if (shape.empty()) return 0;
         return std::accumulate(shape.begin(), shape.end(), 
@@ -341,7 +345,9 @@ private:
 // Type aliases for common tensor types
 using FloatTensor = Tensor<float>;
 using HalfTensor = Tensor<__half>;
+#if defined(TC_HAS_BF16)
 using BFloat16Tensor = Tensor<__nv_bfloat16>;
+#endif
 using IntTensor = Tensor<int>;
 using Int8Tensor = Tensor<int8_t>;
 

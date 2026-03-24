@@ -8,6 +8,7 @@ add_executable(tensorcraft_tests
     test_conv2d.cpp
     test_fusion.cpp
     test_attention_docs_contract.cpp
+    cuda_test_ops.cu
 )
 
 target_link_libraries(tensorcraft_tests PRIVATE
@@ -21,13 +22,15 @@ target_include_directories(tensorcraft_tests PRIVATE
     ${CMAKE_SOURCE_DIR}/include
 )
 
-# Enable CUDA for test files
 set_target_properties(tensorcraft_tests PROPERTIES
-    CUDA_SEPARABLE_COMPILATION ON
-    LINKER_LANGUAGE CUDA
+    CUDA_SEPARABLE_COMPILATION OFF
+    CUDA_RESOLVE_DEVICE_SYMBOLS OFF
+    CUDA_ARCHITECTURES "${CMAKE_CUDA_ARCHITECTURES}"
+    CUDA_RUNTIME_LIBRARY Shared
 )
 
-# Rename .cpp files to .cu for CUDA compilation
+set_source_files_properties(cuda_test_ops.cu PROPERTIES LANGUAGE CUDA)
+
 set_source_files_properties(
     test_main.cpp
     test_elementwise.cpp
@@ -37,7 +40,7 @@ set_source_files_properties(
     test_conv2d.cpp
     test_fusion.cpp
     test_attention_docs_contract.cpp
-    PROPERTIES LANGUAGE CUDA
+    PROPERTIES LANGUAGE CXX
 )
 
 include(GoogleTest)
