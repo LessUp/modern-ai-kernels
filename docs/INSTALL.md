@@ -7,7 +7,7 @@ This guide provides detailed instructions for installing TensorCraft-HPC on vari
 ### Required
 
 - **CUDA Toolkit**: 11.0 or later (12.x recommended for best performance)
-- **CMake**: 3.18 or later
+- **CMake**: 3.20 or later
 - **C++ Compiler**: C++17 compatible
   - GCC 9+ (Linux)
   - Clang 10+ (Linux/macOS)
@@ -19,6 +19,7 @@ This guide provides detailed instructions for installing TensorCraft-HPC on vari
 - **Ninja**: For faster builds
 - **pybind11**: For Python bindings
 - **Python**: 3.8+ (for Python bindings)
+- **NumPy**: Installed automatically for the `tensorcraft-ops` Python package
 
 ## Quick Start
 
@@ -28,12 +29,18 @@ git clone https://github.com/LessUp/modern-ai-kernels.git
 cd modern-ai-kernels
 
 # Configure and build
-cmake -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build --parallel
+cmake --preset release
+cmake --build build/release --parallel
 
-# Run tests (optional)
-ctest --test-dir build
+# Run tests
+ctest --test-dir build/release --output-on-failure
+
+# Build and install Python bindings
+pip install -e .
+python -c "import tensorcraft_ops as tc; print(tc.__version__)"
 ```
+
+Python bindings currently require CUDA. If CUDA is unavailable, CMake disables tests, benchmarks, and Python bindings automatically.
 
 ## Platform-Specific Instructions
 
@@ -161,9 +168,9 @@ xcode-select --install
 # Install CMake via Homebrew
 brew install cmake ninja
 
-# Build (CPU-only mode for development)
-cmake -B build -DCMAKE_BUILD_TYPE=Release -DTENSORCRAFT_CPU_ONLY=ON
-cmake --build build --parallel
+# Build (CPU-only configuration for docs/install-rule validation)
+cmake --preset cpu-smoke
+cmake --build build/cpu-smoke --parallel
 ```
 
 ## CMake Options
@@ -171,23 +178,24 @@ cmake --build build --parallel
 | Option | Default | Description |
 |--------|---------|-------------|
 | `CMAKE_BUILD_TYPE` | `Release` | Build type (Debug, Release, RelWithDebInfo) |
-| `CMAKE_CUDA_ARCHITECTURES` | Auto | Target GPU architectures |
-| `BUILD_TESTING` | `ON` | Build unit tests |
-| `BUILD_BENCHMARKS` | `ON` | Build benchmarks |
-| `BUILD_PYTHON_BINDINGS` | `OFF` | Build Python bindings |
-| `BUILD_EXAMPLES` | `OFF` | Build example programs |
+| `CMAKE_CUDA_ARCHITECTURES` | `70;75;80;86;89;90` | Target GPU architectures |
+| `TC_ENABLE_CUDA` | `ON` | Enable CUDA language support and CUDA-dependent targets |
+| `TC_BUILD_TESTS` | `ON` | Build CUDA unit tests |
+| `TC_BUILD_BENCHMARKS` | `ON` | Build CUDA benchmarks |
+| `TC_BUILD_PYTHON` | `ON` | Build pybind11 Python bindings |
+| `TC_BUILD_DOCS` | `OFF` | Reserved documentation build toggle |
 
 ### Example Configurations
 
 ```bash
 # Debug build with tests
-cmake -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+cmake --preset debug
 
 # Release build with Python bindings
-cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_PYTHON_BINDINGS=ON
+cmake --preset release -DTC_BUILD_PYTHON=ON
 
 # Specific GPU architectures
-cmake -B build -DCMAKE_CUDA_ARCHITECTURES="80;86;89"
+cmake --preset release -DCMAKE_CUDA_ARCHITECTURES="80;86;89"
 ```
 
 ## GPU Architecture Reference
@@ -205,21 +213,21 @@ cmake -B build -DCMAKE_CUDA_ARCHITECTURES="80;86;89"
 ### Installation
 
 ```bash
-# Build with Python bindings
-cmake -B build -DBUILD_PYTHON_BINDINGS=ON
-cmake --build build --parallel
-
-# Install to Python environment
-pip install ./build/python
+# Editable install from repository root
+pip install -e .
 ```
+
+This builds and installs the current pybind11 extension module as `tensorcraft_ops`.
 
 ### Usage
 
 ```python
-import tensorcraft
+import numpy as np
+import tensorcraft_ops as tc
 
-# Create tensors and run operations
-result = tensorcraft.gemm(A, B)
+x = np.array([[1.0, 2.0], [3.0, 4.0]], dtype=np.float32)
+y = tc.softmax(x)
+z = tc.transpose(x)
 ```
 
 ## Verification
@@ -228,14 +236,23 @@ After installation, verify everything works:
 
 ```bash
 # Run tests
-ctest --test-dir build --output-on-failure
+ctest --test-dir build/release --output-on-failure
 
 # Run a benchmark
-./build/benchmarks/gemm_benchmark
+./build/release/benchmarks/gemm_benchmark
 
-# Check CUDA detection
-./build/tests/test_main
+# Check Python module import
+python -c "import tensorcraft_ops as tc; print(tc.__version__)"
 ```
+
+On systems without CUDA, validate configure/install behavior instead:
+
+```bash
+cmake --preset cpu-smoke
+cmake --install build/cpu-smoke --prefix /tmp/tensorcraft-install
+```
+
+Tests, benchmarks, and Python bindings are intentionally disabled in that mode.
 
 ## Troubleshooting
 
@@ -251,7 +268,7 @@ cmake --build build --parallel
 
 ## Uninstallation
 
-TensorCraft-HPC is a header-only library. To uninstall:
+TensorCraft-HPC ships headers plus an optional Python extension. To uninstall:
 
 1. Remove the cloned repository
-2. Remove any installed Python packages: `pip uninstall tensorcraft`
+2. Remove any installed Python package: `pip uninstall tensorcraft-ops`

@@ -26,7 +26,10 @@ cmake --preset release
 cmake --build build/release -j$(nproc)
 ctest --test-dir build/release --output-on-failure
 pip install -e .
+python -c "import tensorcraft_ops as tc; print(tc.__version__)"
 ```
+
+`pip install -e .` builds the pybind11 extension exposed as `tensorcraft_ops`. Python bindings currently require CUDA; when CUDA is unavailable, CMake disables tests, benchmarks, and Python bindings automatically.
 
 ## Docs
 

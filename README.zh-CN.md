@@ -26,7 +26,10 @@ cmake --preset release
 cmake --build build/release -j$(nproc)
 ctest --test-dir build/release --output-on-failure
 pip install -e .
+python -c "import tensorcraft_ops as tc; print(tc.__version__)"
 ```
+
+`pip install -e .` 会构建并安装当前的 pybind11 扩展模块，导入名为 `tensorcraft_ops`。Python 绑定当前依赖 CUDA；当 CUDA 不可用时，CMake 会自动关闭 tests、benchmarks 和 Python bindings。
 
 ## 文档
 
