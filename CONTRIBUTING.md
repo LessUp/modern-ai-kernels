@@ -122,12 +122,18 @@ TEST(GemmTest, BasicMultiplication) {
 ### 运行测试
 
 ```bash
-# 构建并运行所有测试
-cmake --build build --target test
+# 推荐的日常 CUDA 开发验证路径
+cmake --preset dev
+cmake --build --preset dev --parallel 2
+ctest --preset dev --output-on-failure
 
-# 运行特定测试
-./build/tests/tensorcraft_tests --gtest_filter=GemmTest.*
+# 调试配置下运行测试
+cmake --preset debug
+cmake --build --preset debug --parallel 2
+ctest --preset debug --output-on-failure
 ```
+
+当前 GitHub CI 主要覆盖 CPU configure/install smoke 和 Python packaging smoke；真实 CUDA 构建与测试仍需要在具备 CUDA 的机器上验证。
 
 ## 性能基准
 
@@ -160,7 +166,9 @@ BENCHMARK(BM_Gemm_Tiled)->RangeMultiplier(2)->Range(256, 4096);
 ### 运行基准测试
 
 ```bash
-./build/benchmarks/gemm_benchmark --benchmark_format=console
+cmake --preset release
+cmake --build --preset release --parallel 2
+./build/release/benchmarks/gemm_benchmark --benchmark_format=console
 ```
 
 ## Pull Request 检查清单
@@ -187,7 +195,7 @@ BENCHMARK(BM_Gemm_Tiled)->RangeMultiplier(2)->Range(256, 4096);
 
 ```bash
 cmake --preset debug
-cmake --build build/debug -j$(nproc)
+cmake --build --preset debug --parallel 2
 ```
 
 ### 使用 Sanitizers
