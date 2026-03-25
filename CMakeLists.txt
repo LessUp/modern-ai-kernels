@@ -38,6 +38,11 @@ if(TC_ENABLE_CUDA)
         set(CMAKE_CUDA_COMPILER "/usr/local/cuda/bin/nvcc" CACHE FILEPATH "Path to nvcc")
     endif()
 
+    if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES OR CMAKE_CUDA_ARCHITECTURES STREQUAL "")
+        set(TC_DEFAULT_CUDA_ARCHITECTURES "75;80;86;89;90")
+        set(CMAKE_CUDA_ARCHITECTURES "${TC_DEFAULT_CUDA_ARCHITECTURES}" CACHE STRING "CUDA architectures")
+    endif()
+
     include(CheckLanguage)
     check_language(CUDA)
     if(CMAKE_CUDA_COMPILER)
@@ -55,12 +60,6 @@ if(TC_ENABLE_CUDA)
 
         set(CMAKE_CUDA_STANDARD 17)
         set(CMAKE_CUDA_STANDARD_REQUIRED ON)
-
-        # CUDA architectures
-        if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES OR CMAKE_CUDA_ARCHITECTURES STREQUAL "")
-            set(TC_DEFAULT_CUDA_ARCHITECTURES "75;80;86;89;90")
-            set(CMAKE_CUDA_ARCHITECTURES "${TC_DEFAULT_CUDA_ARCHITECTURES}" CACHE STRING "CUDA architectures" FORCE)
-        endif()
 
         # Feature detection based on CUDA version
         if(CUDAToolkit_VERSION VERSION_GREATER_EQUAL "13.0")

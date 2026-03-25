@@ -57,7 +57,7 @@ protected:
 
 BENCHMARK_DEFINE_F(Conv2DBenchmark, Naive)(benchmark::State& state) {
     for (auto _ : state) {
-        launch_conv2d_naive(d_input, d_weight, nullptr, d_output,
+        launch_conv2d_naive(d_input, d_weight, static_cast<const float*>(nullptr), d_output,
                            N, C, H, W, K, R, S, stride, stride, padding, padding);
         cudaDeviceSynchronize();
     }
@@ -120,7 +120,7 @@ protected:
 
 BENCHMARK_DEFINE_F(DepthwiseConv2DBenchmark, Depthwise)(benchmark::State& state) {
     for (auto _ : state) {
-        launch_conv2d_depthwise(d_input, d_weight, nullptr, d_output,
+        launch_conv2d_depthwise(d_input, d_weight, static_cast<const float*>(nullptr), d_output,
                                N, C, H, W, R, S, stride, stride, padding, padding);
         cudaDeviceSynchronize();
     }
