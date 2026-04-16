@@ -25,15 +25,21 @@ jobs:
       - name: Extract changelog for version
         id: changelog
         run: |
-          # Extract changelog section for this version
           VERSION=${{ steps.version.outputs.VERSION }}
-          CHANGELOG=$(awk "/## \[${VERSION}\]/{flag=1; next} /## \[/{flag=0} flag" CHANGELOG.md)
+
+          # Extract changelog section for this version
+          if grep -q "## \[${VERSION}\]" docs/reference/changelog.md; then
+            CHANGELOG=$(awk "/## \[${VERSION}\]/{flag=1; next} /## \[/{flag=0} flag" docs/reference/changelog.md)
+          else
+            CHANGELOG="See [CHANGELOG](docs/reference/changelog.md) for details."
+          fi
+
           echo "CHANGELOG<<EOF" >> $GITHUB_OUTPUT
           echo "$CHANGELOG" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           name: TensorCraft-HPC v${{ steps.version.outputs.VERSION }}
           body: |
@@ -43,11 +49,20 @@ jobs:
 
             ## Installation
 
-            See [INSTALL.md](docs/INSTALL.md) for detailed installation instructions.
+            See [Installation Guide](docs/getting-started/installation.md) for detailed installation instructions.
+
+            ## Quick Start
+
+            ```bash
+            cmake --preset dev
+            cmake --build --preset dev --parallel 2
+            ctest --preset dev --output-on-failure
+            python -m pip install -e .
+            ```
 
             ## Full Changelog
 
-            See [CHANGELOG.md](CHANGELOG.md) for the complete changelog.
+            See [Changelog](docs/reference/changelog.md) for the complete changelog.
           draft: false
           prerelease: ${{ contains(github.ref, '-alpha') || contains(github.ref, '-beta') || contains(github.ref, '-rc') }}
           generate_release_notes: true
@@ -82,11 +97,11 @@ jobs:
         run: |
           mkdir -p tensorcraft-hpc-${{ github.ref_name }}
           cp -r include tensorcraft-hpc-${{ github.ref_name }}/
-          cp LICENSE README.md CHANGELOG.md tensorcraft-hpc-${{ github.ref_name }}/
+          cp LICENSE README.md docs/reference/changelog.md tensorcraft-hpc-${{ github.ref_name }}/CHANGELOG.md
           zip -r tensorcraft-hpc-${{ github.ref_name }}-headers.zip tensorcraft-hpc-${{ github.ref_name }}
 
       - name: Upload Release Assets
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: |
             tensorcraft-hpc-${{ github.ref_name }}-headers.zip

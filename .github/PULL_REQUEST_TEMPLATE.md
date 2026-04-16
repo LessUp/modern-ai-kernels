@@ -31,16 +31,27 @@ Fixes #
 
 <!-- Describe the tests you ran to verify your changes -->
 
+### Local Validation
+
+```bash
+# Recommended validation commands
+cmake --preset dev
+cmake --build --preset dev --parallel 2
+ctest --preset dev --output-on-failure
+python -m pip install -e .
+python -c "import tensorcraft_ops as tc; print(tc.__version__)"
+```
+
 - [ ] Unit tests pass locally
 - [ ] New tests added for new functionality
-- [ ] Tested on CUDA 11.x
-- [ ] Tested on CUDA 12.x
+- [ ] Manual testing completed
 
 ### Test Configuration
 
-- **GPU**: <!-- e.g., RTX 4090, A100 -->
-- **CUDA Version**: <!-- e.g., 12.2 -->
+- **GPU**: <!-- e.g., RTX 4090, A100, H100 -->
+- **CUDA Version**: <!-- e.g., 12.8 -->
 - **OS**: <!-- e.g., Ubuntu 22.04 -->
+- **CMake Preset**: <!-- e.g., dev -->
 
 ## Checklist
 

@@ -7,11 +7,6 @@ on:
       - 'index.md'
       - 'README.md'
       - 'README.zh-CN.md'
-      - 'CHANGELOG.md'
-      - 'CONTRIBUTING.md'
-      - 'CODE_OF_CONDUCT.md'
-      - 'SECURITY.md'
-      - 'LICENSE'
       - 'docs/**'
       - 'changelog/**'
       - '_config.yml'
@@ -29,6 +24,7 @@ concurrency:
 
 jobs:
   build:
+    name: Build Jekyll Site
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -39,10 +35,6 @@ jobs:
             index.md
             README.md
             README.zh-CN.md
-            CHANGELOG.md
-            CONTRIBUTING.md
-            CODE_OF_CONDUCT.md
-            SECURITY.md
             LICENSE
             _config.yml
             docs
@@ -61,6 +53,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
 
   deploy:
+    name: Deploy to GitHub Pages
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

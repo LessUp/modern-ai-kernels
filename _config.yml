@@ -11,7 +11,7 @@ show_downloads: false
 # SEO & metadata
 url: https://lessup.github.io
 baseurl: /modern-ai-kernels
-lang: zh-CN
+lang: en
 author: LessUp
 
 # Markdown rendering
@@ -21,10 +21,45 @@ kramdown:
   hard_wrap: false
   syntax_highlighter: rouge
 
+# Navigation
+navigation:
+  - title: "Home"
+    url: "/"
+  - title: "English Docs"
+    url: "/docs/en/"
+  - title: "中文文档"
+    url: "/docs/zh/"
+  - title: "Changelog"
+    url: "/CHANGELOG"
+
 # Default layout for all pages
 defaults:
   - scope:
       path: ""
+    values:
+      layout: default
+  - scope:
+      path: "docs"
+    values:
+      layout: default
+  - scope:
+      path: "docs/getting-started"
+    values:
+      layout: default
+  - scope:
+      path: "docs/guides"
+    values:
+      layout: default
+  - scope:
+      path: "docs/api"
+    values:
+      layout: default
+  - scope:
+      path: "docs/examples"
+    values:
+      layout: default
+  - scope:
+      path: "docs/reference"
     values:
       layout: default
   - scope:
@@ -63,3 +98,13 @@ exclude:
   - __pycache__
   - "*.egg-info"
   - node_modules
+  - Gemfile
+  - Gemfile.lock
+
+# Include these files
+include:
+  - index.md
+  - README.md
+  - README.zh-CN.md
+  - CHANGELOG.md
+  - LICENSE
