@@ -25,7 +25,7 @@ body:
       description: Describe the use case or problem this feature would solve.
       placeholder: |
         As a [type of user], I want [goal] so that [benefit].
-        
+
         Example: As a deep learning researcher, I want optimized sparse attention kernels so that I can train large language models more efficiently.
     validations:
       required: true
@@ -36,13 +36,6 @@ body:
       label: Proposed Solution
       description: If you have ideas on how this could be implemented, please share them.
       placeholder: Describe your proposed solution...
-
-  - type: textarea
-    id: alternatives
-    attributes:
-      label: Alternatives Considered
-      description: Have you considered any alternative solutions or workarounds?
-      placeholder: Describe alternatives you've considered...
 
   - type: dropdown
     id: category

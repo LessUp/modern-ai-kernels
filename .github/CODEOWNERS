@@ -3,38 +3,38 @@
 # Learn more: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
 
 # Default owners for everything in the repo
-* @maintainer
+* @LessUp
 
 # Core kernel implementations
-/include/tensorcraft/kernels/ @maintainer
-/src/ @maintainer
+/include/tensorcraft/kernels/ @LessUp
+/src/ @LessUp
 
 # Memory management
-/include/tensorcraft/memory/ @maintainer
+/include/tensorcraft/memory/ @LessUp
 
 # Core utilities
-/include/tensorcraft/core/ @maintainer
+/include/tensorcraft/core/ @LessUp
 
 # Python bindings
-/src/python_ops/ @maintainer
+/src/python_ops/ @LessUp
 
 # Tests
-/tests/ @maintainer
+/tests/ @LessUp
 
 # Benchmarks
-/benchmarks/ @maintainer
+/benchmarks/ @LessUp
 
 # Documentation
-/docs/ @maintainer
-*.md @maintainer
+/docs/ @LessUp
+*.md @LessUp
 
 # Build system
-CMakeLists.txt @maintainer
-CMakePresets.json @maintainer
-/cmake/ @maintainer
+CMakeLists.txt @LessUp
+CMakePresets.json @LessUp
+/cmake/ @LessUp
 
 # CI/CD
-/.github/ @maintainer
+/.github/ @LessUp
 
 # Examples
-/examples/ @maintainer
+/examples/ @LessUp

@@ -54,14 +54,17 @@ body:
       label: Operating System
       description: What operating system are you using?
       options:
+        - Ubuntu 24.04
         - Ubuntu 22.04
         - Ubuntu 20.04
-        - Ubuntu 18.04
-        - CentOS 7/8
-        - RHEL 7/8
+        - CentOS 7/8/9
+        - RHEL 7/8/9
+        - Rocky Linux 8/9
+        - Amazon Linux 2023
         - Windows 10
         - Windows 11
-        - macOS
+        - macOS (Intel)
+        - macOS (Apple Silicon)
         - Other (please specify in additional context)
     validations:
       required: true
@@ -72,6 +75,8 @@ body:
       label: CUDA Version
       description: What version of CUDA are you using?
       options:
+        - CUDA 13.0+
+        - CUDA 12.8
         - CUDA 12.4
         - CUDA 12.3
         - CUDA 12.2
@@ -79,14 +84,8 @@ body:
         - CUDA 12.0
         - CUDA 11.8
         - CUDA 11.7
-        - CUDA 11.6
-        - CUDA 11.5
-        - CUDA 11.4
-        - CUDA 11.3
-        - CUDA 11.2
-        - CUDA 11.1
-        - CUDA 11.0
-        - Other (please specify in additional context)
+        - CUDA 11.x (other)
+        - No CUDA
     validations:
       required: true
 
@@ -95,7 +94,7 @@ body:
     attributes:
       label: GPU Model
       description: What GPU are you using?
-      placeholder: e.g., NVIDIA RTX 4090, A100, V100
+      placeholder: e.g., NVIDIA RTX 4090, A100, H100, RTX 3090
     validations:
       required: true
 
@@ -104,14 +103,14 @@ body:
     attributes:
       label: NVIDIA Driver Version
       description: What NVIDIA driver version are you using?
-      placeholder: e.g., 535.104.05
+      placeholder: e.g., 550.90.07
 
   - type: input
-    id: compiler
+    id: cmake-preset
     attributes:
-      label: Compiler Version
-      description: What compiler are you using?
-      placeholder: e.g., GCC 11.4.0, Clang 15.0
+      label: CMake Preset or Command
+      description: What CMake preset or command did you use?
+      placeholder: e.g., dev, release, or custom cmake command
 
   - type: textarea
     id: logs
