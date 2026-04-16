@@ -12,6 +12,8 @@ jobs:
   release:
     name: Create Release
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,10 +30,10 @@ jobs:
           VERSION=${{ steps.version.outputs.VERSION }}
 
           # Extract changelog section for this version
-          if grep -q "## \[${VERSION}\]" docs/reference/changelog.md; then
-            CHANGELOG=$(awk "/## \[${VERSION}\]/{flag=1; next} /## \[/{flag=0} flag" docs/reference/changelog.md)
+          if grep -q "## \[${VERSION}\]" CHANGELOG.md; then
+            CHANGELOG=$(awk "/## \[${VERSION}\]/{flag=1; next} /## \[/{flag=0} flag" CHANGELOG.md)
           else
-            CHANGELOG="See [CHANGELOG](docs/reference/changelog.md) for details."
+            CHANGELOG="See [CHANGELOG](CHANGELOG.md) for details."
           fi
 
           echo "CHANGELOG<<EOF" >> $GITHUB_OUTPUT
@@ -73,6 +75,8 @@ jobs:
     name: Build Release Artifacts
     runs-on: ubuntu-latest
     needs: release
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     container:
       image: nvidia/cuda:12.8.0-devel-ubuntu22.04
     steps:
