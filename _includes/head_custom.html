@@ -1,0 +1,38 @@
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- TENSORCRAFT-HPC 自定义头部 -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+
+<!-- 自定义样式 -->
+<link rel="stylesheet" href="{{ '/assets/css/custom.css' | relative_url }}">
+
+<!-- 字体优化 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<!-- Favicon -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E⚡%3C/text%3E%3C/svg%3E">
+
+<!-- Open Graph / SEO 优化 -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="TensorCraft-HPC">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#76B900">
+
+<!-- 移动端优化 -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+
+<!-- 搜索优化 -->
+{% if page.search_exclude != true %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareSourceCode",
+  "name": "TensorCraft-HPC",
+  "description": "{{ page.description | default: site.description }}",
+  "url": "{{ site.url }}{{ site.baseurl }}{{ page.url }}",
+  "codeRepository": "https://github.com/LessUp/modern-ai-kernels",
+  "programmingLanguage": ["C++", "CUDA", "Python"],
+  "license": "https://github.com/LessUp/modern-ai-kernels/blob/main/LICENSE"
+}
+</script>
+{% endif %}
