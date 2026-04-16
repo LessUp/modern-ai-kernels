@@ -3,13 +3,14 @@
  * @brief Tests for fused operators and quantization kernels
  */
 
-#include <gtest/gtest.h>
-#include <vector>
-#include <cmath>
-#include <random>
 #include <cfloat>
+#include <cmath>
+#include <gtest/gtest.h>
+#include <random>
+#include <vector>
 
 #include "tensorcraft/core/cuda_check.hpp"
+
 #include "cuda_test_ops.hpp"
 
 using namespace tensorcraft;
@@ -24,7 +25,8 @@ protected:
 
     std::vector<float> random_vec(size_t n) {
         std::vector<float> v(n);
-        for (auto& x : v) x = dist(gen);
+        for (auto& x : v)
+            x = dist(gen);
         return v;
     }
 
@@ -42,9 +44,9 @@ TEST_F(FusionTest, QuantizeDeQuantizeRoundTrip) {
     auto h_input = random_vec(N);
 
     float *d_input, *d_output;
-    int8_t *d_q;
-    TC_CUDA_CHECK(cudaMalloc(&d_input,  N * sizeof(float)));
-    TC_CUDA_CHECK(cudaMalloc(&d_q,      N * sizeof(int8_t)));
+    int8_t* d_q;
+    TC_CUDA_CHECK(cudaMalloc(&d_input, N * sizeof(float)));
+    TC_CUDA_CHECK(cudaMalloc(&d_q, N * sizeof(int8_t)));
     TC_CUDA_CHECK(cudaMalloc(&d_output, N * sizeof(float)));
 
     TC_CUDA_CHECK(cudaMemcpy(d_input, h_input.data(), N * sizeof(float), cudaMemcpyHostToDevice));
@@ -62,7 +64,9 @@ TEST_F(FusionTest, QuantizeDeQuantizeRoundTrip) {
             << "index " << i << " input=" << h_input[i] << " output=" << h_output[i];
     }
 
-    cudaFree(d_input); cudaFree(d_q); cudaFree(d_output);
+    cudaFree(d_input);
+    cudaFree(d_q);
+    cudaFree(d_output);
 }
 
 TEST_F(FusionTest, QuantizeInt8Clamps) {
@@ -73,10 +77,10 @@ TEST_F(FusionTest, QuantizeInt8Clamps) {
 
     std::vector<float> h_input = {200.0f, -200.0f, 50.0f, -50.0f};
 
-    float *d_input;
-    int8_t *d_q;
+    float* d_input;
+    int8_t* d_q;
     TC_CUDA_CHECK(cudaMalloc(&d_input, N * sizeof(float)));
-    TC_CUDA_CHECK(cudaMalloc(&d_q,     N * sizeof(int8_t)));
+    TC_CUDA_CHECK(cudaMalloc(&d_q, N * sizeof(int8_t)));
 
     TC_CUDA_CHECK(cudaMemcpy(d_input, h_input.data(), N * sizeof(float), cudaMemcpyHostToDevice));
 
@@ -91,7 +95,8 @@ TEST_F(FusionTest, QuantizeInt8Clamps) {
     EXPECT_EQ(h_q[2], 50);
     EXPECT_EQ(h_q[3], -50);
 
-    cudaFree(d_input); cudaFree(d_q);
+    cudaFree(d_input);
+    cudaFree(d_q);
 }
 
 // ── Fused GEMM Tests ────────────────────────────────────────────
@@ -106,19 +111,19 @@ TEST_F(FusionTest, GemmBiasReLU) {
     // CPU reference: C = ReLU(A @ B + bias)
     std::vector<float> h_ref(M * N);
     for (int m = 0; m < M; ++m)
-    for (int n = 0; n < N; ++n) {
-        float sum = 0.0f;
-        for (int k = 0; k < K; ++k)
-            sum += h_A[m * K + k] * h_B[k * N + n];
-        sum += h_bias[n];
-        h_ref[m * N + n] = sum > 0.0f ? sum : 0.0f;
-    }
+        for (int n = 0; n < N; ++n) {
+            float sum = 0.0f;
+            for (int k = 0; k < K; ++k)
+                sum += h_A[m * K + k] * h_B[k * N + n];
+            sum += h_bias[n];
+            h_ref[m * N + n] = sum > 0.0f ? sum : 0.0f;
+        }
 
     float *d_A, *d_B, *d_bias, *d_C;
-    TC_CUDA_CHECK(cudaMalloc(&d_A,    M * K * sizeof(float)));
-    TC_CUDA_CHECK(cudaMalloc(&d_B,    K * N * sizeof(float)));
+    TC_CUDA_CHECK(cudaMalloc(&d_A, M * K * sizeof(float)));
+    TC_CUDA_CHECK(cudaMalloc(&d_B, K * N * sizeof(float)));
     TC_CUDA_CHECK(cudaMalloc(&d_bias, N * sizeof(float)));
-    TC_CUDA_CHECK(cudaMalloc(&d_C,    M * N * sizeof(float)));
+    TC_CUDA_CHECK(cudaMalloc(&d_C, M * N * sizeof(float)));
 
     TC_CUDA_CHECK(cudaMemcpy(d_A, h_A.data(), M * K * sizeof(float), cudaMemcpyHostToDevice));
     TC_CUDA_CHECK(cudaMemcpy(d_B, h_B.data(), K * N * sizeof(float), cudaMemcpyHostToDevice));
@@ -134,5 +139,8 @@ TEST_F(FusionTest, GemmBiasReLU) {
         EXPECT_NEAR(h_C[i], h_ref[i], 1e-2f) << "index " << i;
     }
 
-    cudaFree(d_A); cudaFree(d_B); cudaFree(d_bias); cudaFree(d_C);
+    cudaFree(d_A);
+    cudaFree(d_B);
+    cudaFree(d_bias);
+    cudaFree(d_C);
 }

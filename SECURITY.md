@@ -6,6 +6,7 @@ We release patches for security vulnerabilities for the following versions:
 
 | Version | Supported          |
 | ------- | ------------------ |
+| 2.x.x   | :white_check_mark: |
 | 1.x.x   | :white_check_mark: |
 | < 1.0   | :x:                |
 
@@ -17,7 +18,7 @@ We take the security of TensorCraft-HPC seriously. If you believe you have found
 
 **Please do not report security vulnerabilities through public GitHub issues.**
 
-Instead, please report them via email to [INSERT SECURITY EMAIL].
+Instead, please report them via email to: **security@lessup.dev**
 
 You should receive a response within 48 hours. If for some reason you do not, please follow up via email to ensure we received your original message.
 
@@ -40,23 +41,17 @@ Please include the following information in your report:
 ### What to Expect
 
 1. **Acknowledgment**: We will acknowledge receipt of your vulnerability report.
-
-2. **Communication**: We will keep you informed of the progress towards a fix and full announcement.
-
-3. **Credit**: We will credit you in the security advisory if you wish (please let us know your preference).
-
-4. **Disclosure**: We follow a coordinated disclosure process. We ask that you give us reasonable time to address the issue before any public disclosure.
+2. **Communication**: We will keep you informed of the progress towards a fix.
+3. **Credit**: We will credit you in the security advisory if you wish.
+4. **Disclosure**: We follow a coordinated disclosure process.
 
 ## Security Best Practices for Users
 
 When using TensorCraft-HPC in your projects:
 
-1. **Keep Updated**: Always use the latest stable version to ensure you have the latest security patches.
-
-2. **Input Validation**: Validate all inputs before passing them to TensorCraft-HPC functions, especially when dealing with user-provided data.
-
-3. **Memory Safety**: Be aware of memory allocation patterns and ensure proper cleanup to prevent memory leaks.
-
+1. **Keep Updated**: Always use the latest stable version.
+2. **Input Validation**: Validate all inputs before passing them to TensorCraft-HPC functions.
+3. **Memory Safety**: Be aware of memory allocation patterns and ensure proper cleanup.
 4. **CUDA Security**: Follow NVIDIA's security guidelines for CUDA applications.
 
 ## Security Updates
@@ -66,7 +61,3 @@ Security updates will be released as patch versions and announced through:
 - GitHub Security Advisories
 - Release notes in CHANGELOG.md
 - GitHub Releases
-
-## Preferred Languages
-
-We prefer all communications to be in English.

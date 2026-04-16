@@ -4,8 +4,8 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "tensorcraft-ops"
-version = "0.1.0"
-description = "Python bindings for TensorCraft-HPC"
+version = "2.0.0"
+description = "Python bindings for TensorCraft-HPC - High-Performance AI Kernels"
 readme = "README.md"
 requires-python = ">=3.8"
 license = { text = "MIT" }
@@ -15,11 +15,36 @@ authors = [
 classifiers = [
   "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
   "Programming Language :: C++",
-  "Topic :: Scientific/Engineering :: Artificial Intelligence"
+  "Programming Language :: CUDA",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Scientific/Engineering :: Physics",
+  "Intended Audience :: Science/Research",
+  "Intended Audience :: Developers",
 ]
 dependencies = [
   "numpy>=1.24"
+]
+
+[project.urls]
+Homepage = "https://github.com/LessUp/modern-ai-kernels"
+Documentation = "https://lessup.github.io/modern-ai-kernels/"
+Repository = "https://github.com/LessUp/modern-ai-kernels.git"
+Issues = "https://github.com/LessUp/modern-ai-kernels/issues"
+Changelog = "https://github.com/LessUp/modern-ai-kernels/blob/main/CHANGELOG.md"
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=7.0",
+  "black>=24.0",
+  "isort>=5.0",
+  "mypy>=1.0",
+  "ruff>=0.1.0",
 ]
 
 [tool.scikit-build]
@@ -31,8 +56,53 @@ TC_ENABLE_CUDA = "ON"
 TC_BUILD_PYTHON = "ON"
 TC_BUILD_TESTS = "OFF"
 TC_BUILD_BENCHMARKS = "OFF"
-CMAKE_CUDA_COMPILER = "/usr/local/cuda/bin/nvcc"
-CUDAToolkit_ROOT = "/usr/local/cuda"
 CMAKE_CUDA_ARCHITECTURES = "75"
 CMAKE_CUDA_FLAGS = "-lineinfo -Xcompiler -O2"
 CMAKE_BUILD_TYPE = "RelWithDebInfo"
+
+# ───────────────────────────────────────────────────────────────
+# Python Tool Configuration
+# ───────────────────────────────────────────────────────────────
+
+[tool.black]
+line-length = 100
+target-version = ["py38", "py39", "py310", "py311", "py312"]
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 100
+known_first_party = ["tensorcraft_ops"]
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+
+[tool.ruff]
+line-length = 100
+target-version = "py38"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "C4"]
+ignore = ["E501"]

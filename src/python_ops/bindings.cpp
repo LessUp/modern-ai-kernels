@@ -3,23 +3,23 @@
  * @brief Python bindings for TensorCraft-HPC using pybind11
  */
 
+#include <initializer_list>
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-
-#include <initializer_list>
 #include <stdexcept>
 #include <string>
 #include <vector>
 
-#include "cuda_ops.hpp"
 #include "tensorcraft/core/cuda_check.hpp"
+
+#include "cuda_ops.hpp"
 
 namespace py = pybind11;
 using namespace tensorcraft;
 
 // Helper to convert numpy array to device pointer
-template<typename T>
+template <typename T>
 T* numpy_to_device(py::array_t<T> arr, size_t& size) {
     py::buffer_info buf = arr.request();
     size = static_cast<size_t>(buf.size);
@@ -31,10 +31,11 @@ T* numpy_to_device(py::array_t<T> arr, size_t& size) {
 }
 
 // Helper to copy device data to numpy array
-template<typename T>
+template <typename T>
 py::array_t<T> device_to_numpy(T* d_ptr, const std::vector<ssize_t>& shape) {
     size_t size = 1;
-    for (auto s : shape) size *= static_cast<size_t>(s);
+    for (auto s : shape)
+        size *= static_cast<size_t>(s);
 
     py::array_t<T> result(shape);
     py::buffer_info buf = result.request();
@@ -43,24 +44,23 @@ py::array_t<T> device_to_numpy(T* d_ptr, const std::vector<ssize_t>& shape) {
 }
 
 // RAII wrapper for device memory
-template<typename T>
+template <typename T>
 struct DeviceArray {
     T* ptr = nullptr;
     size_t size = 0;
 
-    explicit DeviceArray(py::array_t<T> arr) {
-        ptr = numpy_to_device(arr, size);
-    }
+    explicit DeviceArray(py::array_t<T> arr) { ptr = numpy_to_device(arr, size); }
 
     ~DeviceArray() {
-        if (ptr) cudaFree(ptr);
+        if (ptr)
+            cudaFree(ptr);
     }
 
     DeviceArray(const DeviceArray&) = delete;
     DeviceArray& operator=(const DeviceArray&) = delete;
 };
 
-template<typename T>
+template <typename T>
 struct DeviceBuffer {
     T* ptr = nullptr;
     size_t size = 0;
@@ -70,7 +70,8 @@ struct DeviceBuffer {
     }
 
     ~DeviceBuffer() {
-        if (ptr) cudaFree(ptr);
+        if (ptr)
+            cudaFree(ptr);
     }
 
     DeviceBuffer(const DeviceBuffer&) = delete;
@@ -99,7 +100,8 @@ size_t array_size(const py::buffer_info& buf) {
     return static_cast<size_t>(buf.size);
 }
 
-void require_same_shape(const py::buffer_info& lhs, const py::buffer_info& rhs, const char* message) {
+void require_same_shape(const py::buffer_info& lhs, const py::buffer_info& rhs,
+                        const char* message) {
     if (lhs.ndim != rhs.ndim || lhs.shape != rhs.shape) {
         throw std::invalid_argument(message);
     }
@@ -113,7 +115,8 @@ void require_non_empty_last_dim(const py::buffer_info& buf, const char* message)
 
 void require_vector_size(const py::buffer_info& buf, ssize_t expected, const char* name) {
     if (buf.size != expected) {
-        throw std::invalid_argument(std::string(name) + " must contain exactly " + std::to_string(expected) + " elements");
+        throw std::invalid_argument(std::string(name) + " must contain exactly " +
+                                    std::to_string(expected) + " elements");
     }
 }
 
@@ -121,7 +124,7 @@ size_t matrix_output_size(int rows, int cols) {
     return static_cast<size_t>(rows) * static_cast<size_t>(cols);
 }
 
-template<typename Launcher>
+template <typename Launcher>
 py::array_t<float> run_shape_preserving_float_op(py::array_t<float> input, Launcher&& launch) {
     py::buffer_info buf = input.request();
     DeviceArray<float> d_input(input);
@@ -132,9 +135,8 @@ py::array_t<float> run_shape_preserving_float_op(py::array_t<float> input, Launc
     return copy_float_output(d_output, array_shape(buf));
 }
 
-template<typename Launcher>
-py::array_t<float> run_binary_float_op(py::array_t<float> a,
-                                       py::array_t<float> b,
+template <typename Launcher>
+py::array_t<float> run_binary_float_op(py::array_t<float> a, py::array_t<float> b,
                                        Launcher&& launch) {
     py::buffer_info buf_a = a.request();
     py::buffer_info buf_b = b.request();
@@ -150,7 +152,7 @@ py::array_t<float> run_binary_float_op(py::array_t<float> a,
     return copy_float_output(d_output, array_shape(buf_a));
 }
 
-template<typename Launcher>
+template <typename Launcher>
 py::array_t<float> run_matrix_float_op(py::array_t<float> input, Launcher&& launch) {
     py::buffer_info buf = input.request();
 
@@ -168,11 +170,12 @@ py::array_t<float> run_matrix_float_op(py::array_t<float> input, Launcher&& laun
     return copy_float_output(d_output, {cols, rows});
 }
 
-template<typename Launcher>
+template <typename Launcher>
 py::array_t<float> run_last_dim_float_op(py::array_t<float> input, Launcher&& launch) {
     py::buffer_info buf = input.request();
 
-    require_non_empty_last_dim(buf, "Input must have at least 1 dimension with a non-empty last axis");
+    require_non_empty_last_dim(buf,
+                               "Input must have at least 1 dimension with a non-empty last axis");
 
     int cols = static_cast<int>(buf.shape[buf.ndim - 1]);
     int rows = static_cast<int>(buf.size / cols);
@@ -184,7 +187,7 @@ py::array_t<float> run_last_dim_float_op(py::array_t<float> input, Launcher&& la
     return copy_float_output(d_output, array_shape(buf));
 }
 
-template<typename Launcher>
+template <typename Launcher>
 py::array_t<float> run_norm_float_op(py::array_t<float> input, Launcher&& launch) {
     py::buffer_info buf = input.request();
 
@@ -203,9 +206,8 @@ py::array_t<float> run_norm_float_op(py::array_t<float> input, Launcher&& launch
     return copy_float_output(d_output, array_shape(buf));
 }
 
-template<typename Launcher>
-py::array_t<float> run_gemm_float_op(py::array_t<float> A,
-                                     py::array_t<float> B,
+template <typename Launcher>
+py::array_t<float> run_gemm_float_op(py::array_t<float> A, py::array_t<float> B,
                                      Launcher&& launch) {
     py::buffer_info buf_a = A.request();
     py::buffer_info buf_b = B.request();
@@ -233,27 +235,23 @@ py::array_t<float> run_gemm_float_op(py::array_t<float> A,
 }
 
 py::array_t<float> py_relu(py::array_t<float> input) {
-    return run_shape_preserving_float_op(input, [](const float* in, float* out, size_t n) {
-        python_ops::relu(in, out, n);
-    });
+    return run_shape_preserving_float_op(
+        input, [](const float* in, float* out, size_t n) { python_ops::relu(in, out, n); });
 }
 
 py::array_t<float> py_silu(py::array_t<float> input) {
-    return run_shape_preserving_float_op(input, [](const float* in, float* out, size_t n) {
-        python_ops::silu(in, out, n);
-    });
+    return run_shape_preserving_float_op(
+        input, [](const float* in, float* out, size_t n) { python_ops::silu(in, out, n); });
 }
 
 py::array_t<float> py_gelu(py::array_t<float> input) {
-    return run_shape_preserving_float_op(input, [](const float* in, float* out, size_t n) {
-        python_ops::gelu(in, out, n);
-    });
+    return run_shape_preserving_float_op(
+        input, [](const float* in, float* out, size_t n) { python_ops::gelu(in, out, n); });
 }
 
 py::array_t<float> py_sigmoid(py::array_t<float> input) {
-    return run_shape_preserving_float_op(input, [](const float* in, float* out, size_t n) {
-        python_ops::sigmoid(in, out, n);
-    });
+    return run_shape_preserving_float_op(
+        input, [](const float* in, float* out, size_t n) { python_ops::sigmoid(in, out, n); });
 }
 
 py::array_t<float> py_vector_add(py::array_t<float> a, py::array_t<float> b) {
@@ -268,11 +266,8 @@ py::array_t<float> py_softmax(py::array_t<float> input) {
     });
 }
 
-py::array_t<float> py_layernorm(
-    py::array_t<float> input,
-    py::array_t<float> gamma,
-    py::array_t<float> beta,
-    float eps = 1e-5f) {
+py::array_t<float> py_layernorm(py::array_t<float> input, py::array_t<float> gamma,
+                                py::array_t<float> beta, float eps = 1e-5f) {
     py::buffer_info input_buf = input.request();
     require_non_empty_last_dim(input_buf, "Input must have a non-empty hidden dimension");
     ssize_t hidden_size = input_buf.shape[input_buf.ndim - 1];
@@ -281,35 +276,32 @@ py::array_t<float> py_layernorm(
 
     DeviceArray<float> d_gamma(gamma);
     DeviceArray<float> d_beta(beta);
-    return run_norm_float_op(input, [&](const float* in, float* out, int batch_size, int hidden_size_int) {
+    return run_norm_float_op(input, [&](const float* in, float* out, int batch_size,
+                                        int hidden_size_int) {
         python_ops::layernorm(in, d_gamma.ptr, d_beta.ptr, out, batch_size, hidden_size_int, eps);
     });
 }
 
-py::array_t<float> py_rmsnorm(
-    py::array_t<float> input,
-    py::array_t<float> weight,
-    float eps = 1e-6f) {
+py::array_t<float> py_rmsnorm(py::array_t<float> input, py::array_t<float> weight,
+                              float eps = 1e-6f) {
     py::buffer_info input_buf = input.request();
     require_non_empty_last_dim(input_buf, "Input must have a non-empty hidden dimension");
     ssize_t hidden_size = input_buf.shape[input_buf.ndim - 1];
     require_vector_size(weight.request(), hidden_size, "weight");
 
     DeviceArray<float> d_weight(weight);
-    return run_norm_float_op(input, [&](const float* in, float* out, int batch_size, int hidden_size_int) {
-        python_ops::rmsnorm(in, d_weight.ptr, out, batch_size, hidden_size_int, eps);
-    });
+    return run_norm_float_op(
+        input, [&](const float* in, float* out, int batch_size, int hidden_size_int) {
+            python_ops::rmsnorm(in, d_weight.ptr, out, batch_size, hidden_size_int, eps);
+        });
 }
 
-py::array_t<float> py_gemm(
-    py::array_t<float> A,
-    py::array_t<float> B,
-    float alpha = 1.0f,
-    float beta = 0.0f,
-    const std::string& version = "tiled") {
-    return run_gemm_float_op(A, B, [&](const float* lhs, const float* rhs, float* out, int M, int N, int K) {
-        python_ops::gemm(lhs, rhs, out, M, N, K, alpha, beta, version.c_str());
-    });
+py::array_t<float> py_gemm(py::array_t<float> A, py::array_t<float> B, float alpha = 1.0f,
+                           float beta = 0.0f, const std::string& version = "tiled") {
+    return run_gemm_float_op(
+        A, B, [&](const float* lhs, const float* rhs, float* out, int M, int N, int K) {
+            python_ops::gemm(lhs, rhs, out, M, N, K, alpha, beta, version.c_str());
+        });
 }
 
 py::array_t<float> py_transpose(py::array_t<float> input) {
@@ -327,14 +319,13 @@ PYBIND11_MODULE(tensorcraft_ops, m) {
     m.def("sigmoid", &py_sigmoid, "Sigmoid activation", py::arg("input"));
     m.def("vector_add", &py_vector_add, "Element-wise vector addition", py::arg("a"), py::arg("b"));
     m.def("softmax", &py_softmax, "Softmax along last dimension", py::arg("input"));
-    m.def("layernorm", &py_layernorm, "Layer normalization",
-          py::arg("input"), py::arg("gamma"), py::arg("beta"), py::arg("eps") = 1e-5f);
-    m.def("rmsnorm", &py_rmsnorm, "RMS normalization",
-          py::arg("input"), py::arg("weight"), py::arg("eps") = 1e-6f);
-    m.def("gemm", &py_gemm, "General matrix multiplication",
-          py::arg("A"), py::arg("B"), py::arg("alpha") = 1.0f, py::arg("beta") = 0.0f,
-          py::arg("version") = "tiled");
+    m.def("layernorm", &py_layernorm, "Layer normalization", py::arg("input"), py::arg("gamma"),
+          py::arg("beta"), py::arg("eps") = 1e-5f);
+    m.def("rmsnorm", &py_rmsnorm, "RMS normalization", py::arg("input"), py::arg("weight"),
+          py::arg("eps") = 1e-6f);
+    m.def("gemm", &py_gemm, "General matrix multiplication", py::arg("A"), py::arg("B"),
+          py::arg("alpha") = 1.0f, py::arg("beta") = 0.0f, py::arg("version") = "tiled");
     m.def("transpose", &py_transpose, "Matrix transpose", py::arg("input"));
 
-    m.attr("__version__") = "0.1.0";
+    m.attr("__version__") = "2.0.0";
 }

@@ -10,14 +10,14 @@
  */
 
 #include <cuda_runtime.h>
-#include <iostream>
-#include <vector>
-#include <chrono>
-#include <random>
-#include <cmath>
 
-#include <tensorcraft/kernels/gemm.hpp>
+#include <chrono>
+#include <cmath>
+#include <iostream>
+#include <random>
 #include <tensorcraft/core/cuda_check.hpp>
+#include <tensorcraft/kernels/gemm.hpp>
+#include <vector>
 
 // Matrix dimensions
 constexpr int M = 1024;
@@ -40,16 +40,13 @@ void initialize_matrix(std::vector<float>& matrix, int rows, int cols) {
 /**
  * @brief Verify GEMM result against reference
  */
-bool verify_result(const std::vector<float>& C,
-                   const std::vector<float>& C_ref,
+bool verify_result(const std::vector<float>& C, const std::vector<float>& C_ref,
                    float tolerance = 1e-3f) {
     for (size_t i = 0; i < C.size(); ++i) {
         float diff = std::abs(C[i] - C_ref[i]);
         float max_val = std::max(std::abs(C[i]), std::abs(C_ref[i]));
         if (diff > tolerance * max_val && diff > tolerance) {
-            std::cerr << "Mismatch at index " << i
-                      << ": got " << C[i]
-                      << ", expected " << C_ref[i]
+            std::cerr << "Mismatch at index " << i << ": got " << C[i] << ", expected " << C_ref[i]
                       << ", diff = " << diff << std::endl;
             return false;
         }
@@ -60,10 +57,8 @@ bool verify_result(const std::vector<float>& C,
 /**
  * @brief CPU reference GEMM implementation
  */
-void gemm_cpu_reference(const std::vector<float>& A,
-                        const std::vector<float>& B,
-                        std::vector<float>& C,
-                        int M, int N, int K) {
+void gemm_cpu_reference(const std::vector<float>& A, const std::vector<float>& B,
+                        std::vector<float>& C, int M, int N, int K) {
     for (int i = 0; i < M; ++i) {
         for (int j = 0; j < N; ++j) {
             float sum = 0.0f;
@@ -78,12 +73,9 @@ void gemm_cpu_reference(const std::vector<float>& A,
 /**
  * @brief Benchmark a GEMM kernel
  */
-template<typename GemmFunc>
-float benchmark_gemm(GemmFunc gemm_func,
-                     float* d_A, float* d_B, float* d_C,
-                     int M, int N, int K,
-                     int warmup_iters = 5,
-                     int benchmark_iters = 20) {
+template <typename GemmFunc>
+float benchmark_gemm(GemmFunc gemm_func, float* d_A, float* d_B, float* d_C, int M, int N, int K,
+                     int warmup_iters = 5, int benchmark_iters = 20) {
     // Warmup
     for (int i = 0; i < warmup_iters; ++i) {
         gemm_func(d_A, d_B, d_C, M, N, K);
@@ -99,7 +91,7 @@ float benchmark_gemm(GemmFunc gemm_func,
     auto end = std::chrono::high_resolution_clock::now();
 
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-    return static_cast<float>(duration.count()) / benchmark_iters / 1000.0f; // ms
+    return static_cast<float>(duration.count()) / benchmark_iters / 1000.0f;  // ms
 }
 
 int main() {
@@ -159,7 +151,8 @@ int main() {
     {
         std::cout << "1. Naive GEMM:" << std::endl;
         auto naive_gemm = [](float* A, float* B, float* C, int M, int N, int K) {
-            tensorcraft::kernels::gemm_naive(A, B, C, M, N, K);
+            tensorcraft::kernels::launch_gemm(A, B, C, M, N, K, 1.0f, 0.0f,
+                                              tensorcraft::kernels::GemmVersion::Naive);
         };
 
         float time_ms = benchmark_gemm(naive_gemm, d_A, d_B, d_C, M, N, K);
@@ -181,7 +174,8 @@ int main() {
     {
         std::cout << "2. Tiled GEMM (Shared Memory):" << std::endl;
         auto tiled_gemm = [](float* A, float* B, float* C, int M, int N, int K) {
-            tensorcraft::kernels::gemm_tiled(A, B, C, M, N, K);
+            tensorcraft::kernels::launch_gemm(A, B, C, M, N, K, 1.0f, 0.0f,
+                                              tensorcraft::kernels::GemmVersion::Tiled);
         };
 
         float time_ms = benchmark_gemm(tiled_gemm, d_A, d_B, d_C, M, N, K);
@@ -202,7 +196,8 @@ int main() {
     {
         std::cout << "3. Double-Buffered GEMM:" << std::endl;
         auto db_gemm = [](float* A, float* B, float* C, int M, int N, int K) {
-            tensorcraft::kernels::gemm_double_buffer(A, B, C, M, N, K);
+            tensorcraft::kernels::launch_gemm(A, B, C, M, N, K, 1.0f, 0.0f,
+                                              tensorcraft::kernels::GemmVersion::DoubleBuffer);
         };
 
         float time_ms = benchmark_gemm(db_gemm, d_A, d_B, d_C, M, N, K);
@@ -220,22 +215,8 @@ int main() {
     }
 
     // 4. Tensor Core GEMM (if supported)
-    if (prop.major >= 7) {
-        std::cout << "4. Tensor Core GEMM (WMMA):" << std::endl;
-        auto tc_gemm = [](float* A, float* B, float* C, int M, int N, int K) {
-            tensorcraft::kernels::gemm_tensor_core(A, B, C, M, N, K);
-        };
-
-        float time_ms = benchmark_gemm(tc_gemm, d_A, d_B, d_C, M, N, K);
-        double gflops = flops / (time_ms * 1e6);
-
-        std::cout << "   Time: " << time_ms << " ms" << std::endl;
-        std::cout << "   Performance: " << gflops << " GFLOPS" << std::endl;
-        std::cout << std::endl;
-    } else {
-        std::cout << "4. Tensor Core GEMM: Skipped (requires SM 7.0+)" << std::endl;
-        std::cout << std::endl;
-    }
+    // Note: Tensor Core GEMM requires half precision input.
+    // See tensorcraft::kernels::launch_gemm_wmma for WMMA-based GEMM.
 
     // Cleanup
     CUDA_CHECK(cudaFree(d_A));

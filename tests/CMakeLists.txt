@@ -8,6 +8,7 @@ add_executable(tensorcraft_tests
     test_conv2d.cpp
     test_fusion.cpp
     test_attention_docs_contract.cpp
+    test_sparse.cpp
     cuda_test_ops.cu
 )
 
@@ -40,6 +41,7 @@ set_source_files_properties(
     test_conv2d.cpp
     test_fusion.cpp
     test_attention_docs_contract.cpp
+    test_sparse.cpp
     PROPERTIES LANGUAGE CXX
 )
 
