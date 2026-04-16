@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Deploy to GitHub Pages | 部署 GitHub Pages
 
 on:
   push:
@@ -7,9 +7,14 @@ on:
       - 'index.md'
       - 'README.md'
       - 'README.zh-CN.md'
+      - 'CHANGELOG.md'
       - 'docs/**'
       - 'changelog/**'
       - '_config.yml'
+      - '_includes/**'
+      - '_layouts/**'
+      - '_sass/**'
+      - 'assets/**'
       - '.github/workflows/pages.yml'
   workflow_dispatch:
 
@@ -18,48 +23,70 @@ permissions:
   pages: write
   id-token: write
 
+# 并发控制 - 确保只有一个部署在运行
 concurrency:
   group: pages
   cancel-in-progress: true
 
 jobs:
   build:
-    name: Build Jekyll Site
+    name: Build Jekyll Site | 构建 Jekyll 站点
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout | 检出代码
         uses: actions/checkout@v4
         with:
-          sparse-checkout-cone-mode: false
-          sparse-checkout: |
-            index.md
-            README.md
-            README.zh-CN.md
-            LICENSE
-            _config.yml
-            docs
-            changelog
+          fetch-depth: 0  # 完整历史，用于最后修改时间
 
-      - name: Setup Pages
+      - name: Setup Ruby | 设置 Ruby 环境
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1'
+          bundler-cache: true
+
+      - name: Setup Pages | 配置 GitHub Pages
+        id: pages
         uses: actions/configure-pages@v5
 
-      - name: Build with Jekyll
+      - name: Build with Jekyll | 构建 Jekyll 站点
         uses: actions/jekyll-build-pages@v1
         with:
           source: ./
           destination: ./_site
+          verbose: true
+        env:
+          JEKYLL_ENV: production
+          PAGES_REPO_NWO: ${{ github.repository }}
 
-      - name: Upload artifact
+      - name: Verify Build | 验证构建
+        run: |
+          echo "✅ Build complete"
+          echo "📁 Site structure:"
+          ls -la _site/
+          echo "📄 Generated files:"
+          find _site -name "*.html" | wc -l
+          echo "🎨 CSS files:"
+          find _site -name "*.css" | head -5
+
+      - name: Upload artifact | 上传构建产物
         uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./_site
 
   deploy:
-    name: Deploy to GitHub Pages
+    name: Deploy to GitHub Pages | 部署到 GitHub Pages
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages | 执行部署
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Deployment Summary | 部署摘要
+        run: |
+          echo "🚀 Site deployed successfully!"
+          echo "🔗 URL: ${{ steps.deployment.outputs.page_url }}"
+          echo "📅 Deployment time: $(date)"

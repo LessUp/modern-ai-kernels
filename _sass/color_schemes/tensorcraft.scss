@@ -1,0 +1,62 @@
+// ═══════════════════════════════════════════════════════════════
+// TENSORCRAFT 主题颜色方案 - 究极配色
+// NVIDIA CUDA 绿色 + 科技蓝 + 深色模式优化
+// ═══════════════════════════════════════════════════════════════
+
+// ─── 品牌主色 ─────────────────────────────────────────────────
+$brand-color: #76B900;
+$brand-color-dark: #5A8F00;
+$brand-color-light: #9CE634;
+
+// ─── 功能色 ───────────────────────────────────────────────────
+$link-color: #0969DA;
+$btn-primary-color: $brand-color;
+
+// ─── 文本颜色 ─────────────────────────────────────────────────
+$body-text-color: #24292F;
+$body-heading-color: #1F2328;
+
+// ─── 背景颜色 ─────────────────────────────────────────────────
+$sidebar-color: #F6F8FA;
+$code-background-color: #F6F8FA;
+
+// ─── 边框颜色 ─────────────────────────────────────────────────
+$border-color: #D0D7DE;
+
+// ─── 字体配置 ─────────────────────────────────────────────────
+$body-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+$mono-font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+
+// ─── 尺寸配置 ─────────────────────────────────────────────────
+$nav-width: 264px;
+$content-width: 900px;
+$header-height: 60px;
+
+// ─── Just the Docs 兼容变量 ───────────────────────────────────
+$link-color: #0969DA;
+$link-color-hover: #0550AE;
+$btn-primary-color: $brand-color;
+$btn-primary-hover: $brand-color-dark;
+$base-button-color: #F3F4F6;
+
+$body-background-color: #FFFFFF;
+$search-background-color: #FFFFFF;
+$table-background-color: #FFFFFF;
+$feedback-color: #EAEEF2;
+
+$table-border-color: #D8DEE4;
+$blockquote-border-color: #4A90E2;
+
+$search-result-preview-color: #57606A;
+$nav-child-link-color: #656D76;
+
+$code-linenr-color: #6E7781;
+$code-linenr-background-color: #F6F8FA;
+
+$root-font-size: 16px;
+$body-line-height: 1.6;
+$content-line-height: 1.7;
+$body-heading-line-height: 1.25;
+
+$transition-duration: 0.2s;
+$transition-timing: ease-in-out;
