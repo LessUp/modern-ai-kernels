@@ -4,12 +4,13 @@
  * @brief LLM attention kernels including FlashAttention, RoPE, PagedAttention
  */
 
-#include "../core/features.hpp"
-#include "../core/cuda_check.hpp"
-#include "../core/type_traits.hpp"
-#include <cfloat>
 #include <cassert>
+#include <cfloat>
 #include <stdexcept>
+
+#include "../core/cuda_check.hpp"
+#include "../core/features.hpp"
+#include "../core/type_traits.hpp"
 
 namespace tensorcraft {
 namespace kernels {
@@ -20,52 +21,47 @@ namespace kernels {
 
 /**
  * @brief FlashAttention kernel with online softmax
- * 
+ *
  * Computes: O = softmax(Q @ K^T / sqrt(d)) @ V
  * Uses tiling and online softmax for memory efficiency.
- * 
+ *
  * Thread mapping: each row of Q is handled by BLOCK_N threads cooperatively.
  * Output accumulator lives in shared memory to avoid excessive register pressure.
  */
-template<typename T, int BLOCK_M = 32, int BLOCK_N = 32, int HEAD_DIM = 64>
-__global__ void flash_attention_kernel(
-    const T* TC_RESTRICT Q,   // [batch, heads, seq_len, head_dim]
-    const T* TC_RESTRICT K,   // [batch, heads, seq_len, head_dim]
-    const T* TC_RESTRICT V,   // [batch, heads, seq_len, head_dim]
-    T* TC_RESTRICT O,         // [batch, heads, seq_len, head_dim]
-    int batch_size,
-    int num_heads,
-    int seq_len,
-    float scale) {
-    
+template <typename T, int BLOCK_M = 32, int BLOCK_N = 32, int HEAD_DIM = 64>
+__global__ void flash_attention_kernel(const T* TC_RESTRICT Q,  // [batch, heads, seq_len, head_dim]
+                                       const T* TC_RESTRICT K,  // [batch, heads, seq_len, head_dim]
+                                       const T* TC_RESTRICT V,  // [batch, heads, seq_len, head_dim]
+                                       T* TC_RESTRICT O,        // [batch, heads, seq_len, head_dim]
+                                       int batch_size, int num_heads, int seq_len, float scale) {
     // Shared memory layout
     __shared__ float Qs[BLOCK_M][HEAD_DIM];
     __shared__ float Ks[BLOCK_N][HEAD_DIM];
     __shared__ float Vs[BLOCK_N][HEAD_DIM];
-    __shared__ float S[BLOCK_M][BLOCK_N];    // QK^T scores
-    __shared__ float O_acc[BLOCK_M][HEAD_DIM]; // Output accumulator (moved from registers)
-    __shared__ float row_m[BLOCK_M];  // Per-row running max
-    __shared__ float row_l[BLOCK_M];  // Per-row running sum(exp)
-    
+    __shared__ float S[BLOCK_M][BLOCK_N];       // QK^T scores
+    __shared__ float O_acc[BLOCK_M][HEAD_DIM];  // Output accumulator (moved from registers)
+    __shared__ float row_m[BLOCK_M];            // Per-row running max
+    __shared__ float row_l[BLOCK_M];            // Per-row running sum(exp)
+
     const int batch_head = blockIdx.z;
     const int batch_idx = batch_head / num_heads;
     const int head_idx = batch_head % num_heads;
     const int m_block = blockIdx.x;
-    
+
     const int tx = threadIdx.x;
     const int ty = threadIdx.y;
     const int tid = ty * blockDim.x + tx;
     const int num_threads = blockDim.x * blockDim.y;
-    
+
     // Offset pointers for this batch/head
     const int offset = (batch_idx * num_heads + head_idx) * seq_len * HEAD_DIM;
     const T* q_ptr = Q + offset;
     const T* k_ptr = K + offset;
     const T* v_ptr = V + offset;
     T* o_ptr = O + offset;
-    
+
     const int m_start = m_block * BLOCK_M;
-    
+
     // Initialize shared accumulators (cooperative across all threads)
     for (int i = tid; i < BLOCK_M * HEAD_DIM; i += num_threads) {
         int r = i / HEAD_DIM;
@@ -76,7 +72,7 @@ __global__ void flash_attention_kernel(
         row_m[tid] = -FLT_MAX;
         row_l[tid] = 0.0f;
     }
-    
+
     // Load Q tile (persistent across K/V blocks)
     for (int i = tid; i < BLOCK_M * HEAD_DIM; i += num_threads) {
         int r = i / HEAD_DIM;
@@ -85,13 +81,13 @@ __global__ void flash_attention_kernel(
         Qs[r][d] = (m_idx < seq_len) ? to_float(q_ptr[m_idx * HEAD_DIM + d]) : 0.0f;
     }
     __syncthreads();
-    
+
     // Iterate over K/V blocks
     const int num_kv_blocks = (seq_len + BLOCK_N - 1) / BLOCK_N;
-    
+
     for (int n_block = 0; n_block < num_kv_blocks; ++n_block) {
         const int n_start = n_block * BLOCK_N;
-        
+
         // Load K, V tiles cooperatively
         for (int i = tid; i < BLOCK_N * HEAD_DIM; i += num_threads) {
             int r = i / HEAD_DIM;
@@ -101,49 +97,49 @@ __global__ void flash_attention_kernel(
             Vs[r][d] = (n_idx < seq_len) ? to_float(v_ptr[n_idx * HEAD_DIM + d]) : 0.0f;
         }
         __syncthreads();
-        
+
         // Compute QK^T: S[m][n] = sum_d(Q[m][d] * K[n][d]) * scale
         if (ty < BLOCK_M && tx < BLOCK_N) {
             float qk = 0.0f;
-            #pragma unroll
+#pragma unroll
             for (int d = 0; d < HEAD_DIM; ++d) {
                 qk += Qs[ty][d] * Ks[tx][d];
             }
             S[ty][tx] = qk * scale;
         }
         __syncthreads();
-        
+
         // Online softmax + weighted V accumulation (per row, using thread ty)
         if (ty < BLOCK_M && (m_start + ty) < seq_len) {
             float m_old = row_m[ty];
             float l_old = row_l[ty];
-            
+
             // Find max in this block's scores
             float m_new = m_old;
             for (int n = 0; n < BLOCK_N && (n_start + n) < seq_len; ++n) {
                 m_new = fmaxf(m_new, S[ty][n]);
             }
-            
+
             // Compute rescaled sum
             float l_new = l_old * expf(m_old - m_new);
             for (int n = 0; n < BLOCK_N && (n_start + n) < seq_len; ++n) {
                 l_new += expf(S[ty][n] - m_new);
             }
-            
+
             // Rescale previous accumulator and add new contributions
             float rescale = (l_old > 0.0f) ? (l_old * expf(m_old - m_new) / l_new) : 0.0f;
             float inv_l = 1.0f / l_new;
-            
+
             for (int d = tx; d < HEAD_DIM; d += blockDim.x) {
                 float o_val = O_acc[ty][d] * rescale;
-                
+
                 for (int n = 0; n < BLOCK_N && (n_start + n) < seq_len; ++n) {
                     o_val += expf(S[ty][n] - m_new) * inv_l * Vs[n][d];
                 }
-                
+
                 O_acc[ty][d] = o_val;
             }
-            
+
             if (tx == 0) {
                 row_m[ty] = m_new;
                 row_l[ty] = l_new;
@@ -151,7 +147,7 @@ __global__ void flash_attention_kernel(
         }
         __syncthreads();
     }
-    
+
     // Write output cooperatively
     for (int i = tid; i < BLOCK_M * HEAD_DIM; i += num_threads) {
         int r = i / HEAD_DIM;
@@ -169,26 +165,22 @@ __global__ void flash_attention_kernel(
 
 /**
  * @brief RoPE kernel for applying rotary position embeddings
- * 
+ *
  * Applies rotation: [x0, x1] -> [x0*cos - x1*sin, x0*sin + x1*cos]
  */
-template<typename T>
-__global__ void rope_kernel(
-    T* TC_RESTRICT x,                    // [batch, seq_len, num_heads, head_dim]
-    const float* TC_RESTRICT cos_cache,  // [max_seq, head_dim/2]
-    const float* TC_RESTRICT sin_cache,  // [max_seq, head_dim/2]
-    int batch_size,
-    int seq_len,
-    int num_heads,
-    int head_dim,
-    int start_pos) {
-    
+template <typename T>
+__global__ void rope_kernel(T* TC_RESTRICT x,  // [batch, seq_len, num_heads, head_dim]
+                            const float* TC_RESTRICT cos_cache,  // [max_seq, head_dim/2]
+                            const float* TC_RESTRICT sin_cache,  // [max_seq, head_dim/2]
+                            int batch_size, int seq_len, int num_heads, int head_dim,
+                            int start_pos) {
     const int idx = blockIdx.x * blockDim.x + threadIdx.x;
     const int half_head_dim = head_dim / 2;
     const int total = batch_size * seq_len * num_heads * half_head_dim;
-    
-    if (idx >= total) return;
-    
+
+    if (idx >= total)
+        return;
+
     // Decode indices
     const int d = idx % half_head_dim;
     int remaining = idx / half_head_dim;
@@ -196,25 +188,25 @@ __global__ void rope_kernel(
     remaining /= num_heads;
     const int s = remaining % seq_len;
     const int b = remaining / seq_len;
-    
+
     // Get position
     const int pos = start_pos + s;
-    
+
     // Load cos/sin for this position and dimension
     const float cos_val = cos_cache[pos * half_head_dim + d];
     const float sin_val = sin_cache[pos * half_head_dim + d];
-    
+
     // Compute offset in x
     const int base_offset = ((b * seq_len + s) * num_heads + h) * head_dim;
-    
+
     // Load pair of values
     const float x0 = to_float(x[base_offset + d]);
     const float x1 = to_float(x[base_offset + d + half_head_dim]);
-    
+
     // Apply rotation
     const float y0 = x0 * cos_val - x1 * sin_val;
     const float y1 = x0 * sin_val + x1 * cos_val;
-    
+
     // Store
     x[base_offset + d] = from_float<T>(y0);
     x[base_offset + d + half_head_dim] = from_float<T>(y1);
@@ -223,26 +215,23 @@ __global__ void rope_kernel(
 /**
  * @brief Precompute RoPE cos/sin cache
  */
-__global__ void rope_precompute_cache_kernel(
-    float* TC_RESTRICT cos_cache,  // [max_seq, head_dim/2]
-    float* TC_RESTRICT sin_cache,  // [max_seq, head_dim/2]
-    int max_seq_len,
-    int head_dim,
-    float base = 10000.0f) {
-    
+__global__ void rope_precompute_cache_kernel(float* TC_RESTRICT cos_cache,  // [max_seq, head_dim/2]
+                                             float* TC_RESTRICT sin_cache,  // [max_seq, head_dim/2]
+                                             int max_seq_len, int head_dim, float base = 10000.0f) {
     const int idx = blockIdx.x * blockDim.x + threadIdx.x;
     const int half_head_dim = head_dim / 2;
     const int total = max_seq_len * half_head_dim;
-    
-    if (idx >= total) return;
-    
+
+    if (idx >= total)
+        return;
+
     const int d = idx % half_head_dim;
     const int pos = idx / half_head_dim;
-    
+
     // Compute frequency: 1 / (base^(2d/head_dim))
     const float freq = 1.0f / powf(base, (2.0f * d) / head_dim);
     const float angle = pos * freq;
-    
+
     cos_cache[idx] = cosf(angle);
     sin_cache[idx] = sinf(angle);
 }
@@ -253,88 +242,89 @@ __global__ void rope_precompute_cache_kernel(
 
 /**
  * @brief PagedAttention kernel for non-contiguous KV cache
- * 
+ *
  * Supports paged memory layout for efficient KV cache management.
  */
-template<typename T, int BLOCK_SIZE = 16, int HEAD_DIM = 64>
+template <typename T, int BLOCK_SIZE = 16, int HEAD_DIM = 64>
 __global__ void paged_attention_kernel(
-    const T* TC_RESTRICT Q,           // [batch, num_heads, head_dim]
-    const T* TC_RESTRICT K_cache,     // [num_blocks, block_size, num_heads, head_dim]
-    const T* TC_RESTRICT V_cache,     // [num_blocks, block_size, num_heads, head_dim]
-    T* TC_RESTRICT O,                 // [batch, num_heads, head_dim]
+    const T* TC_RESTRICT Q,               // [batch, num_heads, head_dim]
+    const T* TC_RESTRICT K_cache,         // [num_blocks, block_size, num_heads, head_dim]
+    const T* TC_RESTRICT V_cache,         // [num_blocks, block_size, num_heads, head_dim]
+    T* TC_RESTRICT O,                     // [batch, num_heads, head_dim]
     const int* TC_RESTRICT block_tables,  // [batch, max_blocks_per_seq]
     const int* TC_RESTRICT seq_lens,      // [batch]
-    int batch_size,
-    int num_heads,
-    int max_blocks_per_seq,
-    float scale) {
-    
+    int batch_size, int num_heads, int max_blocks_per_seq, float scale) {
     const int batch_idx = blockIdx.x;
     const int head_idx = blockIdx.y;
     const int tid = threadIdx.x;
-    
-    if (batch_idx >= batch_size) return;
-    
+
+    if (batch_idx >= batch_size)
+        return;
+
     const int seq_len = seq_lens[batch_idx];
     const int num_blocks = (seq_len + BLOCK_SIZE - 1) / BLOCK_SIZE;
-    
+
     // Load query for this batch/head
     __shared__ float q_shared[HEAD_DIM];
     const T* q_ptr = Q + (batch_idx * num_heads + head_idx) * HEAD_DIM;
-    
+
     for (int d = tid; d < HEAD_DIM; d += blockDim.x) {
         q_shared[d] = to_float(q_ptr[d]);
     }
     __syncthreads();
-    
+
     // Online softmax variables
     float m_prev = -FLT_MAX;
     float l_prev = 0.0f;
     float o_acc[HEAD_DIM];
-    
-    #pragma unroll
+
+#pragma unroll
     for (int d = 0; d < HEAD_DIM; ++d) {
         o_acc[d] = 0.0f;
     }
-    
+
     // Iterate over KV cache blocks
     for (int block_idx = 0; block_idx < num_blocks; ++block_idx) {
         const int physical_block = block_tables[batch_idx * max_blocks_per_seq + block_idx];
         const int block_start = block_idx * BLOCK_SIZE;
         const int block_end = min(block_start + BLOCK_SIZE, seq_len);
-        
+
         // Process each position in the block
         for (int pos = block_start; pos < block_end; ++pos) {
             const int pos_in_block = pos - block_start;
-            
+
             // Load K for this position
-            const T* k_ptr = K_cache + ((physical_block * BLOCK_SIZE + pos_in_block) * num_heads + head_idx) * HEAD_DIM;
-            const T* v_ptr = V_cache + ((physical_block * BLOCK_SIZE + pos_in_block) * num_heads + head_idx) * HEAD_DIM;
-            
+            const T* k_ptr =
+                K_cache +
+                ((physical_block * BLOCK_SIZE + pos_in_block) * num_heads + head_idx) * HEAD_DIM;
+            const T* v_ptr =
+                V_cache +
+                ((physical_block * BLOCK_SIZE + pos_in_block) * num_heads + head_idx) * HEAD_DIM;
+
             // Compute attention score
             float score = 0.0f;
             for (int d = 0; d < HEAD_DIM; ++d) {
                 score += q_shared[d] * to_float(k_ptr[d]);
             }
             score *= scale;
-            
+
             // Online softmax update
             float m_curr = fmaxf(m_prev, score);
             float l_curr = l_prev * expf(m_prev - m_curr) + expf(score - m_curr);
-            
+
             float scale_prev = (l_prev > 0.0f) ? (l_prev * expf(m_prev - m_curr) / l_curr) : 0.0f;
             float scale_curr = expf(score - m_curr) / l_curr;
-            
+
             // Update output
             for (int d = 0; d < HEAD_DIM; ++d) {
                 o_acc[d] = o_acc[d] * scale_prev + scale_curr * to_float(v_ptr[d]);
             }
-            
+
             m_prev = m_curr;
             l_prev = l_curr;
         }
     }
-    
+
     // Write output
     T* o_ptr = O + (batch_idx * num_heads + head_idx) * HEAD_DIM;
     for (int d = tid; d < HEAD_DIM; d += blockDim.x) {
@@ -348,34 +338,31 @@ __global__ void paged_attention_kernel(
 
 /**
  * @brief MoE (Mixture of Experts) top-k router kernel
- * 
+ *
  * Selects top-k experts for each token based on gating scores.
  */
-template<typename T, int MAX_EXPERTS = 8>
-__global__ void moe_router_kernel(
-    const T* TC_RESTRICT gate_logits,  // [batch, num_experts]
-    int* TC_RESTRICT expert_indices,    // [batch, top_k]
-    float* TC_RESTRICT expert_weights,  // [batch, top_k]
-    int batch_size,
-    int num_experts,
-    int top_k) {
-    
+template <typename T, int MAX_EXPERTS = 8>
+__global__ void moe_router_kernel(const T* TC_RESTRICT gate_logits,   // [batch, num_experts]
+                                  int* TC_RESTRICT expert_indices,    // [batch, top_k]
+                                  float* TC_RESTRICT expert_weights,  // [batch, top_k]
+                                  int batch_size, int num_experts, int top_k) {
     const int batch_idx = blockIdx.x * blockDim.x + threadIdx.x;
-    if (batch_idx >= batch_size) return;
-    
+    if (batch_idx >= batch_size)
+        return;
+
     const T* logits = gate_logits + batch_idx * num_experts;
     int* indices = expert_indices + batch_idx * top_k;
     float* weights = expert_weights + batch_idx * top_k;
-    
+
     // Load logits and find top-k
     float scores[MAX_EXPERTS];
     int expert_ids[MAX_EXPERTS];
-    
+
     for (int e = 0; e < num_experts && e < MAX_EXPERTS; ++e) {
         scores[e] = to_float(logits[e]);
         expert_ids[e] = e;
     }
-    
+
     // Simple selection sort for top-k (efficient for small k)
     for (int i = 0; i < top_k; ++i) {
         int max_idx = i;
@@ -392,15 +379,15 @@ __global__ void moe_router_kernel(
         scores[max_idx] = tmp_score;
         expert_ids[max_idx] = tmp_id;
     }
-    
+
     // Compute softmax over top-k
     float max_score = scores[0];
     float sum_exp = 0.0f;
-    
+
     for (int i = 0; i < top_k; ++i) {
         sum_exp += expf(scores[i] - max_score);
     }
-    
+
     // Store results
     for (int i = 0; i < top_k; ++i) {
         indices[i] = expert_ids[i];
@@ -415,14 +402,11 @@ __global__ void moe_router_kernel(
 /**
  * @brief Launch FlashAttention kernel
  */
-template<typename T>
-void launch_flash_attention(
-    const T* Q, const T* K, const T* V, T* O,
-    int batch_size, int num_heads, int seq_len, int head_dim,
-    float scale,
-    cudaStream_t stream = nullptr) {
-
-    if (batch_size == 0 || seq_len == 0) return;
+template <typename T>
+void launch_flash_attention(const T* Q, const T* K, const T* V, T* O, int batch_size, int num_heads,
+                            int seq_len, int head_dim, float scale, cudaStream_t stream = nullptr) {
+    if (batch_size == 0 || seq_len == 0)
+        return;
 
     // Use fixed head_dim=64 for now
     constexpr int BLOCK_M = 32;
@@ -440,8 +424,8 @@ void launch_flash_attention(
     dim3 block(BLOCK_N, BLOCK_M);
     dim3 grid((seq_len + BLOCK_M - 1) / BLOCK_M, 1, batch_size * num_heads);
 
-    flash_attention_kernel<T, BLOCK_M, BLOCK_N, HEAD_DIM><<<grid, block, 0, stream>>>(
-        Q, K, V, O, batch_size, num_heads, seq_len, scale);
+    flash_attention_kernel<T, BLOCK_M, BLOCK_N, HEAD_DIM>
+        <<<grid, block, 0, stream>>>(Q, K, V, O, batch_size, num_heads, seq_len, scale);
 
     TC_CUDA_CHECK_LAST();
 }
@@ -449,15 +433,9 @@ void launch_flash_attention(
 /**
  * @brief Launch RoPE kernel
  */
-template<typename T>
-void launch_rope(
-    T* x,
-    const float* cos_cache,
-    const float* sin_cache,
-    int batch_size, int seq_len, int num_heads, int head_dim,
-    int start_pos = 0,
-    cudaStream_t stream = nullptr) {
-
+template <typename T>
+void launch_rope(T* x, const float* cos_cache, const float* sin_cache, int batch_size, int seq_len,
+                 int num_heads, int head_dim, int start_pos = 0, cudaStream_t stream = nullptr) {
     if (head_dim % 2 != 0) {
         throw std::invalid_argument("RoPE head_dim must be even");
     }
@@ -465,13 +443,14 @@ void launch_rope(
         throw std::invalid_argument("RoPE start_pos must be non-negative");
     }
     const int total = batch_size * seq_len * num_heads * (head_dim / 2);
-    if (total == 0) return;
+    if (total == 0)
+        return;
 
     constexpr int BLOCK_SIZE = 256;
     const int grid_size = (total + BLOCK_SIZE - 1) / BLOCK_SIZE;
 
-    rope_kernel<T><<<grid_size, BLOCK_SIZE, 0, stream>>>(
-        x, cos_cache, sin_cache, batch_size, seq_len, num_heads, head_dim, start_pos);
+    rope_kernel<T><<<grid_size, BLOCK_SIZE, 0, stream>>>(x, cos_cache, sin_cache, batch_size,
+                                                         seq_len, num_heads, head_dim, start_pos);
 
     TC_CUDA_CHECK_LAST();
 }
@@ -479,14 +458,8 @@ void launch_rope(
 /**
  * @brief Precompute RoPE cache
  */
-inline void precompute_rope_cache(
-    float* cos_cache,
-    float* sin_cache,
-    int max_seq_len,
-    int head_dim,
-    float base = 10000.0f,
-    cudaStream_t stream = nullptr) {
-
+inline void precompute_rope_cache(float* cos_cache, float* sin_cache, int max_seq_len, int head_dim,
+                                  float base = 10000.0f, cudaStream_t stream = nullptr) {
     if (head_dim % 2 != 0) {
         throw std::invalid_argument("RoPE head_dim must be even");
     }
@@ -497,8 +470,8 @@ inline void precompute_rope_cache(
     constexpr int BLOCK_SIZE = 256;
     const int grid_size = (total + BLOCK_SIZE - 1) / BLOCK_SIZE;
 
-    rope_precompute_cache_kernel<<<grid_size, BLOCK_SIZE, 0, stream>>>(
-        cos_cache, sin_cache, max_seq_len, head_dim, base);
+    rope_precompute_cache_kernel<<<grid_size, BLOCK_SIZE, 0, stream>>>(cos_cache, sin_cache,
+                                                                       max_seq_len, head_dim, base);
 
     TC_CUDA_CHECK_LAST();
 }
@@ -506,15 +479,11 @@ inline void precompute_rope_cache(
 /**
  * @brief Launch MoE router kernel
  */
-template<typename T>
-void launch_moe_router(
-    const T* gate_logits,
-    int* expert_indices,
-    float* expert_weights,
-    int batch_size, int num_experts, int top_k,
-    cudaStream_t stream = nullptr) {
-
-    if (batch_size == 0) return;
+template <typename T>
+void launch_moe_router(const T* gate_logits, int* expert_indices, float* expert_weights,
+                       int batch_size, int num_experts, int top_k, cudaStream_t stream = nullptr) {
+    if (batch_size == 0)
+        return;
     if (num_experts <= 0 || num_experts > 8) {
         throw std::invalid_argument("MoE router supports num_experts within [1, 8]");
     }
@@ -536,38 +505,21 @@ void launch_moe_router(
 // ============================================================================
 
 /// FlashAttention
-template<typename T>
-void flash_attention(
-    const T* Q, const T* K, const T* V, T* O,
-    size_t batch_size, size_t num_heads, size_t seq_len, size_t head_dim,
-    cudaStream_t stream = nullptr) {
-    
+template <typename T>
+void flash_attention(const T* Q, const T* K, const T* V, T* O, size_t batch_size, size_t num_heads,
+                     size_t seq_len, size_t head_dim, cudaStream_t stream = nullptr) {
     float scale = 1.0f / sqrtf(static_cast<float>(head_dim));
-    launch_flash_attention(Q, K, V, O, 
-                          static_cast<int>(batch_size),
-                          static_cast<int>(num_heads),
-                          static_cast<int>(seq_len),
-                          static_cast<int>(head_dim),
-                          scale, stream);
+    launch_flash_attention(Q, K, V, O, static_cast<int>(batch_size), static_cast<int>(num_heads),
+                           static_cast<int>(seq_len), static_cast<int>(head_dim), scale, stream);
 }
 
 /// RoPE
-template<typename T>
-void rope(
-    T* x,
-    const float* cos_cache,
-    const float* sin_cache,
-    size_t batch_size, size_t seq_len, size_t num_heads, size_t head_dim,
-    int start_pos = 0,
-    cudaStream_t stream = nullptr) {
-    
-    launch_rope(x, cos_cache, sin_cache,
-               static_cast<int>(batch_size),
-               static_cast<int>(seq_len),
-               static_cast<int>(num_heads),
-               static_cast<int>(head_dim),
-               start_pos, stream);
+template <typename T>
+void rope(T* x, const float* cos_cache, const float* sin_cache, size_t batch_size, size_t seq_len,
+          size_t num_heads, size_t head_dim, int start_pos = 0, cudaStream_t stream = nullptr) {
+    launch_rope(x, cos_cache, sin_cache, static_cast<int>(batch_size), static_cast<int>(seq_len),
+                static_cast<int>(num_heads), static_cast<int>(head_dim), start_pos, stream);
 }
 
-} // namespace kernels
-} // namespace tensorcraft
+}  // namespace kernels
+}  // namespace tensorcraft

@@ -83,11 +83,9 @@ plugins:
 # ───────────────────────────────────────────────────────────────
 author:
   name: LessUp
-  email: null
 
 twitter:
   card: summary_large_image
-  username: null
 
 social:
   name: TensorCraft-HPC
@@ -95,12 +93,7 @@ social:
     - https://github.com/LessUp/modern-ai-kernels
 
 # Open Graph 默认图片
-defaults:
-  - scope:
-      path: ""
-      type: "pages"
-    values:
-      image: /assets/images/og-image.png
+# Note: defaults for collections are defined below in the collections section
 
 # ───────────────────────────────────────────────────────────────
 # 语言与国际化配置（双语系统）
@@ -120,7 +113,6 @@ kramdown:
       line_numbers: true
   input: GFM
   hard_wrap: false
-  math_engine: mathjax
 
 # ───────────────────────────────────────────────────────────────
 # Sass 配置

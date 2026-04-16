@@ -36,6 +36,15 @@ repos:
       - id: cmake-format
         additional_dependencies: [pyyaml>=5.1]
 
+  # C++ static analysis with cppcheck
+  - repo: https://github.com/pocc/pre-commit-hooks
+    rev: v1.3.5
+    hooks:
+      - id: cppcheck
+        args: ['--error-exitcode=1', '--suppress=missingIncludeSystem', '--inline-suppr']
+        files: \.(cpp|hpp|cu|cuh)$
+        exclude: ^(build/|cmake-build-|tests/)
+
   # Markdown linting
   - repo: https://github.com/igorshubovych/markdownlint-cli
     rev: v0.38.0
@@ -56,9 +65,9 @@ repos:
     hooks:
       - id: shellcheck
 
-  # Python formatting (for any Python scripts)
+  # Python formatting with black
   - repo: https://github.com/psf/black
-    rev: 23.12.1
+    rev: 24.3.0
     hooks:
       - id: black
         language_version: python3
@@ -70,6 +79,22 @@ repos:
       - id: isort
         args: ['--profile', 'black']
 
+  # Python linting with ruff
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.3.4
+    hooks:
+      - id: ruff
+        args: ['--fix']
+
+  # Python type checking with mypy
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.9.0
+    hooks:
+      - id: mypy
+        additional_dependencies: [types-all]
+        args: ['--ignore-missing-imports']
+        files: ^tests/.*\.py$
+
 # CI configuration
 ci:
   autofix_commit_msg: |
@@ -78,5 +103,5 @@ ci:
   autoupdate_branch: ''
   autoupdate_commit_msg: '[pre-commit.ci] pre-commit autoupdate'
   autoupdate_schedule: weekly
-  skip: []
+  skip: [cppcheck, mypy]  # Skip slow hooks in CI
   submodules: false

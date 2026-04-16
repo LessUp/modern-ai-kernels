@@ -154,6 +154,12 @@ y = tc.gelu(tc.layernorm(x, gamma, beta))
 
 ```
 modern-ai-kernels/
+├── specs/                  # 规范文档（单一事实来源）
+│   ├── product/           # 产品功能定义 (PRD)
+│   ├── rfc/               # 技术设计文档
+│   ├── api/               # API 规范定义
+│   ├── db/                # 数据库 Schema 设计
+│   └── testing/           # 测试用例规范与实现计划
 ├── include/tensorcraft/    # 头文件内核库
 │   ├── core/              # CUDA 错误处理、类型特征
 │   ├── memory/            # Tensor、内存池

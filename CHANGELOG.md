@@ -20,7 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
-## [3.0.0] - 2025-04-16 | v3.0.0 - 2025年4月16日
+## [3.0.0] - 2026-04-16 | v3.0.0 - 2026年4月16日
 
 ### Changed | 变更
 
@@ -166,7 +166,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 | Version | Date | Description | 描述 |
 |---------|------|-------------|------|
-| 3.0.0 | 2025-04-16 | Bilingual documentation, CHANGELOG professionalization | 双语文档，CHANGELOG 专业化 |
+| 3.0.0 | 2026-04-16 | Bilingual documentation, CHANGELOG professionalization | 双语文档，CHANGELOG 专业化 |
 | 2.0.0 | 2026-03-09 | Critical bug fixes, architecture improvements | 关键错误修复，架构改进 |
 | 1.1.0 | 2026-01-08 | Build system fixes for CUDA-optional environments | 可选 CUDA 环境的构建系统修复 |
 | 1.0.1 | 2025-02-13 | Project infrastructure improvements | 项目基础设施改进 |

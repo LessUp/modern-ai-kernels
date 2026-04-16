@@ -5,11 +5,25 @@ cmake-build-*/
 *.so
 *.a
 *.dylib
+.ninja_deps
+.ninja_log
 
 # CUDA
 *.cubin
 *.fatbin
 *.ptx
+
+# CMake / Compiler
+.clangd/
+compile_commands.json
+CMakeUserPresets.json
+.cmake/
+
+# Coverage
+coverage/
+*.gcda
+*.gcno
+*.gcov
 
 # Python
 __pycache__/
@@ -19,6 +33,7 @@ __pycache__/
 dist/
 *.egg
 .eggs/
+.mypy_cache/
 
 # IDE
 .vscode/
@@ -36,6 +51,7 @@ _site/
 .pytest_cache/
 .ruff_cache/
 .cache/
+.benchmarks/
 
 # OS
 .DS_Store

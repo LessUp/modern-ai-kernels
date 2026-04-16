@@ -154,6 +154,12 @@ We provide comprehensive documentation in both **English** and **简体中文**:
 
 ```
 modern-ai-kernels/
+├── specs/                  # Specification documents (Single Source of Truth)
+│   ├── product/           # Product feature definitions (PRDs)
+│   ├── rfc/               # Technical design documents
+│   ├── api/               # API specifications
+│   ├── db/                # Database schema designs
+│   └── testing/           # Test case specifications & implementation plans
 ├── include/tensorcraft/    # Header-only kernel library
 │   ├── core/              # CUDA error handling, type traits
 │   ├── memory/            # Tensor, memory pool

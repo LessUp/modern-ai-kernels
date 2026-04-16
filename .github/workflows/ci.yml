@@ -77,12 +77,31 @@ jobs:
             -DTC_ENABLE_CUDA=OFF
             -DTC_BUILD_TESTS=OFF
             -DTC_BUILD_BENCHMARKS=OFF
-            -DTC_BUILD_PYTHON=OFF
+            -DTC_BUILD_PYTHON=ON
 
       - name: Verify wheel artifact exists
         run: |
           test -n "$(ls dist/*.whl)"
           echo "Built wheel: $(ls dist/*.whl)"
+
+  pre-commit:
+    name: Pre-commit Hooks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install pre-commit
+        run: pip install pre-commit
+
+      - name: Run pre-commit
+        run: pre-commit run --all-files --show-diff-on-failure
+        continue-on-error: true
 
   ci-note:
     name: CI Coverage Note
@@ -97,6 +116,7 @@ jobs:
           echo "- ✅ Code formatting (clang-format)" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ CPU-only configure/install smoke" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Python packaging smoke" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Pre-commit hooks" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Local CUDA Validation" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY

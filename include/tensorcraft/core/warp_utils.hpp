@@ -2,7 +2,7 @@
 /**
  * @file warp_utils.hpp
  * @brief Warp-level reduction and shuffle utilities
- * 
+ *
  * Provides efficient warp-level primitives using CUDA shuffle intrinsics
  * for use across all kernel implementations.
  */
@@ -17,13 +17,13 @@ namespace tensorcraft {
 
 /**
  * @brief Warp-level max reduction using shuffle
- * 
+ *
  * Reduces across all 32 lanes of a warp to find the maximum value.
  * Result is valid only in lane 0 after the reduction.
  */
-template<typename T>
+template <typename T>
 TC_DEVICE_INLINE T warp_reduce_max(T val) {
-    #pragma unroll
+#pragma unroll
     for (int offset = 16; offset > 0; offset /= 2) {
         T other = __shfl_down_sync(0xffffffff, val, offset);
         val = val > other ? val : other;
@@ -33,13 +33,13 @@ TC_DEVICE_INLINE T warp_reduce_max(T val) {
 
 /**
  * @brief Warp-level sum reduction using shuffle
- * 
+ *
  * Reduces across all 32 lanes of a warp to compute the sum.
  * Result is valid only in lane 0 after the reduction.
  */
-template<typename T>
+template <typename T>
 TC_DEVICE_INLINE T warp_reduce_sum(T val) {
-    #pragma unroll
+#pragma unroll
     for (int offset = 16; offset > 0; offset /= 2) {
         val += __shfl_down_sync(0xffffffff, val, offset);
     }
@@ -49,9 +49,9 @@ TC_DEVICE_INLINE T warp_reduce_sum(T val) {
 /**
  * @brief Warp-level min reduction using shuffle
  */
-template<typename T>
+template <typename T>
 TC_DEVICE_INLINE T warp_reduce_min(T val) {
-    #pragma unroll
+#pragma unroll
     for (int offset = 16; offset > 0; offset /= 2) {
         T other = __shfl_down_sync(0xffffffff, val, offset);
         val = val < other ? val : other;
@@ -62,7 +62,7 @@ TC_DEVICE_INLINE T warp_reduce_min(T val) {
 /**
  * @brief Broadcast value from lane 0 to all lanes in a warp
  */
-template<typename T>
+template <typename T>
 TC_DEVICE_INLINE T warp_broadcast(T val, int src_lane = 0) {
     return __shfl_sync(0xffffffff, val, src_lane);
 }
@@ -73,14 +73,14 @@ TC_DEVICE_INLINE T warp_broadcast(T val, int src_lane = 0) {
 
 /**
  * @brief Block-level sum reduction using warp shuffles + shared memory
- * 
+ *
  * @tparam T Value type
  * @tparam BLOCK_SIZE Number of threads per block
  * @param val Per-thread value
  * @param shared Shared memory array of size [BLOCK_SIZE / 32]
  * @return Sum across all threads (valid in thread 0)
  */
-template<typename T, int BLOCK_SIZE>
+template <typename T, int BLOCK_SIZE>
 TC_DEVICE_INLINE T block_reduce_sum(T val, T* shared) {
     const int lane = threadIdx.x % 32;
     const int warp_id = threadIdx.x / 32;
@@ -103,7 +103,7 @@ TC_DEVICE_INLINE T block_reduce_sum(T val, T* shared) {
 /**
  * @brief Block-level max reduction using warp shuffles + shared memory
  */
-template<typename T, int BLOCK_SIZE>
+template <typename T, int BLOCK_SIZE>
 TC_DEVICE_INLINE T block_reduce_max(T val, T* shared) {
     const int lane = threadIdx.x % 32;
     const int warp_id = threadIdx.x / 32;
@@ -123,4 +123,4 @@ TC_DEVICE_INLINE T block_reduce_max(T val, T* shared) {
     return val;
 }
 
-} // namespace tensorcraft
+}  // namespace tensorcraft
