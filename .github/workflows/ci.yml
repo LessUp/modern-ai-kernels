@@ -18,6 +18,8 @@ jobs:
   format-check:
     name: Format Check
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -27,11 +29,12 @@ jobs:
         with:
           clang-format-version: '17'
           check-path: 'include src tests benchmarks examples'
-          exclude-regex: '(^|/)(build|\.git)(/|$)'
 
   configure-cpu-smoke:
     name: CPU Configure And Install Smoke
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -56,6 +59,8 @@ jobs:
   python-package-smoke:
     name: Python Packaging Smoke (No CUDA)
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -87,6 +92,8 @@ jobs:
   pre-commit:
     name: Pre-commit Hooks
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Checkout
         uses: actions/checkout@v4
