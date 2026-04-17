@@ -1,11 +1,10 @@
-name: Deploy to GitHub Pages | 部署 GitHub Pages
+name: Deploy to GitHub Pages
 
 on:
   push:
     branches: [master, main]
     paths:
       - 'docs/**'
-      - 'CHANGELOG.md'
       - '.github/workflows/pages.yml'
   workflow_dispatch:
 
@@ -14,61 +13,45 @@ permissions:
   pages: write
   id-token: write
 
-# 并发控制 - 确保只有一个部署在运行
 concurrency:
   group: pages
   cancel-in-progress: true
 
 jobs:
   build:
-    name: Build Jekyll Site | 构建 Jekyll 站点
+    name: Build Jekyll Site
     runs-on: ubuntu-latest
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
-      - name: Checkout | 检出代码
+      - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # 完整历史，用于最后修改时间
 
-      - name: Setup Ruby | 设置 Ruby 环境
+      - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.1'
+          ruby-version: '3.3'
           bundler-cache: true
           working-directory: docs/
 
-      - name: Setup Pages | 配置 GitHub Pages
+      - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
 
-      - name: Build with Jekyll | 构建 Jekyll 站点
-        uses: actions/jekyll-build-pages@v1
-        with:
-          source: ./docs/
-          destination: ./docs/_site
-          verbose: true
+      - name: Build with Jekyll
+        working-directory: docs/
+        run: |
+          bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
         env:
           JEKYLL_ENV: production
-          PAGES_REPO_NWO: ${{ github.repository }}
 
-      - name: Verify Build | 验证构建
-        run: |
-          echo "✅ Build complete"
-          echo "📁 Site structure:"
-          ls -la docs/_site/
-          echo "📄 Generated files:"
-          find docs/_site -name "*.html" | wc -l
-          echo "🎨 CSS files:"
-          find docs/_site -name "*.css" | head -5
-
-      - name: Upload artifact | 上传构建产物
+      - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./docs/_site
+          path: docs/_site
 
   deploy:
-    name: Deploy to GitHub Pages | 部署到 GitHub Pages
+    name: Deploy to GitHub Pages
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -77,12 +60,6 @@ jobs:
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
-      - name: Deploy to GitHub Pages | 执行部署
+      - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
-      - name: Deployment Summary | 部署摘要
-        run: |
-          echo "🚀 Site deployed successfully!"
-          echo "🔗 URL: ${{ steps.deployment.outputs.page_url }}"
-          echo "📅 Deployment time: $(date)"
