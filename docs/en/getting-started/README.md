@@ -1,40 +1,80 @@
+---
+title: Getting Started
+nav_order: 1
+has_children: true
+---
+
 # Getting Started
 
-This chapter helps you quickly get started with TensorCraft-HPC.
+This section will help you set up, build, and validate TensorCraft-HPC on your system.
 
-## Content Overview
+## In This Section
 
-| Document | Description |
-|----------|-------------|
-| [Installation Guide](installation.md) | System requirements, installation steps, and build configuration |
-| [Troubleshooting](troubleshooting.md) | Common problem diagnosis and solutions |
+{: .toc }
+- [**Installation Guide**](installation.md) - Complete setup instructions
+- [**Troubleshooting**](troubleshooting.md) - Common issues and solutions
 
 ## Quick Start
 
-If you already have a CUDA development environment, you can use the following commands directly:
+Choose the build preset that matches your needs:
+
+### Development (Recommended)
+
+For CUDA development on a GPU-equipped machine:
 
 ```bash
-# Clone the repository
-git clone https://github.com/LessUp/modern-ai-kernels.git
-cd modern-ai-kernels
-
-# Build (recommended development preset)
 cmake --preset dev
-cmake --build --preset dev --parallel 2
-
-# Run tests
+cmake --build --preset dev --parallel $(nproc)
 ctest --preset dev --output-on-failure
+```
 
-# Install Python bindings
-python -m pip install -e .
+### Python Bindings Only
+
+If you mainly need the Python interface:
+
+```bash
+cmake --preset python-dev
+cmake --build --preset python-dev --parallel $(nproc)
+pip install -e .
 python -c "import tensorcraft_ops as tc; print(tc.__version__)"
 ```
 
-## System Requirements
+### Full Release Build
 
-- **CUDA Toolkit**: 12.8
-- **CMake**: 3.20+
-- **C++ Compiler**: C++17-capable host compiler
-- **NVIDIA GPU**: Recommended for tests and Python bindings
+For benchmarks and complete validation:
 
-For detailed requirements, please refer to the [Installation Guide](installation.md).
+```bash
+cmake --preset release
+cmake --build --preset release --parallel $(nproc)
+ctest --test-dir build/release --output-on-failure
+```
+
+### CPU-Only Validation
+
+To test build infrastructure without CUDA:
+
+```bash
+cmake --preset cpu-smoke
+cmake --install build/cpu-smoke --prefix /tmp/tensorcraft-install
+```
+
+## Next Steps
+
+Once you've successfully built the project:
+
+1. **Explore Examples** → [Examples Section](../examples/)
+2. **Understand Architecture** → [Architecture Guide](../guides/architecture.md)
+3. **Reference API** → [API Documentation](../api/)
+4. **Learn Optimization** → [Optimization Guides](../guides/optimization.md)
+
+## Prerequisites Overview
+
+| Component | Version | Required |
+|-----------|---------|----------|
+| CUDA Toolkit | 12.0+ | Yes (for GPU features) |
+| CMake | 3.20+ | Yes |
+| C++ Compiler | C++17 | Yes |
+| Python | 3.8+ | No (for bindings) |
+| NVIDIA GPU | Compute 70+ | No (for tests/benchmarks) |
+
+For detailed prerequisites and troubleshooting, see the [Installation Guide](installation.md).

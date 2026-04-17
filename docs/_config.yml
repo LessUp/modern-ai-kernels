@@ -1,232 +1,82 @@
-# ═══════════════════════════════════════════════════════════════
-# TENSORCRAFT-HPC 究极 GitHub Pages 配置
-# 主题: Just the Docs + 自定义现代风格
-# 版本: v3.0 - Ultra Edition
-# ═══════════════════════════════════════════════════════════════
+# TensorCraft-HPC Documentation Site
+# GitHub Pages Configuration
 
 # ───────────────────────────────────────────────────────────────
-# 站点基础配置
+# Site Configuration
 # ───────────────────────────────────────────────────────────────
 title: TensorCraft-HPC
 description: >-
-  现代 C++/CUDA AI 高性能计算内核库 | 
-  Modern C++/CUDA AI Kernel Library for HPC
-
-# 主标题和副标题
-logo: "/assets/images/logo.png"  # 如果有logo的话
-name: TensorCraft-HPC
-
-# ───────────────────────────────────────────────────────────────
-# 主题配置 - 使用 Just the Docs（最强文档主题）
-# ───────────────────────────────────────────────────────────────
-remote_theme: just-the-docs/just-the-docs@v0.7.0
-
-# 站点 URL 配置
+  Modern C++/CUDA AI High-Performance Computing Kernel Library
 url: "https://lessup.github.io"
 baseurl: "/modern-ai-kernels"
 repository: LessUp/modern-ai-kernels
 
 # ───────────────────────────────────────────────────────────────
-# Just the Docs 主题特定配置（究极定制）
+# Theme Configuration
+# ───────────────────────────────────────────────────────────────
+remote_theme: just-the-docs/just-the-docs@v0.7.0
+
+# ───────────────────────────────────────────────────────────────
+# Just the Docs Settings
 # ───────────────────────────────────────────────────────────────
 just_the_docs:
-  # 颜色方案
-  color_scheme: tensorcraft
-  
-  # 搜索配置
+  color_scheme: dark
   search_enabled: true
-  search:
-    heading_level: 2
-    previews: 2
-    preview_words_before: 3
-    preview_words_after: 3
-    tokenizer_separator: /[\s/]+/
-    rel_url: true
-    button: true
+  enable_copy_code_button: true
+  back_to_top: true
+  heading_anchors: true
   
-  # 导航配置
   nav_external_links:
-    - title: "GitHub"
+    - title: "GitHub Repository"
       url: "https://github.com/LessUp/modern-ai-kernels"
       hide_icon: false
     - title: "Changelog"
-      url: "/CHANGELOG"
+      url: "https://github.com/LessUp/modern-ai-kernels/blob/master/CHANGELOG.md"
       hide_icon: false
-  
-  # 返回顶部按钮
-  back_to_top: true
-  back_to_top_text: "Back to top ↑"
-  
-  # 页脚配置
-  footer_content: >
-    <p>Copyright &copy; 2024-2025 TensorCraft-HPC. 
-    Distributed by an <a href="https://github.com/LessUp/modern-ai-kernels/tree/main/LICENSE">MIT license.</a></p>
-  
-  # 最后编辑时间
-  last_edit_timestamp: true
-  last_edit_time_format: "%b %e %Y at %I:%M %p"
-  
-  # 代码复制按钮
-  enable_copy_code_button: true
 
 # ───────────────────────────────────────────────────────────────
-# 插件配置
-# ───────────────────────────────────────────────────────────────
-plugins:
-  - jekyll-remote-theme
-  - jekyll-seo-tag
-  - jekyll-github-metadata
-  - jekyll-include-cache
-
-# ───────────────────────────────────────────────────────────────
-# SEO & 元数据（究极优化）
-# ───────────────────────────────────────────────────────────────
-author:
-  name: LessUp
-
-twitter:
-  card: summary_large_image
-
-social:
-  name: TensorCraft-HPC
-  links:
-    - https://github.com/LessUp/modern-ai-kernels
-
-# Open Graph 默认图片
-# Note: defaults for collections are defined below in the collections section
-
-# ───────────────────────────────────────────────────────────────
-# 语言与国际化配置（双语系统）
-# ───────────────────────────────────────────────────────────────
-lang: en
-languages: ["en", "zh"]
-default_lang: "en"
-
-# ───────────────────────────────────────────────────────────────
-# Markdown 渲染配置
+# Build Settings
 # ───────────────────────────────────────────────────────────────
 markdown: kramdown
 kramdown:
   syntax_highlighter: rouge
   syntax_highlighter_opts:
     block:
-      line_numbers: true
+      line_numbers: false
+    inline:
+      line_numbers: false
   input: GFM
   hard_wrap: false
 
-# ───────────────────────────────────────────────────────────────
-# Sass 配置
-# ───────────────────────────────────────────────────────────────
 sass:
   sass_dir: _sass
   style: compressed
-  load_paths:
-    - _sass
 
 # ───────────────────────────────────────────────────────────────
-# 集合配置（内容组织）
+# Plugins
 # ───────────────────────────────────────────────────────────────
-collections:
-  docs_en:
-    permalink: "/:collection/:path/"
-    output: true
-  docs_zh:
-    permalink: "/:collection/:path/"
-    output: true
-
-# 集合默认值
-defaults:
-  - scope:
-      path: ""
-      type: "docs_en"
-    values:
-      layout: "page"
-      lang: "en"
-  - scope:
-      path: ""
-      type: "docs_zh"
-    values:
-      layout: "page"
-      lang: "zh"
-  - scope:
-      path: "docs/en"
-    values:
-      lang: "en"
-      nav_order: 1
-      has_children: true
-  - scope:
-      path: "docs/zh"
-    values:
-      lang: "zh"
-      nav_order: 2
-      has_children: true
+plugins:
+  - jekyll-remote-theme
+  - jekyll-seo-tag
 
 # ───────────────────────────────────────────────────────────────
-# 文件排除（构建优化）
+# Exclude Files
 # ───────────────────────────────────────────────────────────────
 exclude:
-  - .github/
-  - .vscode/
-  - .kiro/
-  - src/
-  - include/
-  - tests/
-  - benchmarks/
-  - examples/
-  - cmake/
-  - build/
-  - cmake-build-*/
-  - "*.o"
-  - "*.so"
-  - "*.a"
-  - "*.cubin"
-  - "*.fatbin"
-  - "*.ptx"
-  - "*.egg-info"
-  - __pycache__/
-  - node_modules/
+  - .gitignore
+  - README.md
   - Gemfile
   - Gemfile.lock
-  - .clang-format
-  - .clang-tidy
-  - .editorconfig
-  - .gitattributes
-  - .gitignore
-  - .pre-commit-config.yaml
-  - CMakeLists.txt
-  - CMakePresets.json
-  - Makefile
-  - LICENSE  # 根目录 LICENSE 不需要
-  - "*.md.bak"
-  - vendor/
-  - .bundle/
 
 # ───────────────────────────────────────────────────────────────
-# 包含的文件
+# Defaults
 # ───────────────────────────────────────────────────────────────
-include:
-  - _pages
-  - _assets
-  - index.md
-  - README.md
-  - README.zh-CN.md
-  - CHANGELOG.md
-  - .nojekyll
-
-# ───────────────────────────────────────────────────────────────
-# 压缩配置（性能优化）
-# ───────────────────────────────────────────────────────────────
-compress_html:
-  clippings: all
-  comments: ["<!-- ", " -->"]
-  endings: all
-  startings: [html, head, body]
-
-# ───────────────────────────────────────────────────────────────
-# 严格模式
-# ───────────────────────────────────────────────────────────────
-strict_front_matter: true
-
-# ═══════════════════════════════════════════════════════════════
-# 究极配置结束
-# ═══════════════════════════════════════════════════════════════
+defaults:
+  - scope:
+      path: "en"
+    values:
+      layout: "default"
+  - scope:
+      path: "zh"
+    values:
+      layout: "default"
