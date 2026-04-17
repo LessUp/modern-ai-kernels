@@ -4,17 +4,8 @@ on:
   push:
     branches: [master, main]
     paths:
-      - 'index.md'
-      - 'README.md'
-      - 'README.zh-CN.md'
-      - 'CHANGELOG.md'
       - 'docs/**'
-      - 'changelog/**'
-      - '_config.yml'
-      - '_includes/**'
-      - '_layouts/**'
-      - '_sass/**'
-      - 'assets/**'
+      - 'CHANGELOG.md'
       - '.github/workflows/pages.yml'
   workflow_dispatch:
 
@@ -45,6 +36,7 @@ jobs:
         with:
           ruby-version: '3.1'
           bundler-cache: true
+          working-directory: docs/
 
       - name: Setup Pages | 配置 GitHub Pages
         id: pages
@@ -53,8 +45,8 @@ jobs:
       - name: Build with Jekyll | 构建 Jekyll 站点
         uses: actions/jekyll-build-pages@v1
         with:
-          source: ./
-          destination: ./_site
+          source: ./docs/
+          destination: ./docs/_site
           verbose: true
         env:
           JEKYLL_ENV: production
@@ -64,16 +56,16 @@ jobs:
         run: |
           echo "✅ Build complete"
           echo "📁 Site structure:"
-          ls -la _site/
+          ls -la docs/_site/
           echo "📄 Generated files:"
-          find _site -name "*.html" | wc -l
+          find docs/_site -name "*.html" | wc -l
           echo "🎨 CSS files:"
-          find _site -name "*.css" | head -5
+          find docs/_site -name "*.css" | head -5
 
       - name: Upload artifact | 上传构建产物
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./_site
+          path: ./docs/_site
 
   deploy:
     name: Deploy to GitHub Pages | 部署到 GitHub Pages
