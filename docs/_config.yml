@@ -54,6 +54,8 @@ exclude:
   - README.md
   - Gemfile
   - Gemfile.lock
+  - vendor/
+  - node_modules/
 
 # ───────────────────────────────────────────────────────────────
 # Defaults
