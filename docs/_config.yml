@@ -14,25 +14,21 @@ repository: LessUp/modern-ai-kernels
 # ───────────────────────────────────────────────────────────────
 # Theme Configuration
 # ───────────────────────────────────────────────────────────────
-remote_theme: just-the-docs/just-the-docs@v0.7.0
+remote_theme: just-the-docs/just-the-docs
 
 # ───────────────────────────────────────────────────────────────
 # Just the Docs Settings
 # ───────────────────────────────────────────────────────────────
-just_the_docs:
-  color_scheme: dark
-  search_enabled: true
-  enable_copy_code_button: true
-  back_to_top: true
-  heading_anchors: true
-  
-  nav_external_links:
-    - title: "GitHub Repository"
-      url: "https://github.com/LessUp/modern-ai-kernels"
-      hide_icon: false
-    - title: "Changelog"
-      url: "https://github.com/LessUp/modern-ai-kernels/blob/master/CHANGELOG.md"
-      hide_icon: false
+color_scheme: dark
+search_enabled: true
+enable_copy_code_button: true
+back_to_top: true
+heading_anchors: true
+
+nav_external_links:
+  - title: "GitHub Repository"
+    url: "https://github.com/LessUp/modern-ai-kernels"
+    hide_icon: false
 
 # ───────────────────────────────────────────────────────────────
 # Build Settings
@@ -40,17 +36,8 @@ just_the_docs:
 markdown: kramdown
 kramdown:
   syntax_highlighter: rouge
-  syntax_highlighter_opts:
-    block:
-      line_numbers: false
-    inline:
-      line_numbers: false
   input: GFM
   hard_wrap: false
-
-sass:
-  sass_dir: _sass
-  style: compressed
 
 # ───────────────────────────────────────────────────────────────
 # Plugins
