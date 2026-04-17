@@ -145,6 +145,48 @@ ctest --preset dev --output-on-failure
 python -m pip install -e .
 ```
 
+### Common Development Commands
+
+```bash
+# Configure and build development version
+cmake --preset dev && cmake --build --preset dev --parallel $(nproc)
+
+# Build release version with all features
+cmake --preset release && cmake --build --preset release --parallel $(nproc)
+
+# Run unit tests
+ctest --preset dev --output-on-failure
+
+# Run performance benchmarks
+./build/release/benchmarks/gemm_benchmark --benchmark_time_unit=ms
+
+# Format code (C++/CUDA)
+find include src tests examples -name "*.hpp" -o -name "*.cpp" -o -name "*.cu" -o -name "*.cuh" | xargs clang-format -i
+
+# Run static analysis
+pre-commit run --all-files
+
+# Install Python bindings (editable mode)
+pip install -e .
+```
+
+### Documentation Commands
+
+```bash
+# Install Jekyll dependencies (first time only)
+cd docs && bundle install
+
+# Preview documentation locally
+cd docs && bundle exec jekyll serve --livereload --incremental
+# Access at: http://localhost:4000
+
+# Build documentation site
+cd docs && JEKYLL_ENV=production bundle exec jekyll build
+
+# Clean build artifacts
+cd docs && bundle exec jekyll clean
+```
+
 ---
 
 ## Testing Requirements
