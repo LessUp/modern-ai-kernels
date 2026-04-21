@@ -111,11 +111,12 @@ __global__ void csr_to_dense_kernel(const T* TC_RESTRICT values, const int* TC_R
 
 /**
  * @brief CSR SpMV kernel: y = A * x
+ * @note Assumes col_indices are valid (within [0, cols)). Invalid indices may cause undefined behavior.
  */
 template <typename T>
 __global__ void spmv_csr_kernel(const T* TC_RESTRICT values, const int* TC_RESTRICT col_indices,
                                 const int* TC_RESTRICT row_ptrs, const T* TC_RESTRICT x,
-                                T* TC_RESTRICT y, int rows) {
+                                T* TC_RESTRICT y, int rows, int cols) {
     int row = blockIdx.x * blockDim.x + threadIdx.x;
     if (row >= rows)
         return;
@@ -126,6 +127,8 @@ __global__ void spmv_csr_kernel(const T* TC_RESTRICT values, const int* TC_RESTR
 
     for (int i = start; i < end; ++i) {
         int col = col_indices[i];
+        // Bounds check in debug builds
+        assert(col >= 0 && col < cols && "CSR col_indices out of bounds");
         sum += to_float(values[i]) * to_float(x[col]);
     }
 
@@ -263,7 +266,7 @@ __global__ void spmm_csr_tiled_kernel(const T* TC_RESTRICT A_values,
 
 template <typename T>
 void launch_spmv_csr(const T* values, const int* col_indices, const int* row_ptrs, const T* x, T* y,
-                     int rows, bool use_vector = true, cudaStream_t stream = nullptr) {
+                     int rows, int cols, bool use_vector = true, cudaStream_t stream = nullptr) {
     if (rows == 0)
         return;
 
@@ -277,7 +280,7 @@ void launch_spmv_csr(const T* values, const int* col_indices, const int* row_ptr
         int block_size = 256;
         int grid_size = (rows + block_size - 1) / block_size;
         spmv_csr_kernel<T>
-            <<<grid_size, block_size, 0, stream>>>(values, col_indices, row_ptrs, x, y, rows);
+            <<<grid_size, block_size, 0, stream>>>(values, col_indices, row_ptrs, x, y, rows, cols);
     }
     TC_CUDA_CHECK_LAST();
 }

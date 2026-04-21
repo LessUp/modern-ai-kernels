@@ -36,8 +36,9 @@ nav_external_links:
 # ───────────────────────────────────────────────────────────────
 # SEO & Social
 # ───────────────────────────────────────────────────────────────
-logo: "/assets/images/logo.png"
-favicon_ico: "/assets/images/favicon.ico"
+# Logo and favicon can be added later
+# logo: "/assets/images/logo.png"
+# favicon_ico: "/assets/images/favicon.ico"
 
 twitter:
   username: tensorcraft

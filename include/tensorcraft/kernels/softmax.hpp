@@ -118,7 +118,8 @@ __global__ void softmax_kernel(const T* TC_RESTRICT input, T* TC_RESTRICT output
     // ========================================================================
     // Phase 3: Normalize
     // ========================================================================
-    float inv_sum = 1.0f / row_sum;
+    // Guard against division by zero (occurs when all inputs are -FLT_MAX or underflow)
+    float inv_sum = (row_sum > 0.0f) ? (1.0f / row_sum) : 0.0f;
 
     for (int i = threadIdx.x; i < cols; i += BLOCK_SIZE) {
         float val = to_float(row_output[i]);
@@ -212,7 +213,8 @@ __global__ void softmax_online_kernel(const T* TC_RESTRICT input, T* TC_RESTRICT
     __syncthreads();
 
     // Compute final softmax values
-    float inv_sum = 1.0f / row_sum;
+    // Guard against division by zero (occurs when all inputs are -FLT_MAX or underflow)
+    float inv_sum = (row_sum > 0.0f) ? (1.0f / row_sum) : 0.0f;
 
     for (int i = threadIdx.x; i < cols; i += BLOCK_SIZE) {
         float val = to_float(row_input[i]);

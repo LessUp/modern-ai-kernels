@@ -358,7 +358,14 @@ __global__ void moe_router_kernel(const T* TC_RESTRICT gate_logits,   // [batch,
     float scores[MAX_EXPERTS];
     int expert_ids[MAX_EXPERTS];
 
-    for (int e = 0; e < num_experts && e < MAX_EXPERTS; ++e) {
+    // Initialize all elements (guards against uninitialized reads)
+    for (int e = 0; e < MAX_EXPERTS; ++e) {
+        scores[e] = -FLT_MAX;
+        expert_ids[e] = 0;
+    }
+
+    // Load actual logits
+    for (int e = 0; e < num_experts; ++e) {
         scores[e] = to_float(logits[e]);
         expert_ids[e] = e;
     }

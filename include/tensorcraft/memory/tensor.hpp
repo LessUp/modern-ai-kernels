@@ -239,7 +239,7 @@ public:
             constexpr int block = 256;
             int grid = static_cast<int>((size_ + block - 1) / block);
             detail::fill_kernel<<<grid, block>>>(data_, value, size_);
-            TC_CUDA_CHECK(cudaGetLastError());
+            TC_CUDA_CHECK_LAST();
         }
     }
 
