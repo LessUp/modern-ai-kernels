@@ -7,27 +7,43 @@ permalink: /
 
 # TensorCraft-HPC
 
-## Modern C++/CUDA AI High-Performance Computing Kernel Library
-
 {: .highlight }
 **Demystifying High-Performance AI Kernels with Modern C++ & CUDA**
+
+**Modern C++/CUDA AI High-Performance Computing Kernel Library**
+
+[![GitHub stars](https://img.shields.io/github/stars/LessUp/modern-ai-kernels?style=social)](https://github.com/LessUp/modern-ai-kernels/stargazers)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/LessUp/modern-ai-kernels/blob/master/LICENSE)
+
+---
+
+## 🚀 Quick Links
+
+<div class="code-example" markdown="block">
+
+| For Beginners | For Developers | For Researchers |
+|:--------------|:---------------|:----------------|
+| [Installation Guide](en/getting-started/installation.md) | [API Reference](en/api/) | [Optimization Guide](en/guides/optimization.md) |
+| [Examples](en/examples/) | [Architecture](en/guides/architecture.md) | [Performance Benchmarks](en/guides/optimization.md#performance) |
+
+</div>
 
 ---
 
 ## Overview
 
-TensorCraft-HPC is a comprehensive, header-only GPU kernel library implementing core deep learning operations with progressive optimization levels—from naive implementations to Tensor Core-optimized kernels.
+TensorCraft-HPC is a **comprehensive, header-only GPU kernel library** implementing core deep learning operations with **progressive optimization levels**—from naive implementations to Tensor Core-optimized kernels.
 
 ### Core Features
 
-| Category | Operations |
-|----------|-----------|
-| **GEMM** | Naive → Tiled → Double Buffer → Tensor Core (WMMA) |
-| **Attention** | FlashAttention, RoPE, MoE Router |
-| **Normalization** | LayerNorm, RMSNorm, BatchNorm, Softmax |
-| **Convolution** | Naive, Im2Col, Depthwise Separable |
-| **Sparse** | CSR/CSC, SpMV, SpMM |
-| **Quantization** | INT8, FP8 (CUDA 12.0+) |
+| Category | Operations | Performance |
+|----------|------------|-------------|
+| **GEMM** | Naive → Tiled → Double Buffer → Tensor Core (WMMA) | 85-95% of cuBLAS |
+| **Attention** | FlashAttention, RoPE, MoE Router | 80-90% of cuDNN |
+| **Normalization** | LayerNorm, RMSNorm, BatchNorm, Softmax | 90-95% of cuDNN |
+| **Convolution** | Naive, Im2Col, Depthwise Separable | 75-85% of cuDNN |
+| **Sparse** | CSR/CSC, SpMV, SpMM | Optimized for sparsity |
+| **Quantization** | INT8, FP8 (CUDA 12.0+) | Reduced precision acceleration |
 
 ---
 

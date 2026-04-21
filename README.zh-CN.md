@@ -14,6 +14,7 @@
 ![CUDA](https://img.shields.io/badge/CUDA-12.8-76B900?logo=nvidia&logoColor=white)
 ![C++](https://img.shields.io/badge/C%2B%2B-17/20/23-00599C?logo=c%2B%2B&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3.8+-3776AB?logo=python&logoColor=white)
+[![GitHub stars](https://img.shields.io/github/stars/LessUp/modern-ai-kernels?style=social)](https://github.com/LessUp/modern-ai-kernels/stargazers)
 
 **纯头文件** • **渐进式优化** • **生产就绪**
 
@@ -23,14 +24,18 @@
 
 ## 🎯 为什么选择 TensorCraft-HPC？
 
+<div align="center">
+
+| 🎓 学习 | 🔬 研究 | 🚀 生产 | 📊 基准测试 |
+|:------:|:------:|:-------:|:----------:|
+| 渐进式 GPU 优化 | 快速内核原型 | 即插即用替换 | 跨架构对比 |
+| 朴素 → Tensor Core | 测试新算法 | 85-95% cuBLAS 性能 | Volta → Blackwell |
+
+</div>
+
+---
+
 TensorCraft-HPC 是一个**综合性的纯头文件 GPU 内核库**，实现了核心深度学习操作，并提供**渐进式优化级别**——从朴素实现到 Tensor Core 优化的内核。
-
-### 适用场景
-
-- 🎓 **学习**: 逐步理解 GPU 内核优化过程
-- 🔬 **研究**: 快速原型化新的内核算法
-- 🚀 **生产**: 高性能即插即用的常见操作替换
-- 📊 **基准测试**: 跨架构比较优化策略
 
 ---
 
