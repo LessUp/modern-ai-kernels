@@ -19,7 +19,7 @@ remote_theme: just-the-docs/just-the-docs
 # ───────────────────────────────────────────────────────────────
 # Just the Docs Settings
 # ───────────────────────────────────────────────────────────────
-color_scheme: dark
+color_scheme: tensorcraft
 search_enabled: true
 enable_copy_code_button: true
 back_to_top: true
@@ -29,6 +29,24 @@ nav_external_links:
   - title: "GitHub Repository"
     url: "https://github.com/LessUp/modern-ai-kernels"
     hide_icon: false
+  - title: "Report an Issue"
+    url: "https://github.com/LessUp/modern-ai-kernels/issues"
+    hide_icon: false
+
+# ───────────────────────────────────────────────────────────────
+# SEO & Social
+# ───────────────────────────────────────────────────────────────
+logo: "/assets/images/logo.png"
+favicon_ico: "/assets/images/favicon.ico"
+
+twitter:
+  username: tensorcraft
+  card: summary_large_image
+
+social:
+  name: TensorCraft-HPC
+  links:
+    - https://github.com/LessUp/modern-ai-kernels
 
 # ───────────────────────────────────────────────────────────────
 # Build Settings

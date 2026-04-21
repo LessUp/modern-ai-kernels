@@ -14,6 +14,7 @@
 ![CUDA](https://img.shields.io/badge/CUDA-12.8-76B900?logo=nvidia&logoColor=white)
 ![C++](https://img.shields.io/badge/C%2B%2B-17/20/23-00599C?logo=c%2B%2B&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3.8+-3776AB?logo=python&logoColor=white)
+[![GitHub stars](https://img.shields.io/github/stars/LessUp/modern-ai-kernels?style=social)](https://github.com/LessUp/modern-ai-kernels/stargazers)
 
 **Header-Only** • **Progressive Optimization** • **Production-Ready**
 
@@ -23,14 +24,18 @@
 
 ## 🎯 Why TensorCraft-HPC?
 
+<div align="center">
+
+| 🎓 Learning | 🔬 Research | 🚀 Production | 📊 Benchmarking |
+|:-----------:|:-----------:|:--------------:|:---------------:|
+| Step-by-step GPU optimization | Rapid kernel prototyping | Drop-in replacements | Cross-arch comparison |
+| Naive → Tensor Core | Test new algorithms | 85-95% cuBLAS perf | Volta → Blackwell |
+
+</div>
+
+---
+
 TensorCraft-HPC is a **comprehensive, header-only GPU kernel library** implementing core deep learning operations with **progressive optimization levels**—from naive implementations to Tensor Core-optimized kernels.
-
-### Perfect For
-
-- 🎓 **Learning**: Understand GPU kernel optimization step-by-step
-- 🔬 **Research**: Prototype new kernel algorithms quickly  
-- 🚀 **Production**: Drop-in high-performance replacements for common operations
-- 📊 **Benchmarking**: Compare optimization strategies across architectures
 
 ---
 

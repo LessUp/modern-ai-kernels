@@ -14,7 +14,7 @@ The complete changelog is now maintained at the repository root level for better
 
 | Version | Date | Key Changes |
 |---------|------|-------------|
-| 3.0.0 | 2025-04-16 | Bilingual documentation, CHANGELOG professionalization |
+| 3.0.0 | 2026-04-16 | Bilingual documentation, CHANGELOG professionalization |
 | 2.0.0 | 2026-03-09 | Critical bug fixes, architecture improvements |
 | 1.1.0 | 2026-01-08 | Build system fixes for CUDA-optional environments |
 | 1.0.1 | 2025-02-13 | Project infrastructure improvements |

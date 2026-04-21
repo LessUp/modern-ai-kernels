@@ -45,26 +45,45 @@ jobs:
         with:
           name: TensorCraft-HPC v${{ steps.version.outputs.VERSION }}
           body: |
-            ## What's Changed
+            ## What's Changed | 更新内容
 
             ${{ steps.changelog.outputs.CHANGELOG }}
 
-            ## Installation
+            ---
 
-            See [Installation Guide](docs/getting-started/installation.md) for detailed installation instructions.
+            ## Installation | 安装
 
-            ## Quick Start
+            See [Installation Guide](https://lessup.github.io/modern-ai-kernels/en/getting-started/installation.html) for detailed installation instructions.
+
+            详见 [安装指南](https://lessup.github.io/modern-ai-kernels/zh/getting-started/installation.html)。
+
+            ---
+
+            ## Quick Start | 快速开始
 
             ```bash
+            # Clone repository | 克隆仓库
+            git clone https://github.com/LessUp/modern-ai-kernels.git
+            cd modern-ai-kernels
+
+            # Configure and build | 配置并构建
             cmake --preset dev
-            cmake --build --preset dev --parallel 2
+            cmake --build --preset dev --parallel $(nproc)
+
+            # Run tests | 运行测试
             ctest --preset dev --output-on-failure
+
+            # Install Python bindings | 安装 Python 绑定
             python -m pip install -e .
             ```
 
-            ## Full Changelog
+            ---
 
-            See [Changelog](docs/reference/changelog.md) for the complete changelog.
+            ## Full Changelog | 完整变更日志
+
+            See [CHANGELOG.md](CHANGELOG.md) for the complete changelog.
+
+            完整变更日志请见 [CHANGELOG.md](CHANGELOG.md)。
           draft: false
           prerelease: ${{ contains(github.ref, '-alpha') || contains(github.ref, '-beta') || contains(github.ref, '-rc') }}
           generate_release_notes: true
@@ -101,7 +120,7 @@ jobs:
         run: |
           mkdir -p tensorcraft-hpc-${{ github.ref_name }}
           cp -r include tensorcraft-hpc-${{ github.ref_name }}/
-          cp LICENSE README.md docs/reference/changelog.md tensorcraft-hpc-${{ github.ref_name }}/CHANGELOG.md
+          cp LICENSE README.md CHANGELOG.md tensorcraft-hpc-${{ github.ref_name }}/
           zip -r tensorcraft-hpc-${{ github.ref_name }}-headers.zip tensorcraft-hpc-${{ github.ref_name }}
 
       - name: Upload Release Assets
