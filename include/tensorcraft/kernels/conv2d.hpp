@@ -49,30 +49,30 @@ template <typename T>
 __global__ void im2col_kernel(const T* TC_RESTRICT input, T* TC_RESTRICT col, int N, int C, int H,
                               int W, int R, int S, int OH, int OW, int stride_h, int stride_w,
                               int pad_h, int pad_w) {
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
-    int total = N * C * R * S * OH * OW;
+    size_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    size_t total = static_cast<size_t>(N) * C * R * S * OH * OW;
     if (idx >= total)
         return;
 
-    int ow = idx % OW;
-    int remaining = idx / OW;
-    int oh = remaining % OH;
+    size_t ow = idx % OW;
+    size_t remaining = idx / OW;
+    size_t oh = remaining % OH;
     remaining /= OH;
-    int s = remaining % S;
+    size_t s = remaining % S;
     remaining /= S;
-    int r = remaining % R;
+    size_t r = remaining % R;
     remaining /= R;
-    int c = remaining % C;
-    int n = remaining / C;
+    size_t c = remaining % C;
+    size_t n = remaining / C;
 
-    int ih = oh * stride_h - pad_h + r;
-    int iw = ow * stride_w - pad_w + s;
+    int ih = static_cast<int>(oh * stride_h - pad_h + r);
+    int iw = static_cast<int>(ow * stride_w - pad_w + s);
 
     T val = T(0);
     if (ih >= 0 && ih < H && iw >= 0 && iw < W) {
         val = input[((n * C + c) * H + ih) * W + iw];
     }
-    int col_idx = (n * (C * R * S) + (c * R * S + r * S + s)) * (OH * OW) + (oh * OW + ow);
+    size_t col_idx = (n * (C * R * S) + (c * R * S + r * S + s)) * (OH * OW) + (oh * OW + ow);
     col[col_idx] = val;
 }
 
