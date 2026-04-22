@@ -111,7 +111,8 @@ __global__ void csr_to_dense_kernel(const T* TC_RESTRICT values, const int* TC_R
 
 /**
  * @brief CSR SpMV kernel: y = A * x
- * @note Assumes col_indices are valid (within [0, cols)). Invalid indices may cause undefined behavior.
+ * @note Assumes col_indices are valid (within [0, cols)). Invalid indices may cause undefined
+ * behavior.
  */
 template <typename T>
 __global__ void spmv_csr_kernel(const T* TC_RESTRICT values, const int* TC_RESTRICT col_indices,
