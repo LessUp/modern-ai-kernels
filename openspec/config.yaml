@@ -1,0 +1,50 @@
+# OpenSpec Configuration
+
+schema: spec-driven
+schema_version: "1.0"
+
+# Project context injected into artifact generation
+context: |
+  TensorCraft-HPC is a header-only C++/CUDA library for high-performance AI computing kernels.
+  Progressive optimization levels: naive → tiled → double buffer → tensor core.
+  Target: CUDA 11.0-13.1, C++17+, SM70-SM100 (Volta to Blackwell).
+  All implementations follow modern C++ best practices with RAII and zero-cost abstractions.
+
+# Language settings
+language: en
+supported_languages:
+  - en
+  - zh
+
+# Specification rules
+rules:
+  - Use RFC 2119 keywords (SHALL, MUST, SHOULD, MAY) in requirements
+  - All requirements must have unique IDs (format: REQ-XXX)
+  - All acceptance criteria must have unique IDs (format: REQ-XXX-ACY)
+  - All implementations must reference specific requirement IDs
+  - Property-based tests validate general correctness properties
+  - Unit tests validate specific examples and edge cases
+  - All kernel versions must produce numerically equivalent outputs
+
+# Requirement ID ranges (for reference)
+requirement_ranges:
+  core: "REQ-001 to REQ-009"    # TensorCraft-HPC core requirements
+  polish: "REQ-010 to REQ-017"  # Project polish requirements
+
+# Status values for requirements
+status_values:
+  - pending
+  - in_progress
+  - implemented
+  - deprecated
+  - removed
+
+# Archive settings
+archive:
+  path: openspec/archive/
+
+# Template paths
+templates:
+  proposal: openspec/templates/proposal.md
+  design: openspec/templates/design.md
+  tasks: openspec/templates/tasks.md

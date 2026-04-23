@@ -1,3 +1,8 @@
+---
+title: Kernel Optimization Guide
+lang: en
+---
+
 # Kernel Optimization Guide
 
 This guide explains the optimization techniques used in TensorCraft-HPC kernels.
@@ -25,8 +30,9 @@ __global__ void gemm_naive(const T* A, const T* B, T* C, int M, int N, int K) {
 ```
 
 **Problems:**
+
 - Each thread reads K elements from A and K elements from B
-- Total global memory reads: M * N * 2K
+- Total global memory reads: M *N* 2K
 - Very low arithmetic intensity
 
 ### Level 2: Shared Memory Tiling
@@ -61,6 +67,7 @@ __global__ void gemm_tiled(const T* A, const T* B, T* C, int M, int N, int K) {
 ```
 
 **Improvements:**
+
 - Each tile is loaded once, used TILE_SIZE times
 - Reduces global memory reads by factor of TILE_SIZE
 - Coalesced memory access patterns
@@ -100,6 +107,7 @@ __global__ void gemm_double_buffer(const T* A, const T* B, T* C, int M, int N, i
 ```
 
 **Improvements:**
+
 - Hides memory latency with computation
 - Better utilization of memory bandwidth
 
@@ -129,6 +137,7 @@ __global__ void gemm_wmma(const half* A, const half* B, float* C, int M, int N, 
 ```
 
 **Improvements:**
+
 - Hardware-accelerated 16x16x16 matrix multiply
 - Much higher throughput than FMA instructions
 

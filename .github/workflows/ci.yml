@@ -72,11 +72,11 @@ jobs:
 
       - name: Install packaging dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install build scikit-build-core pybind11
+          python3 -m pip install --upgrade pip
+          python3 -m pip install build scikit-build-core pybind11
 
       - name: Build wheel without CUDA
-        run: python -m build --wheel
+        run: python3 -m build --wheel
         env:
           CMAKE_ARGS: >-
             -DTC_ENABLE_CUDA=OFF
@@ -108,31 +108,3 @@ jobs:
 
       - name: Run pre-commit
         run: pre-commit run --all-files --show-diff-on-failure
-        continue-on-error: true
-
-  ci-note:
-    name: CI Coverage Note
-    runs-on: ubuntu-latest
-    if: always()
-    steps:
-      - name: Report current CI scope
-        run: |
-          echo "## CI Coverage Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "This workflow validates:" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Code formatting (clang-format)" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ CPU-only configure/install smoke" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Python packaging smoke" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Pre-commit hooks" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Local CUDA Validation" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "GitHub-hosted runners do not have GPUs. For CUDA validation, run locally:" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo '```bash' >> $GITHUB_STEP_SUMMARY
-          echo "cmake --preset dev" >> $GITHUB_STEP_SUMMARY
-          echo "cmake --build --preset dev --parallel 2" >> $GITHUB_STEP_SUMMARY
-          echo "ctest --preset dev --output-on-failure" >> $GITHUB_STEP_SUMMARY
-          echo "python -m pip install -e ." >> $GITHUB_STEP_SUMMARY
-          echo "python -c 'import tensorcraft_ops as tc; print(tc.__version__)'" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY

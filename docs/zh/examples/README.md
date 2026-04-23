@@ -1,3 +1,8 @@
+---
+title: Examples Overview
+lang: zh
+---
+
 # Examples Overview
 
 This section provides practical examples for using TensorCraft-HPC kernels.
@@ -16,14 +21,16 @@ This section provides practical examples for using TensorCraft-HPC kernels.
 Before running the examples, ensure you have:
 
 1. Built the project with CUDA support:
+
    ```bash
    cmake --preset dev
    cmake --build --preset dev --parallel 2
    ```
 
 2. For Python examples, install the bindings:
+
    ```bash
-   python -m pip install -e .
+   python3 -m pip install -e .
    ```
 
 ## Quick Reference

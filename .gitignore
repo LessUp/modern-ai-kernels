@@ -36,7 +36,6 @@ dist/
 .mypy_cache/
 
 # IDE
-.vscode/
 .idea/
 *.swp
 *.swo

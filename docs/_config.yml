@@ -5,43 +5,32 @@
 # Site Configuration
 # ───────────────────────────────────────────────────────────────
 title: TensorCraft-HPC
-description: >-
-  Modern C++/CUDA AI High-Performance Computing Kernel Library
+description: "Modern C++/CUDA AI High-Performance Computing Kernel Library"
 url: "https://lessup.github.io"
 baseurl: "/modern-ai-kernels"
 repository: LessUp/modern-ai-kernels
 
 # ───────────────────────────────────────────────────────────────
-# Theme Configuration
+# Build Configuration
 # ───────────────────────────────────────────────────────────────
-remote_theme: just-the-docs/just-the-docs
+markdown: kramdown
+kramdown:
+  syntax_highlighter: rouge
+  input: GFM
+  hard_wrap: false
+  toc_levels: "2,3"
 
 # ───────────────────────────────────────────────────────────────
-# Just the Docs Settings
+# Plugins
 # ───────────────────────────────────────────────────────────────
-color_scheme: tensorcraft
-search_enabled: true
-enable_copy_code_button: true
-back_to_top: true
-heading_anchors: true
-
-nav_external_links:
-  - title: "GitHub Repository"
-    url: "https://github.com/LessUp/modern-ai-kernels"
-    hide_icon: false
-  - title: "Report an Issue"
-    url: "https://github.com/LessUp/modern-ai-kernels/issues"
-    hide_icon: false
+plugins:
+  - jekyll-remote-theme
+  - jekyll-seo-tag
 
 # ───────────────────────────────────────────────────────────────
 # SEO & Social
 # ───────────────────────────────────────────────────────────────
-# Logo and favicon can be added later
-# logo: "/assets/images/logo.png"
-# favicon_ico: "/assets/images/favicon.ico"
-
 twitter:
-  username: tensorcraft
   card: summary_large_image
 
 social:
@@ -50,20 +39,30 @@ social:
     - https://github.com/LessUp/modern-ai-kernels
 
 # ───────────────────────────────────────────────────────────────
-# Build Settings
+# Sass Configuration
 # ───────────────────────────────────────────────────────────────
-markdown: kramdown
-kramdown:
-  syntax_highlighter: rouge
-  input: GFM
-  hard_wrap: false
+sass:
+  sass_dir: _sass
+  style: compressed
 
 # ───────────────────────────────────────────────────────────────
-# Plugins
+# Defaults
 # ───────────────────────────────────────────────────────────────
-plugins:
-  - jekyll-remote-theme
-  - jekyll-seo-tag
+defaults:
+  - scope:
+      path: "en"
+    values:
+      lang: en
+      layout: docs
+  - scope:
+      path: "zh"
+    values:
+      lang: zh
+      layout: docs
+  - scope:
+      path: "index.html"
+    values:
+      layout: landing
 
 # ───────────────────────────────────────────────────────────────
 # Exclude Files
@@ -75,16 +74,5 @@ exclude:
   - Gemfile.lock
   - vendor/
   - node_modules/
-
-# ───────────────────────────────────────────────────────────────
-# Defaults
-# ───────────────────────────────────────────────────────────────
-defaults:
-  - scope:
-      path: "en"
-    values:
-      layout: "default"
-  - scope:
-      path: "zh"
-    values:
-      layout: "default"
+  - "*.gemspec"
+  - "*.gem"

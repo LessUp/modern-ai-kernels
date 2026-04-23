@@ -1,3 +1,8 @@
+---
+title: Guides Overview
+lang: zh
+---
+
 # Guides Overview
 
 This section contains in-depth guides on architecture, optimization techniques, and modern C++/CUDA practices.

@@ -1,3 +1,8 @@
+---
+title: Core Module API
+lang: zh
+---
+
 # Core Module API
 
 The Core module provides fundamental utilities for CUDA error handling, feature detection, type traits, and warp-level operations.

@@ -1,3 +1,8 @@
+---
+title: Kernels Module API
+lang: en
+---
+
 # Kernels Module API
 
 The Kernels module contains all compute kernels including elementwise operations, softmax, normalization, GEMM, attention, convolution, sparse operations, and fusion/quantization.

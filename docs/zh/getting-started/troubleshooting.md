@@ -1,3 +1,8 @@
+---
+title: Troubleshooting Guide
+lang: zh
+---
+
 # Troubleshooting Guide
 
 This guide covers the current common issues when building or using TensorCraft-HPC.
@@ -63,15 +68,20 @@ nvcc error: ran out of memory during compilation
 **What to do**
 
 1. Prefer the lighter presets:
+
    ```bash
    cmake --preset dev
    cmake --preset python-dev
    ```
+
 2. Reduce parallelism:
+
    ```bash
    cmake --build --preset dev --parallel 2
    ```
+
 3. Limit to one architecture:
+
    ```bash
    cmake --preset dev -DCMAKE_CUDA_ARCHITECTURES=75
    ```
@@ -95,8 +105,8 @@ If CUDA is off, tests and Python bindings are disabled by design.
 Use the repository root and verify the import name:
 
 ```bash
-python -m pip install -e .
-python -c "import tensorcraft_ops as tc; print(tc.__version__)"
+python3 -m pip install -e .
+python3 -c "import tensorcraft_ops as tc; print(tc.__version__)"
 ```
 
 Also make sure you are using the same Python interpreter for both commands.
@@ -112,16 +122,21 @@ TensorCraft can still build successfully, but you may want to clean that environ
 **What to check**
 
 1. Install from the repository root:
+
    ```bash
-   python -m pip install -e .
+   python3 -m pip install -e .
    ```
+
 2. Verify the import with the same interpreter:
+
    ```bash
-   python -c "import tensorcraft_ops as tc; print(tc.__version__)"
+   python3 -c "import tensorcraft_ops as tc; print(tc.__version__)"
    ```
+
 3. If needed, inspect where pip installed the package:
+
    ```bash
-   python -m pip show -f tensorcraft-ops
+   python3 -m pip show -f tensorcraft-ops
    ```
 
 ## CUDA version compatibility
@@ -147,8 +162,8 @@ Current GitHub Actions mainly cover CPU configure/install smoke and packaging sm
 cmake --preset dev
 cmake --build --preset dev --parallel 2
 ctest --preset dev --output-on-failure
-python -m pip install -e .
-python -c "import tensorcraft_ops as tc; print(tc.__version__)"
+python3 -m pip install -e .
+python3 -c "import tensorcraft_ops as tc; print(tc.__version__)"
 ```
 
 ## Still stuck?

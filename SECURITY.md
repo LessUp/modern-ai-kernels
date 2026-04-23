@@ -18,7 +18,7 @@ We take the security of TensorCraft-HPC seriously. If you believe you have found
 
 **Please do not report security vulnerabilities through public GitHub issues.**
 
-Instead, please report them via email to: **security@lessup.dev**
+Instead, please report them via email to: **<security@lessup.dev>**
 
 You should receive a response within 48 hours. If for some reason you do not, please follow up via email to ensure we received your original message.
 

@@ -12,9 +12,7 @@
             "generator": "Ninja",
             "binaryDir": "${sourceDir}/build/${presetName}",
             "cacheVariables": {
-                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
-                "CMAKE_CUDA_COMPILER": "/usr/local/cuda/bin/nvcc",
-                "CUDAToolkit_ROOT": "/usr/local/cuda"
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
             }
         },
         {

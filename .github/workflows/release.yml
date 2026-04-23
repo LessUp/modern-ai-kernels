@@ -74,7 +74,7 @@ jobs:
             ctest --preset dev --output-on-failure
 
             # Install Python bindings | 安装 Python 绑定
-            python -m pip install -e .
+            python3 -m pip install -e .
             ```
 
             ---

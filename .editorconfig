@@ -8,17 +8,11 @@ trim_trailing_whitespace = true
 indent_style = space
 indent_size = 4
 
-[*.{h,hpp,c,cpp,cu,cuh}]
-indent_size = 4
-
-[*.{py}]
-indent_size = 4
-
 [*.{yml,yaml,json}]
 indent_size = 2
 
 [*.md]
 trim_trailing_whitespace = false
 
-[CMakeLists.txt]
-indent_size = 4
+[Makefile]
+indent_style = tab

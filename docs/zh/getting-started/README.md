@@ -1,3 +1,8 @@
+---
+title: 入门指南
+lang: zh
+---
+
 # 入门指南
 
 本章节帮助您快速开始使用 TensorCraft-HPC。
@@ -26,8 +31,8 @@ cmake --build --preset dev --parallel 2
 ctest --preset dev --output-on-failure
 
 # 安装 Python 绑定
-python -m pip install -e .
-python -c "import tensorcraft_ops as tc; print(tc.__version__)"
+python3 -m pip install -e .
+python3 -c "import tensorcraft_ops as tc; print(tc.__version__)"
 ```
 
 ## 系统要求

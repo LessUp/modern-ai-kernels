@@ -34,7 +34,7 @@ namespace tensorcraft;
 class CudaException : public std::runtime_error {
 public:
     CudaException(const std::string& file, int line, cudaError_t error);
-    
+
     cudaError_t error() const noexcept;
     const std::string& file() const noexcept;
     int line() const noexcept;
@@ -42,6 +42,7 @@ public:
 ```
 
 **Behavior:**
+
 - SHALL throw on any CUDA API error
 - SHALL include file, line, and error description
 - SHALL be catchable as `std::runtime_error`
@@ -161,22 +162,22 @@ public:
     Tensor(const Tensor&) = delete;
     Tensor(Tensor&&) noexcept;
     ~Tensor();
-    
+
     // Assignment
     Tensor& operator=(const Tensor&) = delete;
     Tensor& operator=(Tensor&&) noexcept;
-    
+
     // Accessors
     T* data() noexcept;
     const T* data() const noexcept;
     size_t size() const noexcept;
     const std::vector<size_t>& shape() const noexcept;
-    
+
     // Operations
     void fill(T value);
     void copy_from(const T* host_data);
     void copy_to(T* host_data) const;
-    
+
     // Factory
     static Tensor zeros(const std::vector<size_t>& shape);
     static Tensor ones(const std::vector<size_t>& shape);
@@ -188,6 +189,7 @@ using HalfTensor = Tensor<half>;
 ```
 
 **Behavior:**
+
 - SHALL allocate GPU memory on construction
 - SHALL free GPU memory on destruction (RAII)
 - SHALL NOT allow copying (move-only)
@@ -202,17 +204,18 @@ class MemoryPool {
 public:
     explicit MemoryPool(size_t initial_size = 1 << 20);
     ~MemoryPool();
-    
+
     void* allocate(size_t size);
     void deallocate(void* ptr);
     void clear();
-    
+
     size_t capacity() const noexcept;
     size_t used() const noexcept;
 };
 ```
 
 **Behavior:**
+
 - SHALL be thread-safe
 - SHALL track allocated blocks
 - SHALL NOT free in-use memory on `clear()`
@@ -227,11 +230,11 @@ class AlignedVector {
 public:
     explicit AlignedVector(size_t size);
     ~AlignedVector();
-    
+
     T* data() noexcept;
     const T* data() const noexcept;
     size_t size() const noexcept;
-    
+
     T& operator[](size_t i);
     const T& operator[](size_t i) const;
 };
@@ -291,6 +294,7 @@ void softmax(const T* input, T* output, size_t batch_size, size_t dim,
 ```
 
 **Correctness Properties:**
+
 - Output values SHALL be >= 0
 - Row sums SHALL equal 1.0 (within tolerance)
 
@@ -346,7 +350,8 @@ void launch_gemm_wmma(const half* A, const half* B, float* C,
 ```
 
 **Correctness Properties:**
-- For matrices A[M×K], B[K×N], computes C = alpha * A @ B + beta * C
+
+- For matrices A[M×K], B[K×N], computes C = alpha *A @ B + beta* C
 - All versions SHALL produce numerically equivalent outputs (within tolerance)
 
 ### 3.5 Attention (`attention.hpp`)
@@ -454,7 +459,7 @@ import tensorcraft_ops as tc
 tc.__version__  # str
 
 # GEMM
-def tc.gemm(A: np.ndarray, B: np.ndarray, 
+def tc.gemm(A: np.ndarray, B: np.ndarray,
             alpha: float = 1.0, beta: float = 0.0) -> np.ndarray
 
 # Activation
@@ -480,6 +485,7 @@ def tc.conv2d(input: np.ndarray, weight: np.ndarray, bias: Optional[np.ndarray] 
 ```
 
 **Interface Requirements:**
+
 - All functions SHALL accept NumPy arrays with `float32` or `float16` dtype
 - All functions SHALL return NumPy arrays
 - Memory management SHALL be automatic (no explicit free required)
@@ -489,6 +495,7 @@ def tc.conv2d(input: np.ndarray, weight: np.ndarray, bias: Optional[np.ndarray] 
 ## Error Handling
 
 All API functions SHALL:
+
 1. Throw `CudaException` on CUDA errors
 2. Throw `std::invalid_argument` on invalid arguments
 3. Never return error codes (use exceptions)

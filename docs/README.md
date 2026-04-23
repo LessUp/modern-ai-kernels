@@ -1,78 +1,68 @@
 # TensorCraft-HPC Documentation
 
-<div align="center">
+This directory contains the Jekyll-based GitHub Pages site for TensorCraft-HPC.
 
-**English** | [简体中文](zh/README.md) | [Online Docs](https://lessup.github.io/modern-ai-kernels/)
+The site is intentionally split into:
 
-</div>
+- a landing page that explains the repository quickly
+- language-specific documentation hubs under `en/` and `zh/`
+- thin `reference/` wrappers that point back to canonical root governance documents
 
----
-
-## Documentation Language Selection | 文档语言选择
-
-### English
-
-The English documentation is available at **[docs/en/](en/README.md)**.
-
-### 简体中文
-
-中文文档请访问 **[docs/zh/](zh/README.md)**。
-
----
-
-## Documentation Structure
+## Structure
 
 ```
 docs/
-├── README.md         # Language selection (this file)
-├── en/               # English documentation
-│   ├── README.md
-│   ├── getting-started/   # Installation & troubleshooting
-│   ├── guides/            # Architecture & optimization guides
-│   ├── api/               # API reference
-│   ├── examples/          # Code examples
-│   └── reference/         # Contributing, changelog, etc.
-└── zh/               # 简体中文文档
-    ├── README.md
-    ├── getting-started/   # 安装与故障排除
-    ├── guides/            # 架构与优化指南
-    ├── api/               # API 参考
-    ├── examples/          # 代码示例
-    └── reference/         # 贡献指南、变更日志等
+├── _config.yml              # Jekyll configuration
+├── _layouts/                # Custom Jekyll layouts
+│   ├── landing.html         # Landing page layout
+│   └── docs.html            # Documentation page layout
+├── _includes/               # Reusable components
+├── assets/
+│   └── css/
+│       ├── landing.scss     # Landing page styles
+│       └── docs.scss        # Documentation styles
+├── assets/js/
+│   ├── landing.js           # Landing page interactions
+│   └── docs.js              # Documentation interactions
+├── en/                      # English documentation
+├── zh/                      # Chinese documentation
+├── 404.html                 # Custom 404 page
+└── index.html               # Landing page
 ```
 
----
+## Local Development
 
-## Quick Navigation | 快速导航
+```bash
+cd docs
+bundle install
+bundle exec jekyll serve --livereload --incremental
+# Open http://localhost:4000
+```
 
-### Getting Started | 入门指南
+## Adding Documentation
 
-| English | 简体中文 |
-|---------|----------|
-| [Installation Guide](en/getting-started/installation.md) | [安装指南](zh/getting-started/installation.md) |
-| [Troubleshooting](en/getting-started/troubleshooting.md) | [故障排除](zh/getting-started/troubleshooting.md) |
+1. Create a new `.md` file in the appropriate language directory
+2. Add frontmatter:
 
-### API Reference | API 参考
+   ```yaml
+   ---
+   title: Your Page Title
+   lang: en  # or zh
+   ---
+   ```
 
-| English | 简体中文 |
-|---------|----------|
-| [Core Module](en/api/core.md) | [核心模块](zh/api/core.md) |
-| [Memory Module](en/api/memory.md) | [内存模块](zh/api/memory.md) |
-| [Kernels Module](en/api/kernels.md) | [算子模块](zh/api/kernels.md) |
-| [Python API](en/api/python.md) | [Python API](zh/api/python.md) |
+3. Write your content in Markdown
+4. Prefer linking to a canonical root document instead of duplicating long governance content
+5. The docs layout will automatically add the sidebar navigation and TOC
 
-### Examples | 示例教程
+## Style Guide
 
-| English | 简体中文 |
-|---------|----------|
-| [GEMM Examples](en/examples/basic-gemm.md) | [GEMM 示例](zh/examples/basic-gemm.md) |
-| [Attention Examples](en/examples/attention.md) | [注意力示例](zh/examples/attention.md) |
-| [Normalization Examples](en/examples/normalization.md) | [归一化示例](zh/examples/normalization.md) |
-
----
-
-## External Links | 外部链接
-
-- **GitHub Repository**: https://github.com/LessUp/modern-ai-kernels
-- **Online Documentation**: https://lessup.github.io/modern-ai-kernels/
-- **Issue Tracker**: https://github.com/LessUp/modern-ai-kernels/issues
+- Use clear, concise language
+- Include code examples where relevant
+- Follow existing document structures
+- Add alerts for important notes:
+  - `{: .note }` - Informational
+  - `{: .tip }` - Helpful tip
+  - `{: .warning }` - Warning
+  - `{: .danger }` - Critical warning
+  - `{: .important }` - Important note

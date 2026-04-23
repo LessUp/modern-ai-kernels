@@ -1,3 +1,8 @@
+---
+title: Memory Module API
+lang: en
+---
+
 # Memory Module API
 
 The Memory module provides memory management utilities including aligned vectors for vectorized access, RAII tensor wrappers, and a thread-safe memory pool.

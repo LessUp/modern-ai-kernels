@@ -1,3 +1,8 @@
+---
+title: API Reference
+lang: en
+---
+
 # API Reference
 
 This section provides detailed API documentation for all TensorCraft-HPC modules.

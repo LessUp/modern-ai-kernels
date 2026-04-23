@@ -154,6 +154,7 @@ ctest --preset dev --output-on-failure
 ```
 
 **Includes**:
+
 - ✅ All GPU kernels
 - ✅ Unit tests
 - ✅ Debug symbols
@@ -166,11 +167,12 @@ ctest --preset dev --output-on-failure
 ```bash
 cmake --preset python-dev
 cmake --build --preset python-dev --parallel $(nproc)
-pip install -e .
-python -c "import tensorcraft_ops as tc; print(tc.__version__)"
+python3 -m pip install -e .
+python3 -c "import tensorcraft_ops as tc; print(tc.__version__)"
 ```
 
 **Includes**:
+
 - ✅ Python bindings
 - ✅ Core GPU kernels needed by Python API
 - ❌ Full test suite
@@ -188,6 +190,7 @@ ctest --test-dir build/release --output-on-failure
 ```
 
 **Includes**:
+
 - ✅ Everything in `dev`
 - ✅ Performance benchmarks
 - ✅ Optimized build (RelWithDebInfo)
@@ -202,6 +205,7 @@ cmake --build --preset debug --parallel $(nproc)
 ```
 
 **Includes**:
+
 - ✅ Full debug symbols
 - ✅ No optimizations
 - ✅ Runtime checks enabled
@@ -216,6 +220,7 @@ cmake --install build/cpu-smoke --prefix /tmp/tensorcraft-install
 ```
 
 **Includes**:
+
 - ✅ Build system validation
 - ✅ Installation flow
 - ❌ GPU features (disabled)
@@ -255,7 +260,7 @@ ctest --test-dir build/manual --output-on-failure
 
 ```bash
 # From repository root
-pip install -e .
+python3 -m pip install -e .
 ```
 
 ### Verification
@@ -318,7 +323,7 @@ cmake --preset dev -DCMAKE_CUDA_ARCHITECTURES="70;75;80;89;90"
 | `nvcc not found` | Install CUDA Toolkit or check PATH |
 | `CUDA architecture mismatch` | Set `CMAKE_CUDA_ARCHITECTURES` |
 | `CMake version too old` | Upgrade CMake to 3.20+ |
-| `Python import fails` | Run `pip install -e .` from repo root |
+| `Python import fails` | Run `python3 -m pip install -e .` from repo root |
 | `Tests fail on GPU` | Check GPU driver, run `nvidia-smi` |
 
 For detailed troubleshooting, see [Troubleshooting Guide](troubleshooting.md).

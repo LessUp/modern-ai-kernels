@@ -1,3 +1,8 @@
+---
+title: Python API Reference
+lang: zh
+---
+
 # Python API Reference
 
 TensorCraft-HPC provides Python bindings via pybind11. The module is named `tensorcraft_ops`.
@@ -5,8 +10,8 @@ TensorCraft-HPC provides Python bindings via pybind11. The module is named `tens
 ## Installation
 
 ```bash
-python -m pip install -e .
-python -c "import tensorcraft_ops as tc; print(tc.__version__)"
+python3 -m pip install -e .
+python3 -c "import tensorcraft_ops as tc; print(tc.__version__)"
 ```
 
 ## Module Overview
@@ -42,6 +47,7 @@ def relu(input: np.ndarray) -> np.ndarray
 Apply ReLU activation: `max(0, x)`
 
 **Parameters:**
+
 - `input`: Input array of any shape
 
 **Returns:** Output array with same shape
@@ -104,6 +110,7 @@ def vector_add(a: np.ndarray, b: np.ndarray) -> np.ndarray
 Element-wise addition of two arrays.
 
 **Parameters:**
+
 - `a`, `b`: Input arrays (must have same shape)
 
 **Returns:** Element-wise sum
@@ -128,6 +135,7 @@ def softmax(input: np.ndarray) -> np.ndarray
 Apply softmax along the last dimension.
 
 **Parameters:**
+
 - `input`: Input array of any shape
 
 **Returns:** Output with softmax applied along last dimension
@@ -161,6 +169,7 @@ def layernorm(
 Apply layer normalization.
 
 **Parameters:**
+
 - `input`: Input array of shape `(..., hidden_size)`
 - `gamma`: Scale parameter of shape `(hidden_size,)`
 - `beta`: Shift parameter of shape `(hidden_size,)`
@@ -191,6 +200,7 @@ def rmsnorm(
 Apply RMS normalization.
 
 **Parameters:**
+
 - `input`: Input array of shape `(..., hidden_size)`
 - `weight`: Scale parameter of shape `(hidden_size,)`
 - `eps`: Small constant for numerical stability
@@ -221,6 +231,7 @@ def gemm(
 General matrix multiplication: `C = alpha * A @ B + beta * C`
 
 **Parameters:**
+
 - `A`: Input matrix of shape `(M, K)`
 - `B`: Input matrix of shape `(K, N)`
 - `alpha`: Scalar multiplier for `A @ B`
@@ -254,6 +265,7 @@ def transpose(input: np.ndarray) -> np.ndarray
 Transpose a 2D matrix.
 
 **Parameters:**
+
 - `input`: 2D input matrix of shape `(rows, cols)`
 
 **Returns:** Transposed matrix of shape `(cols, rows)`
@@ -300,6 +312,7 @@ y = tc.relu(x)  # Converted to float32 internally
 ## Performance Tips
 
 1. **Use contiguous arrays**: NumPy arrays should be C-contiguous for best performance
+
    ```python
    x = np.ascontiguousarray(x)
    ```

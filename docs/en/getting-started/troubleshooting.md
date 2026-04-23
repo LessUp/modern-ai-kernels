@@ -15,11 +15,13 @@ Common issues and their solutions when building and running TensorCraft-HPC.
 #### Issue: "CMake version too old"
 
 **Error Message**:
+
 ```
 CMake 3.20 or higher is required. You are running version 3.18
 ```
 
 **Solution**:
+
 ```bash
 # Ubuntu/Debian
 sudo apt remove cmake
@@ -35,11 +37,13 @@ cmake --version  # Should show 3.20+
 #### Issue: "CUDA toolkit not found"
 
 **Error Message**:
+
 ```
 Could NOT find CUDA (missing: CUDA_TOOLKIT_ROOT_DIR)
 ```
 
 **Solution**:
+
 ```bash
 # Verify CUDA installation
 nvcc --version
@@ -55,11 +59,13 @@ cmake --preset dev -DCUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda
 #### Issue: "No CUDA capable devices found"
 
 **Error Message**:
+
 ```
 No CUDA capable devices found or CUDA driver error
 ```
 
 **Solution**:
+
 ```bash
 # Check NVIDIA driver
 nvidia-smi
@@ -76,11 +82,13 @@ sudo reboot
 #### Issue: "Unsupported GPU architecture"
 
 **Error Message**:
+
 ```
 nvcc fatal: Unsupported gpu architecture 'compute_90'
 ```
 
 **Solution**:
+
 ```bash
 # Use architecture compatible with your CUDA version
 # CUDA 11.x: Use up to 86 (Ampere)
@@ -96,11 +104,13 @@ nvcc --version
 #### Issue: "C++17 features not supported"
 
 **Error Message**:
+
 ```
 target feature 'c++17' not supported by your implementation
 ```
 
 **Solution**:
+
 ```bash
 # Use a newer compiler
 sudo apt install g++-11
@@ -113,11 +123,13 @@ cmake --preset dev -DCMAKE_CXX_COMPILER=g++-11
 #### Issue: "pybind11 not found" (Python bindings)
 
 **Error Message**:
+
 ```
 Could NOT find pybind11 (missing: pybind11_DIR)
 ```
 
 **Solution**:
+
 ```bash
 # Install pybind11
 pip3 install pybind11
@@ -131,12 +143,14 @@ cmake --preset python-dev -DTC_BUILD_PYTHON=OFF
 #### Issue: "Undefined reference to CUDA functions"
 
 **Error Message**:
+
 ```
 undefined reference to `cudaMalloc'
 undefined reference to `cudaMemcpy'
 ```
 
 **Solution**:
+
 ```bash
 # Clean and reconfigure
 rm -rf build
@@ -155,11 +169,13 @@ nvidia-smi
 #### Issue: "Tests fail with CUDA errors"
 
 **Error Message**:
+
 ```
 CUDA error: initialization error
 ```
 
 **Solution**:
+
 ```bash
 # Check GPU is accessible
 nvidia-smi
@@ -183,6 +199,7 @@ nvcc test_cuda.cu -o test_cuda && ./test_cuda
 **Symptoms**: Tests fail due to small numerical differences
 
 **Solution**:
+
 ```bash
 # This can happen with different GPU architectures
 # Tests have tolerance thresholds, some are stricter
@@ -199,40 +216,44 @@ ctest --preset dev --output-on-failure --verbose
 #### Issue: "ImportError: No module named tensorcraft_ops"
 
 **Error Message**:
+
 ```python
 ImportError: No module named 'tensorcraft_ops'
 ```
 
 **Solution**:
+
 ```bash
 # Install in editable mode
-pip install -e .
+python3 -m pip install -e .
 
 # Verify installation
 pip list | grep tensorcraft
 
 # Check Python path matches installation
 which python
-python -c "import sys; print(sys.executable)"
+python3 -c "import sys; print(sys.executable)"
 ```
 
 #### Issue: "ModuleNotFoundError: tensorcraft_ops.so undefined symbol"
 
 **Error Message**:
+
 ```python
 ModuleNotFoundError: /path/to/tensorcraft_ops.so: undefined symbol: _Z14cudaMallocPvmm
 ```
 
 **Solution**:
+
 ```bash
 # Rebuild Python bindings
 rm -rf build
 cmake --preset python-dev
 cmake --build --preset python-dev --parallel $(nproc)
-pip install -e . --force-reinstall
+python3 -m pip install -e . --force-reinstall
 
 # Check CUDA libraries are linked
-ldd $(python -c "import tensorcraft_ops; print(tensorcraft_ops.__file__)")
+ldd $(python3 -c "import tensorcraft_ops; print(tensorcraft_ops.__file__)")
 ```
 
 #### Issue: "Import works but functions fail"
@@ -240,6 +261,7 @@ ldd $(python -c "import tensorcraft_ops; print(tensorcraft_ops.__file__)")
 **Symptoms**: Can import module but functions throw errors
 
 **Solution**:
+
 ```python
 # Check if GPU is accessible from Python
 import tensorcraft_ops as tc
@@ -265,6 +287,7 @@ except Exception as e:
 **Symptoms**: Compilation takes 30+ minutes
 
 **Solution**:
+
 ```bash
 # Build only what you need
 # For development (no benchmarks)
@@ -284,6 +307,7 @@ cmake --build --preset dev --parallel $(nproc)
 **Symptoms**: Each rebuild takes several minutes
 
 **Solution**:
+
 ```bash
 # Use CMake's incremental build features
 cmake --preset dev
@@ -301,6 +325,7 @@ cmake --build --preset dev --parallel $(nproc)
 **Symptoms**: Build fails with memory errors
 
 **Solution**:
+
 ```bash
 # Reduce parallel jobs
 cmake --build --preset dev --parallel 2  # instead of $(nproc)
@@ -323,6 +348,7 @@ cmake --build --preset dev --target tensorcraft_kernels
 **Symptoms**: Build uses unexpected CUDA version
 
 **Solution**:
+
 ```bash
 # Check which nvcc is used
 which nvcc
@@ -342,6 +368,7 @@ cmake --preset dev -DCUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda-12.8
 #### Issue: "CUDA not available in WSL2"
 
 **Solution**:
+
 ```bash
 # Install WSL2 CUDA driver
 # See: https://docs.nvidia.com/cuda/wsl-user-guide/index.html
@@ -357,6 +384,7 @@ nvcc --version  # Should show CUDA 12.x
 #### Issue: "WSL2 performance is poor"
 
 **Solution**:
+
 ```bash
 # Use WSL2 with GPU passthrough (Windows 11)
 # Ensure Windows GPU driver is up to date
@@ -372,6 +400,7 @@ nvidia-smi
 ### GitHub Issues
 
 Check current known issues:
+
 - 🔍 [Open Issues](https://github.com/LessUp/modern-ai-kernels/issues)
 - ✅ [Fixed in Latest](https://github.com/LessUp/modern-ai-kernels/issues?q=is%3Aissue+is%3Aclosed)
 
@@ -389,6 +418,7 @@ Check current known issues:
 If none of the above solutions work:
 
 1. **Gather Information**:
+
    ```bash
    # System info
    uname -a
