@@ -1,3 +1,8 @@
+---
+title: Python Usage Examples
+lang: zh
+---
+
 # Python Usage Examples
 
 Complete examples for using TensorCraft-HPC Python bindings.
@@ -6,10 +11,10 @@ Complete examples for using TensorCraft-HPC Python bindings.
 
 ```bash
 # From source
-python -m pip install -e .
+python3 -m pip install -e .
 
 # Verify installation
-python -c "import tensorcraft_ops as tc; print(tc.__version__)"
+python3 -c "import tensorcraft_ops as tc; print(tc.__version__)"
 ```
 
 ---
@@ -374,16 +379,19 @@ except ValueError as e:
 ## Performance Tips
 
 1. **Use float32**: The library is optimized for float32
+
    ```python
    x = x.astype(np.float32)  # Convert if needed
    ```
 
 2. **Use contiguous arrays**:
+
    ```python
    x = np.ascontiguousarray(x)
    ```
 
 3. **Batch operations**:
+
    ```python
    # Instead of processing one at a time
    for item in items:

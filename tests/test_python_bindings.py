@@ -1,9 +1,5 @@
-import math
-
 import numpy as np
-
 import tensorcraft_ops as tc
-
 
 EXPECTED_EXPORTS = {
     "relu",

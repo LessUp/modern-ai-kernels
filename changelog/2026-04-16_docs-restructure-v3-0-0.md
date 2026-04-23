@@ -3,6 +3,7 @@
 ## 变更背景
 
 对 TensorCraft-HPC 项目进行全面的文档优化和重构，包括：
+
 - 完善 changelog 文档
 - 优化 .kiro 规格文档
 - 增强 .github 配置
@@ -21,11 +22,13 @@
 ### 2. .kiro 规格文档更新
 
 **tensorcraft-hpc/**
+
 - 更新 `design.md`：简化架构描述，添加版本历史表
 - 更新 `requirements.md`：添加实现状态标记
 - 更新 `tasks.md`：精简任务列表，添加版本历史
 
 **project-polish/**
+
 - 更新 `design.md`：简化组件描述，添加验证清单
 - 更新 `requirements.md`：添加所有需求的完成状态
 - 更新 `tasks.md`：更新任务完成状态
@@ -53,18 +56,21 @@
 ### 5. Workflows 优化
 
 **ci.yml**
+
 - 更新 clang-format-action 到 v4.14.0
 - 添加 CMake setup step
 - 添加 $GITHUB_STEP_SUMMARY 输出
 - 优化 CI 覆盖说明
 
 **release.yml**
+
 - 更新 softprops/action-gh-release 到 v2
 - 改进 changelog 提取逻辑
 - 添加快速开始命令到 release body
 - 使用 CUDA 12.8.0 容器
 
 **pages.yml**
+
 - 添加 job 名称
 - 简化配置
 

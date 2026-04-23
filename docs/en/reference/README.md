@@ -1,34 +1,16 @@
-# Reference Materials
+---
+title: Reference
+lang: en
+---
 
-This section contains project governance, version history, community standards, and security information.
+# Reference
 
-## Content Index
+This section intentionally stays thin. The canonical governance and project-policy files live at the
+repository root.
 
-| Document | Description |
-|----------|-------------|
-| [Contributing Guide](contributing.md) | How to contribute to TensorCraft-HPC |
-| [Changelog](changelog.md) | Version history and changes |
-| [Code of Conduct](code-of-conduct.md) | Community code of conduct |
-| [Security Policy](security.md) | Security policy and vulnerability reporting |
-
-## Quick Links
-
-### Participating in the Project
-
-- Submit Issues: https://github.com/LessUp/modern-ai-kernels/issues
-- Submit Pull Requests: See [Contributing Guide](contributing.md)
-- Community Discussions: GitHub Discussions
-
-### Version Information
-
-- Current Version: See [Changelog](changelog.md)
-- Version History: Includes all releases and change notes
-
-### Contact Us
-
-- GitHub Issues: Technical issues and feature requests
-- Discussions: General discussion and Q&A
-
-## License
-
-This project is licensed under the MIT License. See the LICENSE file in the project root directory for details.
+| Topic | Canonical file |
+|-------|----------------|
+| Contributing | [`CONTRIBUTING.md`](../../../CONTRIBUTING.md) |
+| Changelog | [`CHANGELOG.md`](../../../CHANGELOG.md) |
+| Security | [`SECURITY.md`](../../../SECURITY.md) |
+| Code of conduct | [`CODE_OF_CONDUCT.md`](../../../CODE_OF_CONDUCT.md) |

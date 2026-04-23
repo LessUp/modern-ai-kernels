@@ -1,0 +1,196 @@
+---
+---
+
+<!DOCTYPE html>
+
+<html lang="{{ page.lang | default: site.lang | default: 'en' }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  {% assign page_title = page.title | default: 'TensorCraft-HPC' %}
+  {% if page.title != site.title %}
+    {% assign page_title = page.title | append: ' | ' | append: site.title %}
+  {% endif %}
+  <title>{{ page_title }}</title>
+  
+  {% if page.description %}
+  <meta name="description" content="{{ page.description }}">
+  {% endif %}
+  
+  <!-- SEO -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="{{ site.title }}">
+  <meta property="og:title" content="{{ page.title | default: site.title }}">
+  <meta property="og:description" content="{{ page.description | default: site.description }}">
+  <meta property="og:url" content="{{ site.url }}{{ site.baseurl }}{{ page.url }}">  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E⚡%3C/text%3E%3C/svg%3E">
+  <meta name="theme-color" content="#76B900">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="{{ '/assets/css/docs.css' | relative_url }}">
+  
+  {% seo %}
+</head>
+<body class="docs-page">
+  <!-- Top Navigation -->
+  <header class="docs-header">
+    <div class="header-container">
+      <a href="{{ site.baseurl }}/" class="header-logo">
+        <span class="logo-icon">⚡</span>
+        <span class="logo-text">TensorCraft</span>
+      </a>
+      
+      <div class="header-nav">
+        <a href="{{ site.baseurl }}/en/getting-started/" class="header-link {% if page.url contains '/getting-started/' %}active{% endif %}">Getting Started</a>
+        <a href="{{ site.baseurl }}/en/guides/" class="header-link {% if page.url contains '/guides/' %}active{% endif %}">Guides</a>
+        <a href="{{ site.baseurl }}/en/api/" class="header-link {% if page.url contains '/api/' %}active{% endif %}">API</a>
+        <a href="{{ site.baseurl }}/en/examples/" class="header-link {% if page.url contains '/examples/' %}active{% endif %}">Examples</a>
+      </div>
+      
+      <div class="header-actions">
+        <div class="lang-dropdown">
+          <button class="lang-btn" aria-label="Select language">
+            {% if page.lang == 'zh' %}中文{% else %}EN{% endif %}
+            <svg width="12" height="12" viewBox="0 0 12 12"><path fill="currentColor" d="M6 8L1 3h10z"/></svg>
+          </button>
+          <div class="lang-menu">
+            <a href="{{ site.baseurl }}/en{{ page.url | remove_first: '/en' | remove_first: '/zh' }}" class="{% if page.lang == 'en' or page.lang == nil %}active{% endif %}">English</a>
+            <a href="{{ site.baseurl }}/zh{{ page.url | remove_first: '/en' | remove_first: '/zh' }}" class="{% if page.lang == 'zh' %}active{% endif %}">简体中文</a>
+          </div>
+        </div>
+        
+        <a href="https://github.com/LessUp/modern-ai-kernels" class="header-github" target="_blank" rel="noopener" aria-label="GitHub">
+          <svg viewBox="0 0 24 24" width="20" height="20">
+            <path fill="currentColor" d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+          </svg>
+        </a>
+      </div>
+      
+      <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </header>
+
+  <div class="docs-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="docs-sidebar" id="docs-sidebar">
+      <nav class="sidebar-nav">
+        {% assign current_lang = page.lang | default: 'en' %}
+        
+        <!-- Getting Started -->
+        <div class="nav-section">
+          <h3 class="nav-section-title">Getting Started</h3>
+          <ul class="nav-list">
+            <li><a href="{{ site.baseurl }}/{{ current_lang }}/getting-started/" class="{% if page.url == '/' | append: current_lang | append: '/getting-started/' or page.url == '/' | append: current_lang | append: '/getting-started' %}active{% endif %}">Overview</a></li>
+            <li><a href="{{ site.baseurl }}/{{ current_lang }}/getting-started/installation.html" class="{% if page.url contains 'installation' %}active{% endif %}">Installation</a></li>
+            <li><a href="{{ site.baseurl }}/{{ current_lang }}/getting-started/troubleshooting.html" class="{% if page.url contains 'troubleshooting' %}active{% endif %}">Troubleshooting</a></li>
+          </ul>
+        </div>
+        
+        <!-- Guides -->
+        <div class="nav-section">
+          <h3 class="nav-section-title">Guides</h3>
+          <ul class="nav-list">
+            <li><a href="{{ site.baseurl }}/{{ current_lang }}/guides/" class="{% if page.url == '/' | append: current_lang | append: '/guides/' or page.url == '/' | append: current_lang | append: '/guides' %}active{% endif %}">Overview</a></li>
+            <li><a href="{{ site.baseurl }}/{{ current_lang }}/guides/architecture.html" class="{% if page.url contains '/guides/architecture' %}active{% endif %}">Architecture</a></li>
+            <li><a href="{{ site.baseurl }}/{{ current_lang }}/guides/optimization.html" class="{% if page.url contains '/guides/optimization' %}active{% endif %}">Optimization</a></li>
+            <li><a href="{{ site.baseurl }}/{{ current_lang }}/guides/modern-cpp-cuda.html" class="{% if page.url contains '/guides/modern-cpp-cuda' %}active{% endif %}">Modern C++/CUDA</a></li>
+          </ul>
+        </div>
+        
+        <!-- API Reference -->
+        <div class="nav-section">
+          <h3 class="nav-section-title">API Reference</h3>
+          <ul class="nav-list">
+            <li><a href="{{ site.baseurl }}/{{ current_lang }}/api/" class="{% if page.url == '/' | append: current_lang | append: '/api/' or page.url == '/' | append: current_lang | append: '/api' %}active{% endif %}">Overview</a></li>
+            <li><a href="{{ site.baseurl }}/{{ current_lang }}/api/core.html" class="{% if page.url contains '/api/core' %}active{% endif %}">Core</a></li>
+            <li><a href="{{ site.baseurl }}/{{ current_lang }}/api/memory.html" class="{% if page.url contains '/api/memory' %}active{% endif %}">Memory</a></li>
+            <li><a href="{{ site.baseurl }}/{{ current_lang }}/api/kernels.html" class="{% if page.url contains '/api/kernels' %}active{% endif %}">Kernels</a></li>
+            <li><a href="{{ site.baseurl }}/{{ current_lang }}/api/python.html" class="{% if page.url contains '/api/python' %}active{% endif %}">Python</a></li>
+          </ul>
+        </div>
+        
+        <!-- Examples -->
+        <div class="nav-section">
+          <h3 class="nav-section-title">Examples</h3>
+          <ul class="nav-list">
+            <li><a href="{{ site.baseurl }}/{{ current_lang }}/examples/" class="{% if page.url == '/' | append: current_lang | append: '/examples/' or page.url == '/' | append: current_lang | append: '/examples' %}active{% endif %}">Overview</a></li>
+            <li><a href="{{ site.baseurl }}/{{ current_lang }}/examples/basic-gemm.html" class="{% if page.url contains '/examples/basic-gemm' %}active{% endif %}">GEMM</a></li>
+            <li><a href="{{ site.baseurl }}/{{ current_lang }}/examples/attention.html" class="{% if page.url contains '/examples/attention' %}active{% endif %}">Attention</a></li>
+            <li><a href="{{ site.baseurl }}/{{ current_lang }}/examples/normalization.html" class="{% if page.url contains '/examples/normalization' %}active{% endif %}">Normalization</a></li>
+            <li><a href="{{ site.baseurl }}/{{ current_lang }}/examples/python-usage.html" class="{% if page.url contains '/examples/python-usage' %}active{% endif %}">Python Usage</a></li>
+          </ul>
+        </div>
+        
+        <!-- Reference -->
+        <div class="nav-section">
+          <h3 class="nav-section-title">Reference</h3>
+          <ul class="nav-list">
+            <li><a href="{{ site.baseurl }}/{{ current_lang }}/reference/contributing.html" class="{% if page.url contains '/reference/contributing' %}active{% endif %}">Contributing</a></li>
+            <li><a href="{{ site.baseurl }}/{{ current_lang }}/reference/changelog.html" class="{% if page.url contains '/reference/changelog' %}active{% endif %}">Changelog</a></li>
+            <li><a href="{{ site.baseurl }}/{{ current_lang }}/reference/security.html" class="{% if page.url contains '/reference/security' %}active{% endif %}">Security</a></li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="docs-main">
+      <div class="docs-content">
+        {% if page.title %}
+        <h1 class="page-title">{{ page.title }}</h1>
+        {% endif %}
+        
+        <div class="content-body">
+          {{ content }}
+        </div>
+        
+        <!-- Page Footer -->
+        <footer class="page-footer">
+          <div class="edit-page">
+            <a href="https://github.com/LessUp/modern-ai-kernels/edit/master/docs/{{ page.path }}" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+              Edit this page
+            </a>
+          </div>
+          
+          <div class="page-nav">
+            {% if page.previous %}
+            <a href="{{ page.previous.url | relative_url }}" class="page-nav-prev">
+              <span class="page-nav-label">Previous</span>
+              <span class="page-nav-title">{{ page.previous.title }}</span>
+            </a>
+            {% endif %}
+            
+            {% if page.next %}
+            <a href="{{ page.next.url | relative_url }}" class="page-nav-next">
+              <span class="page-nav-label">Next</span>
+              <span class="page-nav-title">{{ page.next.title }}</span>
+            </a>
+            {% endif %}
+          </div>
+        </footer>
+      </div>
+      
+      <!-- Table of Contents -->
+      <aside class="docs-toc" id="docs-toc">
+        <h4>On this page</h4>
+        <nav id="toc-nav"></nav>
+      </aside>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="{{ '/assets/js/docs.js' | relative_url }}"></script>
+</body>
+</html>

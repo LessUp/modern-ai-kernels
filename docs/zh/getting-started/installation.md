@@ -1,3 +1,8 @@
+---
+title: Installation Guide
+lang: zh
+---
+
 # Installation Guide
 
 This guide documents the current recommended build paths for TensorCraft-HPC.
@@ -36,8 +41,8 @@ Use this when you mainly care about the Python extension.
 ```bash
 cmake --preset python-dev
 cmake --build --preset python-dev --parallel 2
-python -m pip install -e .
-python -c "import tensorcraft_ops as tc; print(tc.__version__)"
+python3 -m pip install -e .
+python3 -c "import tensorcraft_ops as tc; print(tc.__version__)"
 ```
 
 ### 3. Heavier full build
@@ -76,8 +81,8 @@ In this mode, tests, benchmarks, and Python bindings are intentionally disabled.
 Install from the repository root:
 
 ```bash
-python -m pip install -e .
-python -c "import tensorcraft_ops as tc; print(tc.__version__)"
+python3 -m pip install -e .
+python3 -c "import tensorcraft_ops as tc; print(tc.__version__)"
 ```
 
 The import name is `tensorcraft_ops`.
@@ -114,8 +119,8 @@ Recommended validation on a CUDA machine:
 cmake --preset dev
 cmake --build --preset dev --parallel 2
 ctest --preset dev --output-on-failure
-python -m pip install -e .
-python -c "import tensorcraft_ops as tc; print(tc.__version__)"
+python3 -m pip install -e .
+python3 -c "import tensorcraft_ops as tc; print(tc.__version__)"
 ```
 
 ## Troubleshooting

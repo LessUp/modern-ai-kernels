@@ -1,0 +1,482 @@
+---
+layout: landing
+title: TensorCraft-HPC - Modern C++/CUDA AI Kernel Library
+description: Demystifying High-Performance AI Kernels with Modern C++ & CUDA. A comprehensive, header-only GPU kernel library for learning, validating, and implementing core AI algorithms.
+---
+
+<!-- Hero Section -->
+<section class="hero" id="hero">
+  <div class="hero-bg">
+    <div class="hero-grid"></div>
+    <div class="hero-glow"></div>
+  </div>
+  
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="badge-accent">Stable</span> OpenSpec-driven kernel reference
+    </div>
+    
+    <h1 class="hero-title">
+      <span class="title-line">Demystifying</span>
+      <span class="title-line title-highlight">High-Performance</span>
+      <span class="title-line">AI Kernels</span>
+    </h1>
+    
+    <p class="hero-subtitle">
+      A readable C++/CUDA kernel repository for learning, validation, and packaging.<br>
+      Keep the fast paths, keep the docs honest, and keep the workflow small enough to maintain.
+    </p>
+    
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-value">OpenSpec</span>
+        <span class="stat-label">Active workflow</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span class="stat-value">Volta→Blackwell</span>
+        <span class="stat-label">Architecture coverage</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span class="stat-value">Header-Only</span>
+        <span class="stat-label">Repository core</span>
+      </div>
+    </div>
+    
+    <div class="hero-cta">
+      <a href="{{ site.baseurl }}/en/README.html" class="btn btn-primary">
+        <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        Docs Hub
+      </a>
+      <a href="https://github.com/LessUp/modern-ai-kernels" class="btn btn-secondary" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+        View on GitHub
+      </a>
+    </div>
+    
+    <!-- Code Preview -->
+    <div class="hero-code">
+      <div class="code-window">
+        <div class="code-header">
+          <div class="code-dots">
+            <span></span><span></span><span></span>
+          </div>
+          <div class="code-tabs">
+            <button class="code-tab active" data-lang="cpp">C++</button>
+            <button class="code-tab" data-lang="python">Python</button>
+          </div>
+        </div>
+        <div class="code-content">
+          <pre class="code-panel active" data-lang="cpp"><code><span class="comment">// C++: High-performance GEMM with TensorCraft</span>
+<span class="keyword">#include</span> <span class="string">"tensorcraft/kernels/gemm.hpp"</span>
+<span class="keyword">#include</span> <span class="string">"tensorcraft/memory/tensor.hpp"</span>
+
+<span class="comment">// Create tensors (RAII-managed GPU memory)</span>
+tensorcraft::FloatTensor A({<span class="number">4096</span>, <span class="number">4096</span>});
+tensorcraft::FloatTensor B({<span class="number">4096</span>, <span class="number">4096</span>});
+tensorcraft::FloatTensor C({<span class="number">4096</span>, <span class="number">4096</span>});
+
+<span class="comment">// Optimized GEMM: C = α(A × B) + βC</span>
+tensorcraft::kernels::gemm(
+    A.data(), B.data(), C.data(),
+    <span class="number">4096</span>, <span class="number">4096</span>, <span class="number">4096</span>);</code></pre>
+          <pre class="code-panel" data-lang="python"><code><span class="comment"># Python: Simple NumPy-compatible API</span>
+<span class="keyword">import</span> tensorcraft_ops <span class="keyword">as</span> tc
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+
+<span class="comment"># Matrix multiplication</span>
+A = np.random.randn(<span class="number">4096</span>, <span class="number">4096</span>).astype(np.float32)
+B = np.random.randn(<span class="number">4096</span>, <span class="number">4096</span>).astype(np.float32)
+
+<span class="comment"># FlashAttention-style operation</span>
+Q = np.random.randn(<span class="number">32</span>, <span class="number">128</span>, <span class="number">64</span>).astype(np.float32)
+K = np.random.randn(<span class="number">32</span>, <span class="number">128</span>, <span class="number">64</span>).astype(np.float32)
+V = np.random.randn(<span class="number">32</span>, <span class="number">128</span>, <span class="number">64</span>).astype(np.float32)
+
+output = tc.flash_attention(Q, K, V)</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="features" id="features">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">What the repository covers</h2>
+      <p class="section-subtitle">Representative kernels, readable structure, and a smaller maintenance surface</p>
+    </div>
+    
+    <div class="features-grid">
+      <div class="feature-card" data-feature="gemm">
+        <div class="feature-icon icon-gemm">
+          <svg viewBox="0 0 24 24" width="28" height="28"><path fill="currentColor" d="M4 4h16v16H4V4zm2 2v12h12V6H6zm2 2h8v2H8V8zm0 4h8v2H8v-2z"/></svg>
+        </div>
+        <h3>GEMM</h3>
+        <p>Matrix multiplication with progressive optimization from naive → tiled → double buffer → Tensor Core (WMMA).</p>
+        <div class="feature-meta">
+          <span class="feature-badge">85-95% cuBLAS</span>
+        </div>
+      </div>
+      
+      <div class="feature-card" data-feature="attention">
+        <div class="feature-icon icon-attention">
+          <svg viewBox="0 0 24 24" width="28" height="28"><path fill="currentColor" d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+        </div>
+        <h3>Attention</h3>
+        <p>FlashAttention with memory-efficient computation, RoPE positional encoding, and MoE Router implementations.</p>
+        <div class="feature-meta">
+          <span class="feature-badge">80-90% cuDNN</span>
+          <span class="feature-badge feature-badge-success">-80% Memory</span>
+        </div>
+      </div>
+      
+      <div class="feature-card" data-feature="normalization">
+        <div class="feature-icon icon-norm">
+          <svg viewBox="0 0 24 24" width="28" height="28"><path fill="currentColor" d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+        </div>
+        <h3>Normalization</h3>
+        <p>LayerNorm, RMSNorm, BatchNorm, and Softmax with optimized fusion strategies for modern GPUs.</p>
+        <div class="feature-meta">
+          <span class="feature-badge">90-95% cuDNN</span>
+        </div>
+      </div>
+      
+      <div class="feature-card" data-feature="convolution">
+        <div class="feature-icon icon-conv">
+          <svg viewBox="0 0 24 24" width="28" height="28"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5-7l-3 3.72L9 13l-3 4h12l-4-5z"/></svg>
+        </div>
+        <h3>Convolution</h3>
+        <p>2D/3D convolutions with Im2Col, Winograd, and depthwise separable optimizations.</p>
+        <div class="feature-meta">
+          <span class="feature-badge">75-85% cuDNN</span>
+        </div>
+      </div>
+      
+      <div class="feature-card" data-feature="sparse">
+        <div class="feature-icon icon-sparse">
+          <svg viewBox="0 0 24 24" width="28" height="28"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+        </div>
+        <h3>Sparse Operations</h3>
+        <p>CSR/CSC format support, SpMV, SpMM, and structured sparsity patterns optimized for sparse matrices.</p>
+        <div class="feature-meta">
+          <span class="feature-badge">High Sparsity</span>
+        </div>
+      </div>
+      
+      <div class="feature-card" data-feature="quantization">
+        <div class="feature-icon icon-quant">
+          <svg viewBox="0 0 24 24" width="28" height="28"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+        </div>
+        <h3>Quantization</h3>
+        <p>INT8 and FP8 (CUDA 12.0+) quantized operations for reduced precision with minimal accuracy loss.</p>
+        <div class="feature-meta">
+          <span class="feature-badge">2x Speedup</span>
+          <span class="feature-badge feature-badge-new">CUDA 12+</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Performance Section -->
+<section class="performance" id="performance">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Benchmark and validation surface</h2>
+      <p class="section-subtitle">Use the benchmarks as a learning and regression tool, not as inflated marketing copy</p>
+    </div>
+    
+    <div class="performance-grid">
+      <div class="perf-card">
+        <h3>GEMM Performance</h3>
+        <p class="perf-desc">A100, FP16 Tensor Core</p>
+        <div class="perf-chart">
+          <div class="perf-bar">
+            <div class="perf-bar-label">cuBLAS</div>
+            <div class="perf-bar-track">
+              <div class="perf-bar-fill" style="--target-width: 100%"><span>312 TFLOPs</span></div>
+            </div>
+          </div>
+          <div class="perf-bar">
+            <div class="perf-bar-label">TensorCraft</div>
+            <div class="perf-bar-track">
+              <div class="perf-bar-fill perf-bar-highlight" style="--target-width: 92%"><span>287 TFLOPs</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="perf-badge">92% Efficiency</div>
+      </div>
+      
+      <div class="perf-card">
+        <h3>FlashAttention</h3>
+        <p class="perf-desc">H100, Sequence Length 4096</p>
+        <div class="perf-chart">
+          <div class="perf-bar">
+            <div class="perf-bar-label">Standard</div>
+            <div class="perf-bar-track">
+              <div class="perf-bar-fill" style="--target-width: 100%"><span>45% Peak</span></div>
+            </div>
+          </div>
+          <div class="perf-bar">
+            <div class="perf-bar-label">TensorCraft</div>
+            <div class="perf-bar-track">
+              <div class="perf-bar-fill perf-bar-highlight" style="--target-width: 85%"><span>85% Peak</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="perf-badge perf-badge-success">-84% Memory</div>
+      </div>
+      
+      <div class="perf-card">
+        <h3>LayerNorm</h3>
+        <p class="perf-desc">Batch 32, Hidden 4096</p>
+        <div class="perf-chart">
+          <div class="perf-bar">
+            <div class="perf-bar-label">cuDNN</div>
+            <div class="perf-bar-track">
+              <div class="perf-bar-fill" style="--target-width: 100%"><span>95% Peak</span></div>
+            </div>
+          </div>
+          <div class="perf-bar">
+            <div class="perf-bar-label">TensorCraft</div>
+            <div class="perf-bar-track">
+              <div class="perf-bar-fill perf-bar-highlight" style="--target-width: 93%"><span>93% Peak</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="perf-badge">98% Match</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GPU Support Section -->
+<section class="gpu-support" id="gpu-support">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Multi-Architecture Support</h2>
+      <p class="section-subtitle">From Volta to Blackwell, optimized for every generation</p>
+    </div>
+    
+    <div class="gpu-timeline">
+      <div class="gpu-card">
+        <div class="gpu-gen">Volta</div>
+        <div class="gpu-model">V100</div>
+        <div class="gpu-features">
+          <span class="gpu-feature" title="Tensor Core">TC</span>
+        </div>
+        <div class="gpu-sm">SM 70</div>
+      </div>
+      
+      <div class="gpu-card">
+        <div class="gpu-gen">Turing</div>
+        <div class="gpu-model">RTX 2080</div>
+        <div class="gpu-features">
+          <span class="gpu-feature" title="Tensor Core">TC</span>
+        </div>
+        <div class="gpu-sm">SM 75</div>
+      </div>
+      
+      <div class="gpu-card">
+        <div class="gpu-gen">Ampere</div>
+        <div class="gpu-model">A100, RTX 3090</div>
+        <div class="gpu-features">
+          <span class="gpu-feature" title="Tensor Core">TC</span>
+          <span class="gpu-feature" title="Sparse Tensor Core">STC</span>
+        </div>
+        <div class="gpu-sm">SM 80</div>
+      </div>
+      
+      <div class="gpu-card">
+        <div class="gpu-gen">Ada</div>
+        <div class="gpu-model">RTX 4090</div>
+        <div class="gpu-features">
+          <span class="gpu-feature" title="Tensor Core">TC</span>
+        </div>
+        <div class="gpu-sm">SM 89</div>
+      </div>
+      
+      <div class="gpu-card gpu-card-highlight">
+        <div class="gpu-gen">Hopper ⭐</div>
+        <div class="gpu-model">H100</div>
+        <div class="gpu-features">
+          <span class="gpu-feature" title="Tensor Core">TC</span>
+          <span class="gpu-feature" title="Tensor Memory Accelerator">TMA</span>
+          <span class="gpu-feature" title="Warp Group MMA">WGMMA</span>
+        </div>
+        <div class="gpu-sm">SM 90</div>
+      </div>
+      
+      <div class="gpu-card gpu-card-new">
+        <div class="gpu-gen">Blackwell</div>
+        <div class="gpu-model">B200</div>
+        <div class="gpu-features">
+          <span class="gpu-feature" title="Tensor Core">TC</span>
+          <span class="gpu-feature" title="Tensor Memory Accelerator">TMA</span>
+          <span class="gpu-feature" title="Warp Group MMA">WGMMA</span>
+        </div>
+        <div class="gpu-sm">SM 100</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Quick Start Section -->
+<section class="quickstart" id="quickstart">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Get Started in 60 Seconds</h2>
+      <p class="section-subtitle">Installation is quick and painless</p>
+    </div>
+    
+    <div class="quickstart-steps">
+      <div class="step">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <h3>Clone Repository</h3>
+          <div class="code-block">
+            <pre><code>git clone https://github.com/LessUp/modern-ai-kernels.git
+cd modern-ai-kernels</code></pre>
+            <button class="copy-btn" data-clipboard="git clone https://github.com/LessUp/modern-ai-kernels.git
+cd modern-ai-kernels">
+              <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="step">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <h3>Configure & Build</h3>
+          <div class="code-block">
+            <pre><code>cmake --preset dev
+cmake --build --preset dev --parallel</code></pre>
+            <button class="copy-btn" data-clipboard="cmake --preset dev
+cmake --build --preset dev --parallel">
+              <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="step">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <h3>Run Tests</h3>
+          <div class="code-block">
+            <pre><code>ctest --preset dev --output-on-failure</code></pre>
+            <button class="copy-btn" data-clipboard="ctest --preset dev --output-on-failure">
+              <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="quickstart-cta">
+      <p>Need detailed instructions?</p>
+      <a href="{{ site.baseurl }}/en/getting-started/installation.html" class="btn btn-outline">View Full Installation Guide →</a>
+    </div>
+  </div>
+</section>
+
+<!-- Why Section -->
+<section class="why" id="why">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Why TensorCraft-HPC?</h2>
+    </div>
+    
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="why-icon">🎓</div>
+        <h3>Learn by Doing</h3>
+        <p>Progressive optimization journey: start with naive implementations and understand every optimization step toward Tensor Core performance.</p>
+      </div>
+      
+      <div class="why-card">
+        <div class="why-icon">🔬</div>
+        <h3>Research Ready</h3>
+        <p>Clean, documented code perfect for kernel research. Test new algorithms and compare against optimized baselines.</p>
+      </div>
+      
+      <div class="why-card">
+        <div class="why-icon">🚀</div>
+        <h3>Production Performance</h3>
+        <p>85-95% of cuBLAS/cuDNN performance means you can deploy with confidence. Header-only design for easy integration.</p>
+      </div>
+      
+      <div class="why-card">
+        <div class="why-icon">📊</div>
+        <h3>Benchmarked</h3>
+        <p>Comprehensive benchmarks across Volta through Blackwell. Know exactly what performance to expect on your hardware.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Community Section -->
+<section class="community" id="community">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Join the Community</h2>
+      <p class="section-subtitle">Built by the AI HPC community, for the community</p>
+    </div>
+    
+    <div class="community-grid">
+      <a href="https://github.com/LessUp/modern-ai-kernels" class="community-card" target="_blank" rel="noopener">
+        <div class="community-icon">
+          <svg viewBox="0 0 24 24" width="32" height="32"><path fill="currentColor" d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+        </div>
+        <h3>GitHub</h3>
+        <p>Star the repository, report issues, and contribute code</p>
+      </a>
+      
+      <a href="https://github.com/LessUp/modern-ai-kernels/issues" class="community-card" target="_blank" rel="noopener">
+        <div class="community-icon">
+          <svg viewBox="0 0 24 24" width="32" height="32"><path fill="currentColor" d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1zm0 2a9 9 0 100 18 9 9 0 000-18zm0 4a5 5 0 015 5v1h-2v-1a3 3 0 00-6 0v1H7v-1a5 5 0 015-5zM8 14a1 1 0 110 2 1 1 0 010-2zm8 0a1 1 0 110 2 1 1 0 010-2z"/></svg>
+        </div>
+        <h3>Issues</h3>
+        <p>Report bugs, request features, or ask questions</p>
+      </a>
+      
+      <a href="https://github.com/LessUp/modern-ai-kernels/discussions" class="community-card" target="_blank" rel="noopener">
+        <div class="community-icon">
+          <svg viewBox="0 0 24 24" width="32" height="32"><path fill="currentColor" d="M21 6h-2v9H6v2c0 .55.45 1 1 1h11l4 4V7c0-.55-.45-1-1-1zm-4 6V3c0-.55-.45-1-1-1H3c-.55 0-1 .45-1 1v14l4-4h10c.55 0 1-.45 1-1z"/></svg>
+        </div>
+        <h3>Discussions</h3>
+        <p>Share ideas, showcase projects, get help</p>
+      </a>
+      
+      <a href="{{ site.baseurl }}/en/reference/contributing.html" class="community-card">
+        <div class="community-icon">
+          <svg viewBox="0 0 24 24" width="32" height="32"><path fill="currentColor" d="M13.35 20.65l4.7-4.7a.996.996 0 000-1.41l-4.7-4.7c-.63-.63-1.71-.19-1.71.7v2.35H4c-.55 0-1 .45-1 1v2c0 .55.45 1 1 1h7.65v2.35c0 .89 1.08 1.34 1.71.71zM20 4h-16c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h3c.55 0 1-.45 1-1s-.45-1-1-1h-3v-10h16v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-1.1-.9-2-2-2z"/></svg>
+        </div>
+        <h3>Contributing</h3>
+        <p>Learn how to contribute to the project</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Final CTA Section -->
+<section class="final-cta">
+  <div class="container">
+    <h2>Ready to dive into GPU kernel optimization?</h2>
+    <p>Join thousands of developers learning high-performance AI computing</p>
+    <div class="final-cta-buttons">
+      <a href="{{ site.baseurl }}/en/getting-started/installation.html" class="btn btn-primary btn-large">
+        <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        Get Started Now
+      </a>
+      <a href="https://github.com/LessUp/modern-ai-kernels" class="btn btn-secondary btn-large" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+        Star on GitHub
+      </a>
+    </div>
+  </div>
+</section>

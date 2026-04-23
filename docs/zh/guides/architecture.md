@@ -1,3 +1,8 @@
+---
+title: TensorCraft-HPC 架构设计
+lang: zh
+---
+
 # TensorCraft-HPC 架构设计
 
 本文档描述 TensorCraft-HPC 的整体架构和设计决策。

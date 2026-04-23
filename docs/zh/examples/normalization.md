@@ -1,3 +1,8 @@
+---
+title: Normalization Examples
+lang: zh
+---
+
 # Normalization Examples
 
 This guide demonstrates LayerNorm, RMSNorm, and BatchNorm usage.
@@ -293,6 +298,7 @@ void normalization_with_tensor() {
 ## Performance Tips
 
 1. **Batch multiple operations**: Process multiple sequences together
+
    ```cpp
    // Instead of: layernorm for each sequence
    // Do: layernorm for batch * sequences at once

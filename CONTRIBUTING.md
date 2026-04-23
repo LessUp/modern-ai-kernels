@@ -1,66 +1,42 @@
 # Contributing to TensorCraft-HPC
 
-Thank you for your interest in contributing to TensorCraft-HPC! We welcome all forms of contributions.
+TensorCraft-HPC is maintained as a **stabilizing reference project**. Contributions are welcome,
+but the bar is intentionally biased toward correctness, clarity, and maintainability.
 
-## How to Contribute
+## What Fits This Repository
 
-### Reporting Issues
+Good contributions usually do one of these:
 
-If you find a bug or have a feature suggestion, please submit it via GitHub Issues:
+- fix correctness, build, packaging, or documentation issues
+- tighten the project surface so it is easier to understand and maintain
+- improve tests, validation, or workflow reliability
+- align implementation with OpenSpec requirements
 
-1. Search existing issues to avoid duplicates
-2. Use a clear title to describe the problem
-3. Provide reproduction steps (if it's a bug)
-4. Include environment information:
-   - Operating system
-   - CUDA version
-   - GPU model
-   - Compiler version
+Changes that add broad new scope should start with a strong OpenSpec rationale.
 
-### Submitting Code
+## Required Workflow
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/your-feature`
-3. Make your changes: `git commit -m 'Add some feature'`
-4. Push the branch: `git push origin feature/your-feature`
-5. Create a Pull Request
+1. Review the relevant files in `openspec/specs/`.
+2. For behavior, architecture, workflow, or documentation-surface changes, create or update an
+   active change under `openspec/changes/`.
+3. Keep the implementation tied to that change.
+4. Run the minimum meaningful validations before opening a PR.
+5. Use `/review` before merge for structural or governance changes.
 
-## Code Style
+`specs/` remains in the repository as historical context only.
 
-### C++ Style
+## Local Setup
 
-- Use C++17 as the base standard
-- Follow Google C++ Style Guide (with exceptions below)
-- Indentation: 4 spaces
-- Naming conventions:
-  - Class names: `PascalCase`
-  - Function names: `snake_case`
-  - Variable names: `snake_case`
-  - Constants: `kConstantName` or `CONSTANT_NAME`
-  - Template parameters: `PascalCase`
+### Baseline validation
 
-### CUDA Style
+```bash
+cmake --preset cpu-smoke
+cmake --build --preset cpu-smoke --parallel 2
+cmake --install build/cpu-smoke --prefix /tmp/tensorcraft-install
+python3 -m build --wheel
+```
 
-- Kernel functions use `__global__` prefix
-- Device functions use `__device__ __forceinline__`
-- Use `__restrict__` to hint the compiler
-- Explicitly specify `__launch_bounds__`
-
-### Documentation
-
-- All public APIs need documentation comments
-- Use Doxygen style comments
-- Complex algorithms need explanation
-
-## Testing
-
-### Unit Tests
-
-- All new features need tests
-- Use GoogleTest framework
-- Test files go in `tests/` directory
-
-### Running Tests
+### CUDA-enabled validation
 
 ```bash
 cmake --preset dev
@@ -68,20 +44,28 @@ cmake --build --preset dev --parallel 2
 ctest --preset dev --output-on-failure
 ```
 
-## Pull Request Checklist
+### Hooks
 
-Before submitting a PR, please confirm:
+```bash
+python3 -m pip install pre-commit
+pre-commit install
+```
 
-- [ ] Code follows project style guidelines
-- [ ] All tests pass
-- [ ] New features have corresponding tests
-- [ ] Documentation is updated
-- [ ] No compiler warnings
-- [ ] No significant performance regression
+## Editor and LSP
 
-## Contact
+The recommended baseline is:
 
-- GitHub Issues: Technical issues and feature requests
-- Discussions: General discussion and Q&A
+- `clangd` for C++/CUDA navigation
+- `cmake --preset dev` to generate `build/dev/compile_commands.json`
+- the checked-in `.vscode/` recommendations if you use VS Code
 
-Thank you for your contribution! 🎉
+## Pull Requests
+
+Every PR should:
+
+- reference the active OpenSpec change when relevant
+- explain what was removed, consolidated, or fixed
+- list the validations that were run
+- keep docs, workflows, and repo metadata aligned
+
+Merge quickly after review. Avoid long-lived branch drift.

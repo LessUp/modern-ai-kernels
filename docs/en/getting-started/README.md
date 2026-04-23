@@ -11,6 +11,7 @@ This section will help you set up, build, and validate TensorCraft-HPC on your s
 ## In This Section
 
 {: .toc }
+
 - [**Installation Guide**](installation.md) - Complete setup instructions
 - [**Troubleshooting**](troubleshooting.md) - Common issues and solutions
 
@@ -35,8 +36,8 @@ If you mainly need the Python interface:
 ```bash
 cmake --preset python-dev
 cmake --build --preset python-dev --parallel $(nproc)
-pip install -e .
-python -c "import tensorcraft_ops as tc; print(tc.__version__)"
+python3 -m pip install -e .
+python3 -c "import tensorcraft_ops as tc; print(tc.__version__)"
 ```
 
 ### Full Release Build

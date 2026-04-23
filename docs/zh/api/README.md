@@ -1,3 +1,8 @@
+---
+title: API 参考
+lang: zh
+---
+
 # API 参考
 
 本章节提供 TensorCraft-HPC 所有模块的详细 API 文档。

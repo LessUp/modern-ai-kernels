@@ -164,7 +164,7 @@ For any Tensor object created with a given shape, GPU memory SHALL be allocated 
 
 ### Property 2: GEMM Mathematical Correctness
 
-For any matrices A[M×K], B[K×N] and scalars alpha, beta, GEMM SHALL compute C = alpha * A @ B + beta * C correctly within floating-point tolerance.
+For any matrices A[M×K], B[K×N] and scalars alpha, beta, GEMM SHALL compute C = alpha *A @ B + beta* C correctly within floating-point tolerance.
 
 ### Property 3: Softmax Row Sum Invariant
 

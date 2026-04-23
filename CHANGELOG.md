@@ -17,6 +17,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Complete bilingual (EN/ZH) documentation structure | 完整的中英文双语文档结构
 - Root-level CHANGELOG.md with bilingual support | 根目录双语 CHANGELOG.md
 - Professional documentation index and navigation | 专业的文档索引和导航
+- `CLAUDE.md`, `.github/copilot-instructions.md`, `.github/workflows/copilot-setup-steps.yml` |
+  新增 `CLAUDE.md`、`.github/copilot-instructions.md`、`.github/workflows/copilot-setup-steps.yml`
+- `.editorconfig`, `.clangd`, and tracked `.vscode/` recommendations |
+  新增 `.editorconfig`、`.clangd` 与可跟踪的 `.vscode/` 推荐配置
+
+### Changed | 变更
+
+- OpenSpec is now the only active workflow language in root governance docs |
+  根治理文档现统一以 OpenSpec 作为唯一主动工作流语言
+- README, documentation hub, and reference pages were tightened to reduce duplication |
+  收敛 README、文档入口页与参考页，减少重复内容
+- CI now fails on meaningful pre-commit problems instead of hiding them |
+  CI 现在会对真实的 pre-commit 问题直接失败，而不是隐藏失败
+- `CMakePresets.json` no longer injects unused CUDA variables into CPU-only smoke runs |
+  `CMakePresets.json` 不再在 CPU smoke 场景中注入无效 CUDA 变量
 
 ---
 
@@ -86,7 +101,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   - `.editorconfig` for unified code formatting | `.editorconfig` 用于统一代码格式
 - Standardized badges in README | README 中的标准化徽章
   - License, CUDA, C++17/20, CMake, Python | 许可证、CUDA、C++17/20、CMake、Python
-  
+
 ### Changed | 变更
 
 - Changelog files restructured into changelog/ directory | 变更日志文件重组到 changelog/ 目录

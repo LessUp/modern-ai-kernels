@@ -1,3 +1,8 @@
+---
+title: Modern C++ for CUDA Development
+lang: zh
+---
+
 # Modern C++ for CUDA Development
 
 This guide demonstrates how to leverage modern C++ features (C++17/20/23) in CUDA kernel development.

@@ -1,13 +1,14 @@
 name: Feature Request
-description: Suggest a new feature or enhancement
+description: Suggest a scoped improvement that fits the repository closeout direction
 title: "[Feature]: "
 labels: ["enhancement"]
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for suggesting a new feature!
-        Please provide as much detail as possible to help us understand your request.
+        Thanks for suggesting an improvement.
+        This repository is intentionally prioritizing stabilization and cleanup, so please explain
+        why this request belongs in the project now.
 
   - type: textarea
     id: description
@@ -22,7 +23,7 @@ body:
     id: use-case
     attributes:
       label: Use Case
-      description: Describe the use case or problem this feature would solve.
+      description: Describe the concrete problem this improvement solves.
       placeholder: |
         As a [type of user], I want [goal] so that [benefit].
 
@@ -41,16 +42,13 @@ body:
     id: category
     attributes:
       label: Feature Category
-      description: What category does this feature fall under?
+      description: What category does this request fall under?
       options:
-        - New Kernel (GEMM, Attention, etc.)
-        - Performance Optimization
-        - Memory Management
-        - API Enhancement
-        - Python Bindings
-        - Documentation
-        - Build System
-        - Testing
+        - Correctness / bug prevention
+        - Documentation / discoverability
+        - Build / packaging / workflow
+        - API cleanup
+        - Performance follow-up
         - Other
     validations:
       required: true
@@ -58,12 +56,12 @@ body:
   - type: dropdown
     id: priority
     attributes:
-      label: Priority
-      description: How important is this feature to you?
+      label: Why now?
+      description: Help maintainers decide whether this should be part of closeout work.
       options:
-        - Nice to have
-        - Important
-        - Critical for my use case
+        - It closes a correctness or usability gap
+        - It removes maintenance burden
+        - It is nice to have, but not urgent
 
   - type: checkboxes
     id: contribution

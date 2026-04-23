@@ -1,0 +1,11 @@
+CompileFlags:
+  CompilationDatabase: build/dev
+Index:
+  Background: Build
+Diagnostics:
+  ClangTidy:
+    FastCheckFilter: Strict
+Hover:
+  ShowAKA: true
+InlayHints:
+  Enabled: true

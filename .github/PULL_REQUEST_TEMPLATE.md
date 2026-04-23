@@ -1,84 +1,38 @@
-## Description
+## Summary
 
-<!-- Provide a brief description of the changes in this PR -->
+<!-- What changed and why? -->
 
-## Related Issue
+## OpenSpec
 
-<!-- Link to the issue this PR addresses (if applicable) -->
-Fixes #
+- Change name / proposal:
+- Related spec(s):
 
-## Type of Change
+## Scope
 
-<!-- Mark the relevant option with an "x" -->
+- [ ] Bug fix
+- [ ] Documentation / governance cleanup
+- [ ] Build / CI / workflow change
+- [ ] API or behavior change
+- [ ] Performance-sensitive change
 
-- [ ] Bug fix (non-breaking change that fixes an issue)
-- [ ] New feature (non-breaking change that adds functionality)
-- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- [ ] Performance improvement
-- [ ] Documentation update
-- [ ] Code refactoring
-- [ ] Build/CI configuration change
-
-## Changes Made
-
-<!-- List the main changes made in this PR -->
-
--
--
--
-
-## Testing
-
-<!-- Describe the tests you ran to verify your changes -->
-
-### Local Validation
+## Validation
 
 ```bash
-# Recommended validation commands
-cmake --preset dev
-cmake --build --preset dev --parallel 2
-ctest --preset dev --output-on-failure
-python -m pip install -e .
-python -c "import tensorcraft_ops as tc; print(tc.__version__)"
+cmake --preset cpu-smoke
+cmake --build --preset cpu-smoke --parallel 2
+python3 -m build --wheel
 ```
 
-- [ ] Unit tests pass locally
-- [ ] New tests added for new functionality
-- [ ] Manual testing completed
+- [ ] CPU smoke validation completed
+- [ ] Python wheel build completed
+- [ ] CUDA validation completed locally when relevant
 
-### Test Configuration
+## Review Notes
 
-- **GPU**: <!-- e.g., RTX 4090, A100, H100 -->
-- **CUDA Version**: <!-- e.g., 12.8 -->
-- **OS**: <!-- e.g., Ubuntu 22.04 -->
-- **CMake Preset**: <!-- e.g., dev -->
+- [ ] README / Pages / GitHub metadata remain aligned
+- [ ] Root docs were preferred over duplicate docs
+- [ ] `/review` was used for structural or workflow changes
 
-## Checklist
+## Additional context
 
-<!-- Mark completed items with an "x" -->
-
-### Code Quality
-- [ ] My code follows the project's style guidelines (clang-format)
-- [ ] I have performed a self-review of my code
-- [ ] I have commented my code, particularly in hard-to-understand areas
-- [ ] My changes generate no new warnings
-
-### Documentation
-- [ ] I have updated the documentation accordingly
-- [ ] I have updated the CHANGELOG.md (if applicable)
-
-### Testing
-- [ ] I have added tests that prove my fix is effective or that my feature works
-- [ ] New and existing unit tests pass locally with my changes
-
-### Performance (if applicable)
-- [ ] I have run benchmarks and there is no performance regression
-- [ ] Performance improvements are documented with benchmark results
-
-## Screenshots / Benchmark Results
-
-<!-- If applicable, add screenshots or benchmark results to help explain your changes -->
-
-## Additional Notes
-
-<!-- Add any additional notes for reviewers -->
+<!-- Any migration notes, screenshots, benchmark data, or follow-ups -->

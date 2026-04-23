@@ -1,3 +1,8 @@
+---
+title: Attention Examples
+lang: zh
+---
+
 # Attention Examples
 
 This guide demonstrates FlashAttention, RoPE (Rotary Position Embedding), and MoE Router usage.
