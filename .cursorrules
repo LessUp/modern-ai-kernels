@@ -1,0 +1,72 @@
+# TensorCraft-HPC Cursor Rules
+
+## 项目状态
+
+TensorCraft-HPC 处于 **稳定化/收尾模式**。优先级是保持仓库一致性、可信度和低维护成本，而非扩展功能范围。
+
+## 规范优先级
+
+当指令冲突时，按以下顺序使用：
+
+1. `openspec/changes/<change-name>/` — 活跃变更
+2. `openspec/specs/` — 已接受的基准规范
+3. `include/`, `src/`, `tests/`, `docs/` 下的实现代码
+
+**注意**: `specs/` 是遗留归档，仅用于历史参考，不是新工作的活跃真相源。
+
+## 默认工作流
+
+1. 首先阅读相关 OpenSpec 文件
+2. 如果任务改变行为、结构、工作流或公开文档，在 `openspec/changes/` 中创建或更新 OpenSpec 变更
+3. 优先合并、删除和简化，而非添加新组件
+4. 保持变更概念上小而聚焦，即使涉及多个文件
+5. 先用最轻量的检查验证：
+   - `cmake --preset cpu-smoke`
+   - `cmake --build --preset cpu-smoke`
+   - `cmake --install build/cpu-smoke --prefix <tmp-dir>`
+   - `python3 -m build --wheel`
+6. 仅当本地有 CUDA 时运行 CUDA 相关构建/测试：
+   - `cmake --preset dev`
+   - `cmake --build --preset dev --parallel <n>`
+   - `ctest --preset dev --output-on-failure`
+7. 结构性、工作流或策略变更在合并前使用 `/review`
+
+## 仓库规则
+
+- 保持 `openspec/specs/` 与实现对齐
+- 保持根级治理文件简洁且项目特定
+- 保持 GitHub Actions 有意义；避免隐藏失败的工作流
+- 保持 GitHub Pages 聚焦于项目价值和导航，而非 README 复制
+- 当根级文档已存在时，保持参考文档精简
+- 保持 AI 助手配置一致：
+  - `AGENTS.md` = 仓库级基准
+  - `CLAUDE.md` = Claude 特定操作说明
+  - `.github/copilot-instructions.md` = Copilot 特定指令
+
+## 仓库地图
+
+- `openspec/` — 活跃规范工作流
+- `specs/` — 遗留归档
+- `include/tensorcraft/` — 仅头文件库
+- `src/python_ops/` — Python 绑定
+- `tests/` — GTest 和 Python 冒烟测试
+- `benchmarks/` — 基准测试二进制
+- `docs/` — GitHub Pages 站点和文档中心
+- `.github/` — 工作流、模板、仓库自动化
+
+## 收尾护栏
+
+- 不要引入新子系统，除非消除歧义或修复缺陷所必需
+- 不要保留相同用途的重复文档
+- 不要添加造成长期维护成本的重型自动化
+- 优先使用 `clangd` + `compile_commands.json` 作为 C++/CUDA LSP 基准
+- 优先一次一个范围明确的分支/PR，而非并行分支漂移
+
+## 审查清单
+
+在认为变更完成前，确认：
+
+- [ ] 如果变更是结构性或行为性的，存在 OpenSpec 变更/提案
+- [ ] README、Pages 和 GitHub 元数据讲述同一故事
+- [ ] CI/工作流变更在真实问题上大声失败
+- [ ] 文档和指令消除的歧义多于添加的

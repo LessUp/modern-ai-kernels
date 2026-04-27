@@ -7,6 +7,8 @@
  * for use across all kernel implementations.
  */
 
+#include <limits>
+
 #include "features.hpp"
 
 namespace tensorcraft {
@@ -117,7 +119,9 @@ TC_DEVICE_INLINE T block_reduce_max(T val, T* shared) {
     __syncthreads();
 
     if (warp_id == 0) {
-        val = (lane < num_warps) ? shared[lane] : T(-1e30);
+        // Use lowest representable value for proper max reduction semantics
+        // This handles all negative value domains correctly
+        val = (lane < num_warps) ? shared[lane] : std::numeric_limits<T>::lowest();
         val = warp_reduce_max(val);
     }
     return val;

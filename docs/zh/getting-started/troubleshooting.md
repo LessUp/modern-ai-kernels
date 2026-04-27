@@ -1,96 +1,96 @@
 ---
-title: Troubleshooting Guide
+title: 故障排除指南
 lang: zh
 ---
 
-# Troubleshooting Guide
+# 故障排除指南
 
-This guide covers the current common issues when building or using TensorCraft-HPC.
+本指南涵盖构建或使用 TensorCraft-HPC 时的常见问题。
 
-## Build Issues
+## 构建问题
 
-### CUDA not found
+### 未找到 CUDA
 
-**Typical symptom**
+**典型症状**
 
 ```text
 CMake Error: Could not find CUDA
 ```
 
-**What this repository does**
+**本仓库的处理方式**
 
-If CUDA is unavailable, configure can still succeed, but CMake forces:
+如果 CUDA 不可用，配置仍可成功，但 CMake 会强制：
 
 - `TC_BUILD_TESTS=OFF`
 - `TC_BUILD_BENCHMARKS=OFF`
 - `TC_BUILD_PYTHON=OFF`
 
-**What to do**
+**解决方案**
 
 ```bash
 nvcc --version
 cmake --preset cpu-smoke
 ```
 
-If you do need CUDA, point CMake to the toolkit explicitly:
+如果您确实需要 CUDA，请显式指定 toolkit 路径：
 
 ```bash
 cmake -B build -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc -DCUDAToolkit_ROOT=/usr/local/cuda
 ```
 
-## Unsupported GPU architecture
+## 不支持的 GPU 架构
 
-**Typical symptom**
+**典型症状**
 
 ```text
 nvcc fatal: Unsupported gpu architecture 'compute_XX'
 ```
 
-**What to do**
+**解决方案**
 
-Start with a single supported architecture for your machine:
+从您的机器支持的单个架构开始：
 
 ```bash
 cmake --preset dev -DCMAKE_CUDA_ARCHITECTURES=75
 ```
 
-If you already know your GPU architecture, use that exact value.
+如果您已知您的 GPU 架构，请使用该确切值。
 
-## Build is too heavy or runs out of memory
+## 构建过重或内存不足
 
-**Typical symptoms**
+**典型症状**
 
 ```text
 nvcc fatal: Unsupported gpu architecture ...
 nvcc error: ran out of memory during compilation
 ```
 
-**What to do**
+**解决方案**
 
-1. Prefer the lighter presets:
+1. 优先使用较轻量的预设：
 
    ```bash
    cmake --preset dev
    cmake --preset python-dev
    ```
 
-2. Reduce parallelism:
+2. 减少并行度：
 
    ```bash
    cmake --build --preset dev --parallel 2
    ```
 
-3. Limit to one architecture:
+3. 限制为单一架构：
 
    ```bash
    cmake --preset dev -DCMAKE_CUDA_ARCHITECTURES=75
    ```
 
-## Tests or Python bindings are unexpectedly disabled
+## 测试或 Python 绑定意外禁用
 
-This usually means CMake configured without usable CUDA.
+这通常意味着 CMake 在没有可用 CUDA 的情况下进行了配置。
 
-Check the configure summary and look for:
+检查配置摘要，查找：
 
 ```text
 CUDA Enabled:   ON
@@ -98,65 +98,65 @@ Build Tests:    ON
 Build Python:   ON
 ```
 
-If CUDA is off, tests and Python bindings are disabled by design.
+如果 CUDA 关闭，测试和 Python 绑定将按设计被禁用。
 
-## Editable install succeeds but import fails
+## 可编辑安装成功但导入失败
 
-Use the repository root and verify the import name:
+使用仓库根目录并验证导入名称：
 
 ```bash
 python3 -m pip install -e .
 python3 -c "import tensorcraft_ops as tc; print(tc.__version__)"
 ```
 
-Also make sure you are using the same Python interpreter for both commands.
+同时确保两个命令使用相同的 Python 解释器。
 
-## Python environment shows `Ignoring invalid distribution ~...`
+## Python 环境显示 `Ignoring invalid distribution ~...`
 
-Those warnings come from broken package metadata already present in the Python environment, not from TensorCraft itself.
+这些警告来自 Python 环境中已存在的损坏包元数据，而非 TensorCraft 本身。
 
-TensorCraft can still build successfully, but you may want to clean that environment if pip output becomes noisy.
+TensorCraft 仍可成功构建，但如果 pip 输出变得嘈杂，您可能需要清理该环境。
 
 ## `ModuleNotFoundError: No module named 'tensorcraft_ops'`
 
-**What to check**
+**检查项**
 
-1. Install from the repository root:
+1. 从仓库根目录安装：
 
    ```bash
    python3 -m pip install -e .
    ```
 
-2. Verify the import with the same interpreter:
+2. 使用相同解释器验证导入：
 
    ```bash
    python3 -c "import tensorcraft_ops as tc; print(tc.__version__)"
    ```
 
-3. If needed, inspect where pip installed the package:
+3. 如需要，检查 pip 安装包的位置：
 
    ```bash
    python3 -m pip show -f tensorcraft-ops
    ```
 
-## CUDA version compatibility
+## CUDA 版本兼容性
 
-| Capability | Required CUDA |
-|------------|---------------|
-| Basic kernels and core build | 12.8 |
-| BF16-related paths | 12.8 |
-| FP8-related paths | 12.8 |
-| Hopper-specific features | 12.8 |
+| 功能 | 所需 CUDA |
+|------|-----------|
+| 基本内核和核心构建 | 12.8 |
+| BF16 相关路径 | 12.8 |
+| FP8 相关路径 | 12.8 |
+| Hopper 特定功能 | 12.8 |
 
-This repository now assumes the local CUDA `12.8` toolchain and no longer carries a CUDA 10.x compatibility path.
+本仓库现假定本地 CUDA `12.8` 工具链，不再保留 CUDA 10.x 兼容路径。
 
-## GPU runtime path vs CI
+## GPU 运行时路径 vs CI
 
-The repository's documented local validation path is the CUDA `dev` preset plus `ctest` and Python import checks.
+仓库文档记录的本地验证路径是 CUDA `dev` 预设加上 `ctest` 和 Python 导入检查。
 
-Current GitHub Actions mainly cover CPU configure/install smoke and packaging smoke. They do **not** replace running the real CUDA path on a GPU machine.
+当前 GitHub Actions 主要覆盖 CPU 配置/安装冒烟测试和打包冒烟测试。它们**不**替代在 GPU 机器上运行真正的 CUDA 路径。
 
-## Recommended validation commands
+## 推荐的验证命令
 
 ```bash
 cmake --preset dev
@@ -166,12 +166,12 @@ python3 -m pip install -e .
 python3 -c "import tensorcraft_ops as tc; print(tc.__version__)"
 ```
 
-## Still stuck?
+## 仍然卡住？
 
-When reporting an issue, include:
+报告问题时，请包含：
 
 - `nvcc --version`
 - `cmake --version`
-- The preset or exact CMake command you used
-- Full configure/build error output
-- Your `CMAKE_CUDA_ARCHITECTURES` value, if overridden
+- 您使用的预设或确切的 CMake 命令
+- 完整的配置/构建错误输出
+- 您的 `CMAKE_CUDA_ARCHITECTURES` 值（如已覆盖）

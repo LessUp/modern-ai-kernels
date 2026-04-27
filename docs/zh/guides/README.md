@@ -1,30 +1,30 @@
 ---
-title: Guides Overview
+title: 指南概览
 lang: zh
 ---
 
-# Guides Overview
+# 指南概览
 
-This section contains in-depth guides on architecture, optimization techniques, and modern C++/CUDA practices.
+本节包含架构设计、优化技术和现代 C++/CUDA 实践的深入指南。
 
-## Available Guides
+## 可用指南
 
-| Guide | Description |
-|-------|-------------|
-| [Architecture](architecture.md) | Design principles, module structure, and code organization |
-| [Optimization Guide](optimization.md) | Kernel optimization journey from naive to Tensor Core |
-| [Modern C++/CUDA](modern-cpp-cuda.md) | Leveraging C++17/20/23 features in CUDA development |
+| 指南 | 描述 |
+|------|------|
+| [架构设计](architecture.md) | 设计原则、模块结构和代码组织 |
+| [优化指南](optimization.md) | 从朴素实现到 Tensor Core 的内核优化之旅 |
+| [现代 C++/CUDA](modern-cpp-cuda.md) | 在 CUDA 开发中运用 C++17/20/23 特性 |
 
-## Learning Path
+## 学习路径
 
-### For Beginners
+### 初学者
 
-1. Start with **Architecture** to understand the overall structure
-2. Read **Modern C++/CUDA** to learn the coding patterns used
-3. Explore **Optimization Guide** to understand performance techniques
+1. 从**架构设计**开始，了解整体结构
+2. 阅读**现代 C++/CUDA**，学习代码模式
+3. 探索**优化指南**，理解性能优化技术
 
-### For Advanced Users
+### 高级用户
 
-1. Jump to **Optimization Guide** for specific kernel optimizations
-2. Reference **Architecture** for module design patterns
-3. Use **Modern C++/CUDA** as a reference for advanced techniques
+1. 直接跳转到**优化指南**，查看特定内核优化
+2. 参考**架构设计**，了解模块设计模式
+3. 使用**现代 C++/CUDA**作为高级技术参考

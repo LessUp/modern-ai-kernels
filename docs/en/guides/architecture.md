@@ -1,84 +1,85 @@
 ---
-title: TensorCraft-HPC 架构设计
+title: TensorCraft-HPC Architecture Design
 lang: en
 ---
 
-# TensorCraft-HPC 架构设计
+# TensorCraft-HPC Architecture Design
 
-本文档描述 TensorCraft-HPC 的整体架构和设计决策。
+This document describes the overall architecture and design decisions of TensorCraft-HPC.
 
-## 设计原则
+## Design Principles
 
-### 1. Header-Only 设计
+### 1. Header-Only Design
 
-核心库采用纯头文件设计，优点：
+The core library adopts a pure header-only design with the following benefits:
 
-- **零配置集成**：只需 `#include` 即可使用
-- **编译时优化**：模板代码可以完全内联
-- **跨平台兼容**：无需预编译库
+- **Zero-configuration integration**: Simply `#include` to use
+- **Compile-time optimization**: Template code can be fully inlined
+- **Cross-platform compatibility**: No pre-compiled libraries needed
 
 ```cpp
-// 使用方式
+// Usage example
 #include "tensorcraft/kernels/gemm.hpp"
 tensorcraft::kernels::gemm(A, B, C, M, N, K);
 ```
 
-### 2. 渐进式优化
+### 2. Progressive Optimization
 
-每个算子提供多个优化级别，便于学习和对比：
+Each operator provides multiple optimization levels for learning and comparison:
 
 ```
 Naive → Tiled → Double Buffer → Tensor Core
   ↓        ↓          ↓              ↓
-基础实现  共享内存   隐藏延迟      硬件加速
+Basic   Shared     Latency       Hardware
+        Memory     Hiding       Acceleration
 ```
 
-### 3. 现代 C++ 优先
+### 3. Modern C++ First
 
-充分利用 C++17/20/23 特性：
+Fully leverages C++17/20/23 features:
 
-- **Concepts** (C++20): 类型约束
-- **constexpr if** (C++17): 编译时分支
-- **Structured Bindings** (C++17): 多返回值
-- **RAII**: 自动资源管理
+- **Concepts** (C++20): Type constraints
+- **constexpr if** (C++17): Compile-time branching
+- **Structured Bindings** (C++17): Multiple return values
+- **RAII**: Automatic resource management
 
-### 4. 向后兼容
+### 4. Backward Compatibility
 
-支持 CUDA 11.0-13.1，通过条件编译处理新特性：
+Supports CUDA 11.0-13.1 with conditional compilation for new features:
 
 ```cpp
 #if TC_CUDA_VERSION >= 12000
-    // FP8 支持
+    // FP8 support
 #endif
 
 #if TC_CUDA_VERSION >= 11080
-    // WGMMA 支持
+    // WGMMA support
 #endif
 ```
 
 ---
 
-## 模块架构
+## Module Architecture
 
 ```
 tensorcraft/
-├── core/           # 核心工具层
-├── memory/         # 内存管理层
-└── kernels/        # 算子实现层
+├── core/           # Core utilities layer
+├── memory/         # Memory management layer
+└── kernels/        # Operator implementation layer
 ```
 
-### Core 层
+### Core Layer
 
-提供基础设施：
+Provides fundamental infrastructure:
 
 ```
 core/
-├── cuda_check.hpp    # 错误检查
-├── features.hpp      # 特性检测
-└── type_traits.hpp   # 类型系统
+├── cuda_check.hpp    # Error checking
+├── features.hpp      # Feature detection
+└── type_traits.hpp   # Type system
 ```
 
-**cuda_check.hpp**: CUDA 错误检查宏
+**cuda_check.hpp**: CUDA error checking macros
 
 ```cpp
 #define TC_CUDA_CHECK(err) do { \
@@ -89,39 +90,39 @@ core/
 } while(0)
 ```
 
-**features.hpp**: 编译时特性检测
+**features.hpp**: Compile-time feature detection
 
 ```cpp
-// C++ 版本检测
+// C++ version detection
 #if __cplusplus >= 202002L
     #define TC_CPP20 1
 #endif
 
-// CUDA 特性检测
+// CUDA feature detection
 #if defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 700
     #define TC_HAS_WMMA 1
 #endif
 ```
 
-**type_traits.hpp**: 类型特征和 Concepts
+**type_traits.hpp**: Type traits and Concepts
 
 ```cpp
 template<typename T>
 concept Numeric = std::is_arithmetic_v<T> || is_half_v<T>;
 ```
 
-### Memory 层
+### Memory Layer
 
-提供内存抽象：
+Provides memory abstractions:
 
 ```
 memory/
-├── aligned_vector.hpp  # 向量化加载
-├── tensor.hpp          # Tensor 封装
-└── memory_pool.hpp     # 内存池
+├── aligned_vector.hpp  # Vectorized loading
+├── tensor.hpp          # Tensor wrapper
+└── memory_pool.hpp     # Memory pool
 ```
 
-**AlignedVector**: 支持向量化内存访问
+**AlignedVector**: Supports vectorized memory access
 
 ```cpp
 template<typename T, int N>
@@ -129,12 +130,12 @@ struct alignas(sizeof(T) * N) AlignedVector {
     T val[N];
 };
 
-// 128-bit 加载
+// 128-bit load
 using Vec4 = AlignedVector<float, 4>;
 Vec4 data = *reinterpret_cast<const Vec4*>(&input[idx]);
 ```
 
-**Tensor**: RAII 风格的 GPU 张量
+**Tensor**: RAII-style GPU tensor
 
 ```cpp
 template<typename T>
@@ -152,7 +153,7 @@ public:
 };
 ```
 
-**MemoryPool**: 减少分配开销
+**MemoryPool**: Reduces allocation overhead
 
 ```cpp
 class MemoryPool {
@@ -164,29 +165,29 @@ public:
 };
 ```
 
-### Kernels 层
+### Kernels Layer
 
-算子实现：
+Operator implementations:
 
 ```
 kernels/
-├── elementwise.hpp    # 逐元素操作
+├── elementwise.hpp    # Element-wise operations
 ├── softmax.hpp        # Softmax
-├── normalization.hpp  # 归一化
-├── gemm.hpp           # 矩阵乘法
-├── attention.hpp      # 注意力机制
-├── conv2d.hpp         # 卷积
-├── sparse.hpp         # 稀疏矩阵
-└── fusion.hpp         # 融合与量化
+├── normalization.hpp  # Normalization
+├── gemm.hpp           # Matrix multiplication
+├── attention.hpp      # Attention mechanism
+├── conv2d.hpp         # Convolution
+├── sparse.hpp         # Sparse matrices
+└── fusion.hpp         # Fusion and quantization
 ```
 
 ---
 
-## Kernel 设计模式
+## Kernel Design Patterns
 
-### 1. Functor 模式
+### 1. Functor Pattern
 
-使用 Functor 实现可组合的操作：
+Using Functors for composable operations:
 
 ```cpp
 struct ReLU {
@@ -203,9 +204,9 @@ __global__ void elementwise_kernel(const T* in, T* out, size_t n, Func func) {
 }
 ```
 
-### 2. 版本选择模式
+### 2. Version Selection Pattern
 
-通过枚举选择优化级别：
+Selecting optimization level via enumeration:
 
 ```cpp
 enum class GemmVersion { Naive, Tiled, DoubleBuffer, TensorCore, Auto };
@@ -221,18 +222,18 @@ void launch_gemm(const T* A, const T* B, T* C, int M, int N, int K,
             gemm_tiled<<<grid, block, smem>>>(A, B, C, M, N, K);
             break;
         case GemmVersion::TensorCore:
-            // 当前通过专用 WMMA 入口 launch_gemm_wmma 使用 Tensor Core
+            // Currently uses Tensor Core via dedicated WMMA entry launch_gemm_wmma
             break;
         case GemmVersion::Auto:
-            // 默认回退到稳定实现
+            // Default fallback to stable implementation
             break;
     }
 }
 ```
 
-### 3. Epilogue 模式
+### 3. Epilogue Pattern
 
-GEMM 后处理的可扩展设计：
+Extensible design for GEMM post-processing:
 
 ```cpp
 struct EpilogueBiasReLU {
@@ -246,14 +247,14 @@ struct EpilogueBiasReLU {
 
 template<typename T, typename Epilogue>
 __global__ void gemm_with_epilogue(/* ... */, Epilogue epilogue) {
-    // ... GEMM 计算 ...
+    // ... GEMM computation ...
     C[idx] = epilogue(acc, col);
 }
 ```
 
-### 4. 编译时配置
+### 4. Compile-time Configuration
 
-使用模板参数进行编译时配置：
+Using template parameters for compile-time configuration:
 
 ```cpp
 template<typename T, int TILE_M = 128, int TILE_N = 128, int TILE_K = 32>
@@ -266,62 +267,62 @@ __global__ void gemm_optimized(/* ... */) {
 
 ---
 
-## 内存访问优化
+## Memory Access Optimization
 
-### 向量化加载
+### Vectorized Loading
 
 ```cpp
-// 标量加载: 4 次内存事务
+// Scalar load: 4 memory transactions
 float a = input[idx];
 float b = input[idx+1];
 float c = input[idx+2];
 float d = input[idx+3];
 
-// 向量化加载: 1 次内存事务
+// Vectorized load: 1 memory transaction
 float4 vec = *reinterpret_cast<const float4*>(&input[idx]);
 ```
 
-### 合并访问
+### Coalesced Access
 
 ```cpp
-// 好: 相邻线程访问相邻内存
+// Good: Adjacent threads access adjacent memory
 output[threadIdx.x] = input[threadIdx.x];
 
-// 差: 跨步访问
+// Bad: Strided access
 output[threadIdx.x * stride] = input[threadIdx.x * stride];
 ```
 
-### Bank Conflict 避免
+### Bank Conflict Avoidance
 
 ```cpp
-// 有 bank conflict
+// With bank conflict
 __shared__ float tile[32][32];
 
-// 无 bank conflict (添加 padding)
+// Without bank conflict (add padding)
 __shared__ float tile[32][33];
 ```
 
 ---
 
-## 数值稳定性
+## Numerical Stability
 
-### Softmax 稳定性
+### Softmax Stability
 
 ```cpp
-// 不稳定: exp 可能溢出
+// Unstable: exp may overflow
 for (int i = 0; i < n; ++i)
     output[i] = exp(input[i]) / sum;
 
-// 稳定: 减去最大值
+// Stable: subtract maximum value
 float max_val = *max_element(input, input + n);
 for (int i = 0; i < n; ++i)
     output[i] = exp(input[i] - max_val) / sum;
 ```
 
-### LayerNorm 稳定性
+### LayerNorm Stability
 
 ```cpp
-// Welford 算法: 单遍计算均值和方差
+// Welford's algorithm: Single-pass mean and variance computation
 float mean = 0.0f, M2 = 0.0f;
 for (int i = 0; i < n; ++i) {
     float delta = x[i] - mean;
@@ -333,60 +334,60 @@ float var = M2 / n;
 
 ---
 
-## 扩展指南
+## Extension Guide
 
-### 添加新算子
+### Adding New Operators
 
-1. 在 `include/tensorcraft/kernels/` 创建头文件
-2. 实现 kernel 函数和启动器
-3. 添加测试到 `tests/`
-4. 添加基准测试到 `benchmarks/`
-5. 更新文档
+1. Create header file in `include/tensorcraft/kernels/`
+2. Implement kernel function and launcher
+3. Add tests to `tests/`
+4. Add benchmarks to `benchmarks/`
+5. Update documentation
 
-### 添加新优化级别
+### Adding New Optimization Levels
 
-1. 在现有头文件中添加新的 kernel 实现
-2. 更新版本枚举
-3. 在启动器中添加分支
-4. 添加对比测试
+1. Add new kernel implementation in existing header
+2. Update version enumeration
+3. Add branch in launcher
+4. Add comparative tests
 
-### 支持新数据类型
+### Supporting New Data Types
 
-1. 在 `type_traits.hpp` 添加类型检测
-2. 在 `features.hpp` 添加特性检测
-3. 特化相关 kernel 模板
-4. 添加类型转换工具
+1. Add type detection in `type_traits.hpp`
+2. Add feature detection in `features.hpp`
+3. Specialize related kernel templates
+4. Add type conversion utilities
 
 ---
 
-## 性能考量
+## Performance Considerations
 
-### 占用率 vs 寄存器
+### Occupancy vs Registers
 
 ```cpp
-// 高占用率: 更多并行
+// High occupancy: More parallelism
 __launch_bounds__(256, 4)  // 256 threads, 4 blocks/SM
 
-// 更多寄存器: 更少溢出
+// More registers: Less spilling
 __launch_bounds__(128, 2)  // 128 threads, 2 blocks/SM
 ```
 
-### 共享内存 vs L1 Cache
+### Shared Memory vs L1 Cache
 
 ```cpp
-// 偏向共享内存
+// Prefer shared memory
 cudaFuncSetAttribute(kernel, 
     cudaFuncAttributePreferredSharedMemoryCarveout, 100);
 
-// 偏向 L1 Cache
+// Prefer L1 Cache
 cudaFuncSetAttribute(kernel,
     cudaFuncAttributePreferredSharedMemoryCarveout, 0);
 ```
 
-### 异步执行
+### Asynchronous Execution
 
 ```cpp
-// 使用多个 stream 重叠执行
+// Use multiple streams for overlapped execution
 cudaStream_t streams[4];
 for (int i = 0; i < 4; ++i) {
     cudaStreamCreate(&streams[i]);

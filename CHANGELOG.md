@@ -33,6 +33,33 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `CMakePresets.json` no longer injects unused CUDA variables into CPU-only smoke runs |
   `CMakePresets.json` 不再在 CPU smoke 场景中注入无效 CUDA 变量
 
+### Fixed | 修复
+
+- Rewrote `docs/en/guides/architecture.md` to proper English (was Chinese content) |
+  重写 `docs/en/guides/architecture.md` 为正确的英文版本（原内容为中文）
+- Completed `docs/zh/getting-started/installation.md` Chinese translation |
+  补全 `docs/zh/getting-started/installation.md` 中文翻译
+- Translated `docs/zh/getting-started/troubleshooting.md` to Chinese |
+  翻译 `docs/zh/getting-started/troubleshooting.md` 为中文
+- Translated `docs/zh/examples/README.md` to Chinese |
+  翻译 `docs/zh/examples/README.md` 为中文
+
+### Removed | 移除
+
+- Deleted `changelog/` directory (consolidated into CHANGELOG.md) |
+  删除 `changelog/` 目录（内容已合并到 CHANGELOG.md）
+- Removed redundant `pre-commit` CI job (kept `format-check`) |
+  移除冗余的 `pre-commit` CI job（保留 `format-check`）
+
+### Technical | 技术改进
+
+- Added sm_70 (V100) support to CMakePresets release build |
+  CMakePresets release 构建添加 sm_70 (V100) 支持
+- Enhanced `.clangd` with multi-directory fallback (build/dev, build/release) |
+  增强 `.clangd` 配置支持多目录 fallback
+- Updated GitHub repository metadata (description, topics, homepage) |
+  更新 GitHub 仓库元数据（描述、标签、主页）
+
 ---
 
 ## [3.0.0] - 2026-04-16 | v3.0.0 - 2026年4月16日

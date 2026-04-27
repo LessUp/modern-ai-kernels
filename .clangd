@@ -1,5 +1,8 @@
 CompileFlags:
   CompilationDatabase: build/dev
+  CompilationDatabaseFallback:
+    - build/release
+    - build/debug
 Index:
   Background: Build
 Diagnostics:
