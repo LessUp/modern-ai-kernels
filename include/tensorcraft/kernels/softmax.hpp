@@ -118,7 +118,13 @@ __global__ void softmax_kernel(const T* TC_RESTRICT input, T* TC_RESTRICT output
     // ========================================================================
     // Phase 3: Normalize
     // ========================================================================
-    // Guard against division by zero (occurs when all inputs are -FLT_MAX or underflow)
+    // Handle edge cases:
+    // - row_sum > 0: normal case, normalize by sum
+    // - row_sum == 0: all inputs were -FLT_MAX (numerically stable, output zeros)
+    // - row_sum < 0: should never happen, indicates numerical issue (output NaNs)
+    // Note: When all inputs are -FLT_MAX, exp(val - max) = exp(0) = 1 for each,
+    // so row_sum should equal cols > 0. Division by zero only occurs if cols == 0
+    // (handled by launcher) or extreme numerical underflow (output zeros is safe).
     float inv_sum = (row_sum > 0.0f) ? (1.0f / row_sum) : 0.0f;
 
     for (int i = threadIdx.x; i < cols; i += BLOCK_SIZE) {
@@ -213,7 +219,9 @@ __global__ void softmax_online_kernel(const T* TC_RESTRICT input, T* TC_RESTRICT
     __syncthreads();
 
     // Compute final softmax values
-    // Guard against division by zero (occurs when all inputs are -FLT_MAX or underflow)
+    // Handle edge cases (same as softmax_kernel above):
+    // - row_sum > 0: normal case
+    // - row_sum == 0: extreme numerical underflow, output zeros is safe fallback
     float inv_sum = (row_sum > 0.0f) ? (1.0f / row_sum) : 0.0f;
 
     for (int i = threadIdx.x; i < cols; i += BLOCK_SIZE) {

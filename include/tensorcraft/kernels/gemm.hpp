@@ -343,9 +343,12 @@ void launch_gemm(const T* A, const T* B, T* C, int M, int N, int K, T alpha = T(
             break;
 
         case GemmVersion::TensorCore:
+            // TensorCore version requires half precision input
+            // Use launch_gemm_wmma() directly for half-precision Tensor Core GEMM
             throw std::invalid_argument(
-                "GemmVersion::TensorCore is not supported by launch_gemm; use launch_gemm_wmma for "
-                "Tensor Core GEMM.");
+                "GemmVersion::TensorCore requires half-precision types. "
+                "For Tensor Core GEMM with half precision, call launch_gemm_wmma() directly. "
+                "This launcher template does not support the TensorCore version.");
 
         case GemmVersion::Auto:
         default:

@@ -1,0 +1,494 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1777214574529,
+  "projectRoot": "/home/shane/dev/modern-ai-kernels",
+  "techStack": {
+    "languages": [
+      {
+        "name": "Python",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "pyproject.toml"
+        ]
+      },
+      {
+        "name": "C/C++",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "CMakeLists.txt"
+        ]
+      }
+    ],
+    "frameworks": [
+      {
+        "name": "pytest",
+        "version": null,
+        "category": "testing"
+      }
+    ],
+    "packageManager": null,
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": "pytest",
+    "lintCommand": "ruff check",
+    "devCommand": null,
+    "scripts": {}
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "docs",
+      "examples",
+      "src",
+      "tests"
+    ],
+    "gitBranches": {
+      "defaultBranch": "master",
+      "branchingStrategy": null
+    }
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "benchmarks": {
+      "path": "benchmarks",
+      "purpose": null,
+      "fileCount": 4,
+      "lastAccessed": 1777214574433,
+      "keyFiles": [
+        "CMakeLists.txt",
+        "attention_benchmark.cpp",
+        "conv_benchmark.cpp",
+        "gemm_benchmark.cpp"
+      ]
+    },
+    "build": {
+      "path": "build",
+      "purpose": "Build output",
+      "fileCount": 0,
+      "lastAccessed": 1777214574477,
+      "keyFiles": []
+    },
+    "changelog": {
+      "path": "changelog",
+      "purpose": null,
+      "fileCount": 9,
+      "lastAccessed": 1777214574499,
+      "keyFiles": [
+        "2025-02-13_project-infrastructure.md",
+        "2026-01-08.md",
+        "2026-03-09_major-refactoring.md",
+        "2026-03-10_pages-optimization.md",
+        "2026-03-10_workflow-deep-standardization.md"
+      ]
+    },
+    "dist": {
+      "path": "dist",
+      "purpose": "Distribution/build output",
+      "fileCount": 1,
+      "lastAccessed": 1777214574501,
+      "keyFiles": [
+        "tensorcraft_ops-2.0.0-cp312-cp312-linux_x86_64.whl"
+      ]
+    },
+    "docs": {
+      "path": "docs",
+      "purpose": "Documentation",
+      "fileCount": 5,
+      "lastAccessed": 1777214574506,
+      "keyFiles": [
+        "404.html",
+        "Gemfile",
+        "README.md",
+        "_config.yml",
+        "index.html"
+      ]
+    },
+    "examples": {
+      "path": "examples",
+      "purpose": "Example code",
+      "fileCount": 3,
+      "lastAccessed": 1777214574507,
+      "keyFiles": [
+        "CMakeLists.txt",
+        "attention_example.cu",
+        "basic_gemm.cu"
+      ]
+    },
+    "include": {
+      "path": "include",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1777214574508,
+      "keyFiles": []
+    },
+    "openspec": {
+      "path": "openspec",
+      "purpose": null,
+      "fileCount": 2,
+      "lastAccessed": 1777214574508,
+      "keyFiles": [
+        "README.md",
+        "config.yaml"
+      ]
+    },
+    "specs": {
+      "path": "specs",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1777214574509,
+      "keyFiles": [
+        "README.md"
+      ]
+    },
+    "src": {
+      "path": "src",
+      "purpose": "Source code",
+      "fileCount": 0,
+      "lastAccessed": 1777214574512,
+      "keyFiles": []
+    },
+    "tests": {
+      "path": "tests",
+      "purpose": "Test files",
+      "fileCount": 13,
+      "lastAccessed": 1777214574516,
+      "keyFiles": [
+        "CMakeLists.txt",
+        "cuda_test_ops.cu",
+        "cuda_test_ops.hpp",
+        "test_attention_docs_contract.cpp",
+        "test_conv2d.cpp"
+      ]
+    },
+    "docs/assets": {
+      "path": "docs/assets",
+      "purpose": "Static assets",
+      "fileCount": 0,
+      "lastAccessed": 1777214574518,
+      "keyFiles": []
+    },
+    "specs/api": {
+      "path": "specs/api",
+      "purpose": "API routes",
+      "fileCount": 1,
+      "lastAccessed": 1777214574521,
+      "keyFiles": [
+        "cxx-api.md"
+      ]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": ".pre-commit-config.yaml",
+      "accessCount": 7,
+      "lastAccessed": 1777262740616,
+      "type": "file"
+    },
+    {
+      "path": "AGENTS.md",
+      "accessCount": 7,
+      "lastAccessed": 1777262751121,
+      "type": "file"
+    },
+    {
+      "path": ".clangd",
+      "accessCount": 6,
+      "lastAccessed": 1777261432380,
+      "type": "file"
+    },
+    {
+      "path": "CMakePresets.json",
+      "accessCount": 6,
+      "lastAccessed": 1777261688515,
+      "type": "file"
+    },
+    {
+      "path": "docs/zh/getting-started/installation.md",
+      "accessCount": 5,
+      "lastAccessed": 1777258548049,
+      "type": "file"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "accessCount": 5,
+      "lastAccessed": 1777261181791,
+      "type": "file"
+    },
+    {
+      "path": "CLAUDE.md",
+      "accessCount": 5,
+      "lastAccessed": 1777261708405,
+      "type": "file"
+    },
+    {
+      "path": "docs/en/guides/architecture.md",
+      "accessCount": 4,
+      "lastAccessed": 1777258355209,
+      "type": "file"
+    },
+    {
+      "path": "docs/zh/examples/README.md",
+      "accessCount": 4,
+      "lastAccessed": 1777261206624,
+      "type": "file"
+    },
+    {
+      "path": "openspec/config.yaml",
+      "accessCount": 4,
+      "lastAccessed": 1777261478744,
+      "type": "file"
+    },
+    {
+      "path": "openspec/README.md",
+      "accessCount": 4,
+      "lastAccessed": 1777261478869,
+      "type": "file"
+    },
+    {
+      "path": "pyproject.toml",
+      "accessCount": 4,
+      "lastAccessed": 1777261715612,
+      "type": "file"
+    },
+    {
+      "path": "docs/en/getting-started/installation.md",
+      "accessCount": 3,
+      "lastAccessed": 1777256835736,
+      "type": "file"
+    },
+    {
+      "path": "changelog/README.md",
+      "accessCount": 3,
+      "lastAccessed": 1777256897437,
+      "type": "file"
+    },
+    {
+      "path": "docs/zh/guides/architecture.md",
+      "accessCount": 3,
+      "lastAccessed": 1777258476455,
+      "type": "file"
+    },
+    {
+      "path": "docs/zh/getting-started/troubleshooting.md",
+      "accessCount": 3,
+      "lastAccessed": 1777258696174,
+      "type": "file"
+    },
+    {
+      "path": "README.md",
+      "accessCount": 3,
+      "lastAccessed": 1777261163471,
+      "type": "file"
+    },
+    {
+      "path": "docs/en/reference/contributing.md",
+      "accessCount": 3,
+      "lastAccessed": 1777261181935,
+      "type": "file"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "accessCount": 3,
+      "lastAccessed": 1777261182038,
+      "type": "file"
+    },
+    {
+      "path": "docs/en/reference/changelog.md",
+      "accessCount": 3,
+      "lastAccessed": 1777261182228,
+      "type": "file"
+    },
+    {
+      "path": "docs/_config.yml",
+      "accessCount": 3,
+      "lastAccessed": 1777261198954,
+      "type": "file"
+    },
+    {
+      "path": "docs/en/examples/README.md",
+      "accessCount": 3,
+      "lastAccessed": 1777261205917,
+      "type": "file"
+    },
+    {
+      "path": "specs/README.md",
+      "accessCount": 3,
+      "lastAccessed": 1777261221435,
+      "type": "file"
+    },
+    {
+      "path": ".editorconfig",
+      "accessCount": 3,
+      "lastAccessed": 1777261454249,
+      "type": "file"
+    },
+    {
+      "path": ".clang-tidy",
+      "accessCount": 3,
+      "lastAccessed": 1777261454496,
+      "type": "file"
+    },
+    {
+      "path": ".vscode/settings.json",
+      "accessCount": 3,
+      "lastAccessed": 1777261456184,
+      "type": "file"
+    },
+    {
+      "path": ".clang-format",
+      "accessCount": 3,
+      "lastAccessed": 1777261456481,
+      "type": "file"
+    },
+    {
+      "path": ".vscode/extensions.json",
+      "accessCount": 3,
+      "lastAccessed": 1777261456573,
+      "type": "file"
+    },
+    {
+      "path": "openspec/changes/closeout-stabilization/proposal.md",
+      "accessCount": 3,
+      "lastAccessed": 1777261688647,
+      "type": "file"
+    },
+    {
+      "path": "docs/en/getting-started/troubleshooting.md",
+      "accessCount": 2,
+      "lastAccessed": 1777258590732,
+      "type": "file"
+    },
+    {
+      "path": "docs/en/api/kernels.md",
+      "accessCount": 2,
+      "lastAccessed": 1777258748000,
+      "type": "file"
+    },
+    {
+      "path": "docs/zh/api/kernels.md",
+      "accessCount": 2,
+      "lastAccessed": 1777258748142,
+      "type": "file"
+    },
+    {
+      "path": "docs/README.md",
+      "accessCount": 2,
+      "lastAccessed": 1777261163608,
+      "type": "file"
+    },
+    {
+      "path": "CMakeLists.txt",
+      "accessCount": 2,
+      "lastAccessed": 1777261169340,
+      "type": "file"
+    },
+    {
+      "path": "tests/CMakeLists.txt",
+      "accessCount": 2,
+      "lastAccessed": 1777261180632,
+      "type": "file"
+    },
+    {
+      "path": "benchmarks/CMakeLists.txt",
+      "accessCount": 2,
+      "lastAccessed": 1777261181671,
+      "type": "file"
+    },
+    {
+      "path": "docs/zh/reference/contributing.md",
+      "accessCount": 2,
+      "lastAccessed": 1777261181731,
+      "type": "file"
+    },
+    {
+      "path": "docs/zh/reference/changelog.md",
+      "accessCount": 2,
+      "lastAccessed": 1777261182107,
+      "type": "file"
+    },
+    {
+      "path": "docs/zh/README.md",
+      "accessCount": 2,
+      "lastAccessed": 1777261196863,
+      "type": "file"
+    },
+    {
+      "path": "docs/en/reference/security.md",
+      "accessCount": 2,
+      "lastAccessed": 1777261196951,
+      "type": "file"
+    },
+    {
+      "path": "docs/en/README.md",
+      "accessCount": 2,
+      "lastAccessed": 1777261197209,
+      "type": "file"
+    },
+    {
+      "path": "docs/zh/api/README.md",
+      "accessCount": 2,
+      "lastAccessed": 1777261206410,
+      "type": "file"
+    },
+    {
+      "path": "docs/en/api/README.md",
+      "accessCount": 2,
+      "lastAccessed": 1777261206735,
+      "type": "file"
+    },
+    {
+      "path": "docs/index.html",
+      "accessCount": 2,
+      "lastAccessed": 1777261230391,
+      "type": "file"
+    },
+    {
+      "path": ".vscode/launch.json",
+      "accessCount": 2,
+      "lastAccessed": 1777261239184,
+      "type": "file"
+    },
+    {
+      "path": "examples/CMakeLists.txt",
+      "accessCount": 1,
+      "lastAccessed": 1777255988449,
+      "type": "file"
+    },
+    {
+      "path": "src/python_ops/CMakeLists.txt",
+      "accessCount": 1,
+      "lastAccessed": 1777255988611,
+      "type": "file"
+    },
+    {
+      "path": "README.zh-CN.md",
+      "accessCount": 1,
+      "lastAccessed": 1777256019220,
+      "type": "file"
+    },
+    {
+      "path": "docs/en/guides/optimization.md",
+      "accessCount": 1,
+      "lastAccessed": 1777256025788,
+      "type": "file"
+    },
+    {
+      "path": "docs/en/examples/basic-gemm.md",
+      "accessCount": 1,
+      "lastAccessed": 1777256025840,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}

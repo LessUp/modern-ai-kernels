@@ -422,7 +422,9 @@ void launch_flash_attention(const T* Q, const T* K, const T* V, T* O, int batch_
 
     static_assert(BLOCK_M * BLOCK_N <= 1024, "FlashAttention block size exceeds CUDA limit");
     if (head_dim != HEAD_DIM) {
-        throw std::invalid_argument("FlashAttention currently supports head_dim == 64");
+        throw std::invalid_argument(
+            "FlashAttention: head_dim must be 64 (current implementation is template-specialized). "
+            "Support for other head dimensions requires additional kernel instantiations.");
     }
     if (num_heads <= 0) {
         throw std::invalid_argument("FlashAttention requires num_heads > 0");

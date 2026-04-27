@@ -122,19 +122,19 @@ public:
     Tensor(const Tensor&) = delete;
     Tensor(Tensor&&) noexcept;
     ~Tensor();
-    
+
     Tensor& operator=(const Tensor&) = delete;
     Tensor& operator=(Tensor&&) noexcept;
-    
+
     T* data() noexcept;
     const T* data() const noexcept;
     size_t size() const noexcept;
     const std::vector<size_t>& shape() const noexcept;
-    
+
     void fill(T value);
     void copy_from(const T* host_data);
     void copy_to(T* host_data) const;
-    
+
     static Tensor zeros(const std::vector<size_t>& shape);
     static Tensor ones(const std::vector<size_t>& shape);
 };
@@ -216,7 +216,7 @@ import tensorcraft_ops as tc
 tc.__version__  # str
 
 # GEMM
-def tc.gemm(A: np.ndarray, B: np.ndarray, 
+def tc.gemm(A: np.ndarray, B: np.ndarray,
             alpha: float = 1.0, beta: float = 0.0) -> np.ndarray
 
 # Activation
@@ -237,7 +237,7 @@ def tc.flash_attention(Q: np.ndarray, K: np.ndarray, V: np.ndarray,
                        scale: Optional[float] = None) -> np.ndarray
 
 # Convolution
-def tc.conv2d(input: np.ndarray, weight: np.ndarray, 
+def tc.conv2d(input: np.ndarray, weight: np.ndarray,
               bias: Optional[np.ndarray] = None,
               stride: int = 1, padding: int = 0) -> np.ndarray
 ```

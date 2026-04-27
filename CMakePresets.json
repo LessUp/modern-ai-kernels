@@ -34,6 +34,7 @@
             "inherits": "default",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_CUDA_ARCHITECTURES": "70;75;80;86;89;90",
                 "CMAKE_CUDA_FLAGS": "-O3 --use_fast_math -Xcompiler -O3",
                 "TC_BUILD_TESTS": "ON",
                 "TC_BUILD_BENCHMARKS": "ON"
