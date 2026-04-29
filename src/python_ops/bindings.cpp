@@ -313,6 +313,16 @@ py::array_t<float> py_transpose(py::array_t<float> input) {
 PYBIND11_MODULE(tensorcraft_ops, m) {
     m.doc() = "TensorCraft-HPC: High-Performance AI Kernels";
 
+    // Register exception translator for CUDA errors
+    py::register_exception_translator([](std::exception_ptr p) {
+        try {
+            if (p)
+                std::rethrow_exception(p);
+        } catch (const tensorcraft::CudaException& e) {
+            PyErr_SetString(PyExc_RuntimeError, e.what());
+        }
+    });
+
     m.def("relu", &py_relu, "ReLU activation", py::arg("input"));
     m.def("silu", &py_silu, "SiLU (Swish) activation", py::arg("input"));
     m.def("gelu", &py_gelu, "GeLU activation", py::arg("input"));
