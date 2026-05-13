@@ -2,42 +2,183 @@
 /**
  * @file sparse.hpp
  * @brief Sparse matrix operations (CSR/CSC formats, SpMV, SpMM)
+ *
+ * Provides sparse matrix formats with RAII memory management,
+ * consistent with the Tensor class design philosophy.
  */
 
 #include "../core/cuda_check.hpp"
 #include "../core/features.hpp"
 #include "../core/type_traits.hpp"
+#include "../memory/memory_pool.hpp"
 
 namespace tensorcraft {
 namespace kernels {
 
 // ============================================================================
-// CSR (Compressed Sparse Row) Format
+// CSR (Compressed Sparse Row) Format - Non-Owning View
 // ============================================================================
 
+/**
+ * @brief Non-owning view of CSR sparse matrix data
+ *
+ * Used for kernel launches where memory is managed externally.
+ * Provides a safe interface for passing sparse matrix data to kernels.
+ */
 template <typename T>
-struct CSRMatrix {
-    T* values;         // Non-zero values [nnz]
-    int* col_indices;  // Column indices [nnz]
-    int* row_ptrs;     // Row pointers [rows + 1]
+struct CSRMatrixView {
+    const T* values;         // Non-zero values [nnz]
+    const int* col_indices;  // Column indices [nnz]
+    const int* row_ptrs;     // Row pointers [rows + 1]
     int rows;
     int cols;
     int nnz;
 };
 
 // ============================================================================
-// CSC (Compressed Sparse Column) Format
+// CSC (Compressed Sparse Column) Format - Non-Owning View
 // ============================================================================
 
+/**
+ * @brief Non-owning view of CSC sparse matrix data
+ */
 template <typename T>
-struct CSCMatrix {
-    T* values;         // Non-zero values [nnz]
-    int* row_indices;  // Row indices [nnz]
-    int* col_ptrs;     // Column pointers [cols + 1]
+struct CSCMatrixView {
+    const T* values;         // Non-zero values [nnz]
+    const int* row_indices;  // Row indices [nnz]
+    const int* col_ptrs;     // Column pointers [cols + 1]
     int rows;
     int cols;
     int nnz;
 };
+
+// ============================================================================
+// CSR Sparse Matrix with RAII Memory Management
+// ============================================================================
+
+/**
+ * @brief CSR sparse matrix with automatic memory management
+ *
+ * This class provides RAII-style memory management for sparse matrices,
+ * consistent with the Tensor class design. Memory is allocated from
+ * MemoryPool for reduced allocation overhead.
+ *
+ * @tparam T Element type (float, half, etc.)
+ */
+template <typename T>
+class CSRMatrix {
+public:
+    using value_type = T;
+
+    /// Default constructor (empty matrix)
+    CSRMatrix() = default;
+
+    /**
+     * @brief Construct CSR matrix with given dimensions
+     * @param rows Number of rows
+     * @param cols Number of columns
+     * @param nnz Number of non-zero elements
+     */
+    CSRMatrix(int rows, int cols, int nnz)
+        : rows_(rows), cols_(cols), nnz_(nnz) {
+        if (nnz > 0) {
+            values_ = static_cast<T*>(MemoryPool::instance().allocate(nnz * sizeof(T)));
+            col_indices_ = static_cast<int*>(MemoryPool::instance().allocate(nnz * sizeof(int)));
+        }
+        if (rows > 0) {
+            row_ptrs_ = static_cast<int*>(MemoryPool::instance().allocate((rows + 1) * sizeof(int)));
+        }
+    }
+
+    /// Destructor - returns memory to pool
+    ~CSRMatrix() {
+        if (values_) {
+            MemoryPool::instance().deallocate(values_);
+        }
+        if (col_indices_) {
+            MemoryPool::instance().deallocate(col_indices_);
+        }
+        if (row_ptrs_) {
+            MemoryPool::instance().deallocate(row_ptrs_);
+        }
+    }
+
+    // Move only
+    CSRMatrix(CSRMatrix&& other) noexcept
+        : values_(other.values_),
+          col_indices_(other.col_indices_),
+          row_ptrs_(other.row_ptrs_),
+          rows_(other.rows_),
+          cols_(other.cols_),
+          nnz_(other.nnz_) {
+        other.values_ = nullptr;
+        other.col_indices_ = nullptr;
+        other.row_ptrs_ = nullptr;
+        other.rows_ = 0;
+        other.cols_ = 0;
+        other.nnz_ = 0;
+    }
+
+    CSRMatrix& operator=(CSRMatrix&& other) noexcept {
+        if (this != &other) {
+            if (values_) MemoryPool::instance().deallocate(values_);
+            if (col_indices_) MemoryPool::instance().deallocate(col_indices_);
+            if (row_ptrs_) MemoryPool::instance().deallocate(row_ptrs_);
+
+            values_ = other.values_;
+            col_indices_ = other.col_indices_;
+            row_ptrs_ = other.row_ptrs_;
+            rows_ = other.rows_;
+            cols_ = other.cols_;
+            nnz_ = other.nnz_;
+
+            other.values_ = nullptr;
+            other.col_indices_ = nullptr;
+            other.row_ptrs_ = nullptr;
+            other.rows_ = 0;
+            other.cols_ = 0;
+            other.nnz_ = 0;
+        }
+        return *this;
+    }
+
+    CSRMatrix(const CSRMatrix&) = delete;
+    CSRMatrix& operator=(const CSRMatrix&) = delete;
+
+    // Accessors
+    T* values() { return values_; }
+    const T* values() const { return values_; }
+
+    int* col_indices() { return col_indices_; }
+    const int* col_indices() const { return col_indices_; }
+
+    int* row_ptrs() { return row_ptrs_; }
+    const int* row_ptrs() const { return row_ptrs_; }
+
+    int rows() const { return rows_; }
+    int cols() const { return cols_; }
+    int nnz() const { return nnz_; }
+
+    /// Get a view for kernel launches
+    CSRMatrixView<T> view() const {
+        return CSRMatrixView<T>{values_, col_indices_, row_ptrs_, rows_, cols_, nnz_};
+    }
+
+    /// Check if matrix is empty
+    bool empty() const { return nnz_ == 0; }
+
+private:
+    T* values_ = nullptr;
+    int* col_indices_ = nullptr;
+    int* row_ptrs_ = nullptr;
+    int rows_ = 0;
+    int cols_ = 0;
+    int nnz_ = 0;
+};
+
+// Legacy type alias for backward compatibility
+template <typename T>
+using CSRMatrixLegacy = CSRMatrixView<T>;
 
 // ============================================================================
 // Dense to CSR Conversion
@@ -314,15 +455,33 @@ void launch_csr_to_dense(const T* values, const int* col_indices, const int* row
     TC_CUDA_CHECK_LAST();
 }
 
-// Convenience functions
+// Convenience functions for RAII CSRMatrix class
 template <typename T>
 void spmv(const CSRMatrix<T>& A, const T* x, T* y, cudaStream_t stream = nullptr) {
-    launch_spmv_csr(A.values, A.col_indices, A.row_ptrs, x, y, A.rows, true, stream);
+    launch_spmv_csr(A.values(), A.col_indices(), A.row_ptrs(), x, y, A.rows(), true, stream);
 }
 
 template <typename T>
 void spmm(const CSRMatrix<T>& A, const T* B, T* C, int N, cudaStream_t stream = nullptr) {
+    launch_spmm_csr(A.values(), A.col_indices(), A.row_ptrs(), B, C, A.rows(), A.cols(), N, stream);
+}
+
+// Convenience functions for CSRMatrixView (non-owning)
+template <typename T>
+void spmv(CSRMatrixView<T> A, const T* x, T* y, cudaStream_t stream = nullptr) {
+    launch_spmv_csr(A.values, A.col_indices, A.row_ptrs, x, y, A.rows, true, stream);
+}
+
+template <typename T>
+void spmm(CSRMatrixView<T> A, const T* B, T* C, int N, cudaStream_t stream = nullptr) {
     launch_spmm_csr(A.values, A.col_indices, A.row_ptrs, B, C, A.rows, A.cols, N, stream);
+}
+
+// Legacy support: accept raw pointer struct (deprecated)
+template <typename T>
+[[deprecated("Use CSRMatrix<T> or CSRMatrixView<T> instead")]]
+void spmv(const CSRMatrixLegacy<T>& A, const T* x, T* y, cudaStream_t stream = nullptr) {
+    launch_spmv_csr(A.values, A.col_indices, A.row_ptrs, x, y, A.rows, true, stream);
 }
 
 }  // namespace kernels

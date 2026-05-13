@@ -9,11 +9,10 @@
 #include <vector>
 
 #include "tensorcraft/core/cuda_check.hpp"
-
-#include "cuda_test_ops.hpp"
+#include "tensorcraft/kernels/gemm.hpp"
+#include "reference/reference_ops.hpp"
 
 using namespace tensorcraft;
-using namespace tensorcraft::tests;
 
 class GemmTest : public ::testing::Test {
 protected:
@@ -30,25 +29,6 @@ protected:
         return m;
     }
 
-    std::vector<float> reference_gemm(const std::vector<float>& A, const std::vector<float>& B,
-                                      int M, int N, int K, float alpha, float beta,
-                                      const std::vector<float>& C = {}) {
-        std::vector<float> result(M * N, 0.0f);
-
-        for (int m = 0; m < M; ++m) {
-            for (int n = 0; n < N; ++n) {
-                float sum = 0.0f;
-                for (int k = 0; k < K; ++k) {
-                    sum += A[m * K + k] * B[k * N + n];
-                }
-                float c_val = C.empty() ? 0.0f : C[m * N + n];
-                result[m * N + n] = alpha * sum + beta * c_val;
-            }
-        }
-
-        return result;
-    }
-
     std::mt19937 gen;
     std::uniform_real_distribution<float> dist;
 };
@@ -59,7 +39,7 @@ TEST_F(GemmTest, NaiveCorrectness) {
     auto h_A = random_matrix(M, K);
     auto h_B = random_matrix(K, N);
     std::vector<float> h_C(M * N, 0.0f);
-    auto h_ref = reference_gemm(h_A, h_B, M, N, K, 1.0f, 0.0f);
+    auto h_ref = reference::gemm(h_A, h_B, M, N, K, 1.0f, 0.0f);
 
     float *d_A, *d_B, *d_C;
     TC_CUDA_CHECK(cudaMalloc(&d_A, M * K * sizeof(float)));
@@ -70,7 +50,7 @@ TEST_F(GemmTest, NaiveCorrectness) {
     TC_CUDA_CHECK(cudaMemcpy(d_B, h_B.data(), K * N * sizeof(float), cudaMemcpyHostToDevice));
     TC_CUDA_CHECK(cudaMemset(d_C, 0, M * N * sizeof(float)));
 
-    launch_gemm(d_A, d_B, d_C, M, N, K, 1.0f, 0.0f, GemmVersion::Naive);
+    kernels::launch_gemm(d_A, d_B, d_C, M, N, K, 1.0f, 0.0f, kernels::GemmVersion::Naive);
     TC_CUDA_CHECK(cudaDeviceSynchronize());
 
     TC_CUDA_CHECK(cudaMemcpy(h_C.data(), d_C, M * N * sizeof(float), cudaMemcpyDeviceToHost));
@@ -90,7 +70,7 @@ TEST_F(GemmTest, TiledCorrectness) {
     auto h_A = random_matrix(M, K);
     auto h_B = random_matrix(K, N);
     std::vector<float> h_C(M * N, 0.0f);
-    auto h_ref = reference_gemm(h_A, h_B, M, N, K, 1.0f, 0.0f);
+    auto h_ref = reference::gemm(h_A, h_B, M, N, K, 1.0f, 0.0f);
 
     float *d_A, *d_B, *d_C;
     TC_CUDA_CHECK(cudaMalloc(&d_A, M * K * sizeof(float)));
@@ -101,7 +81,7 @@ TEST_F(GemmTest, TiledCorrectness) {
     TC_CUDA_CHECK(cudaMemcpy(d_B, h_B.data(), K * N * sizeof(float), cudaMemcpyHostToDevice));
     TC_CUDA_CHECK(cudaMemset(d_C, 0, M * N * sizeof(float)));
 
-    launch_gemm(d_A, d_B, d_C, M, N, K, 1.0f, 0.0f, GemmVersion::Tiled);
+    kernels::launch_gemm(d_A, d_B, d_C, M, N, K, 1.0f, 0.0f, kernels::GemmVersion::Tiled);
     TC_CUDA_CHECK(cudaDeviceSynchronize());
 
     TC_CUDA_CHECK(cudaMemcpy(h_C.data(), d_C, M * N * sizeof(float), cudaMemcpyDeviceToHost));
@@ -121,7 +101,7 @@ TEST_F(GemmTest, DoubleBufferCorrectness) {
     auto h_A = random_matrix(M, K);
     auto h_B = random_matrix(K, N);
     std::vector<float> h_C(M * N, 0.0f);
-    auto h_ref = reference_gemm(h_A, h_B, M, N, K, 1.0f, 0.0f);
+    auto h_ref = reference::gemm(h_A, h_B, M, N, K, 1.0f, 0.0f);
 
     float *d_A, *d_B, *d_C;
     TC_CUDA_CHECK(cudaMalloc(&d_A, M * K * sizeof(float)));
@@ -132,7 +112,7 @@ TEST_F(GemmTest, DoubleBufferCorrectness) {
     TC_CUDA_CHECK(cudaMemcpy(d_B, h_B.data(), K * N * sizeof(float), cudaMemcpyHostToDevice));
     TC_CUDA_CHECK(cudaMemset(d_C, 0, M * N * sizeof(float)));
 
-    launch_gemm(d_A, d_B, d_C, M, N, K, 1.0f, 0.0f, GemmVersion::DoubleBuffer);
+    kernels::launch_gemm(d_A, d_B, d_C, M, N, K, 1.0f, 0.0f, kernels::GemmVersion::DoubleBuffer);
     TC_CUDA_CHECK(cudaDeviceSynchronize());
 
     TC_CUDA_CHECK(cudaMemcpy(h_C.data(), d_C, M * N * sizeof(float), cudaMemcpyDeviceToHost));
@@ -162,12 +142,12 @@ TEST_F(GemmTest, VersionEquivalence) {
     TC_CUDA_CHECK(cudaMemcpy(d_B, h_B.data(), K * N * sizeof(float), cudaMemcpyHostToDevice));
 
     std::vector<std::vector<float>> results;
-    std::vector<GemmVersion> versions = {GemmVersion::Naive, GemmVersion::Tiled,
-                                         GemmVersion::DoubleBuffer};
+    std::vector<GemmVersion> versions = {kernels::GemmVersion::Naive, kernels::GemmVersion::Tiled,
+                                         kernels::GemmVersion::DoubleBuffer};
 
     for (auto ver : versions) {
         TC_CUDA_CHECK(cudaMemset(d_C, 0, M * N * sizeof(float)));
-        launch_gemm(d_A, d_B, d_C, M, N, K, 1.0f, 0.0f, ver);
+        kernels::launch_gemm(d_A, d_B, d_C, M, N, K, 1.0f, 0.0f, ver);
         TC_CUDA_CHECK(cudaDeviceSynchronize());
 
         std::vector<float> h_C(M * N);
@@ -193,7 +173,7 @@ TEST_F(GemmTest, NonSquareMatrices) {
     auto h_A = random_matrix(M, K);
     auto h_B = random_matrix(K, N);
     std::vector<float> h_C(M * N, 0.0f);
-    auto h_ref = reference_gemm(h_A, h_B, M, N, K, 1.0f, 0.0f);
+    auto h_ref = reference::gemm(h_A, h_B, M, N, K, 1.0f, 0.0f);
 
     float *d_A, *d_B, *d_C;
     TC_CUDA_CHECK(cudaMalloc(&d_A, M * K * sizeof(float)));
@@ -204,7 +184,7 @@ TEST_F(GemmTest, NonSquareMatrices) {
     TC_CUDA_CHECK(cudaMemcpy(d_B, h_B.data(), K * N * sizeof(float), cudaMemcpyHostToDevice));
     TC_CUDA_CHECK(cudaMemset(d_C, 0, M * N * sizeof(float)));
 
-    launch_gemm(d_A, d_B, d_C, M, N, K, 1.0f, 0.0f, GemmVersion::Tiled);
+    kernels::launch_gemm(d_A, d_B, d_C, M, N, K, 1.0f, 0.0f, kernels::GemmVersion::Tiled);
     TC_CUDA_CHECK(cudaDeviceSynchronize());
 
     TC_CUDA_CHECK(cudaMemcpy(h_C.data(), d_C, M * N * sizeof(float), cudaMemcpyDeviceToHost));

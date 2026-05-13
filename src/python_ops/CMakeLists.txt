@@ -1,10 +1,11 @@
 # TensorCraft-HPC Python Bindings
-pybind11_add_module(tensorcraft_ops bindings.cpp cuda_ops.cu)
+# Direct kernel bindings - no shallow intermediate layer
+pybind11_add_module(tensorcraft_ops bindings.cpp)
 
 target_link_libraries(tensorcraft_ops PRIVATE tensorcraft CUDA::cudart)
 
-set_source_files_properties(bindings.cpp PROPERTIES LANGUAGE CXX)
-set_source_files_properties(cuda_ops.cu PROPERTIES LANGUAGE CUDA)
+# Bindings need CUDA compilation for kernel launches
+set_source_files_properties(bindings.cpp PROPERTIES LANGUAGE CUDA)
 
 set_target_properties(
   tensorcraft_ops
@@ -17,8 +18,6 @@ set_target_properties(
              POSITION_INDEPENDENT_CODE ON
              CUDA_ARCHITECTURES "${CMAKE_CUDA_ARCHITECTURES}"
              CUDA_RUNTIME_LIBRARY Shared)
-
-target_include_directories(tensorcraft_ops PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_compile_features(tensorcraft_ops PRIVATE cxx_std_17)
 

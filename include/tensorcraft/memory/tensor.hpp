@@ -5,6 +5,8 @@
  *
  * Provides a type-safe tensor class that automatically manages
  * GPU memory allocation and deallocation using RAII.
+ *
+ * Memory allocation uses MemoryPool for reduced allocation overhead.
  */
 
 #include <cassert>
@@ -14,21 +16,18 @@
 
 #include "../core/cuda_check.hpp"
 #include "../core/type_traits.hpp"
+#include "memory_pool.hpp"
+
+// Forward declare kernels::fill for use in Tensor::fill()
+// This avoids a circular dependency on memory_ops.hpp
+namespace tensorcraft {
+namespace kernels {
+template <typename T>
+void fill(T* data, T value, size_t n, cudaStream_t stream = nullptr);
+}
+}  // namespace tensorcraft
 
 namespace tensorcraft {
-
-namespace detail {
-
-/// GPU kernel to fill memory with a typed value
-template <typename T>
-__global__ void fill_kernel(T* data, T value, size_t n) {
-    size_t idx = blockIdx.x * blockDim.x + threadIdx.x;
-    if (idx < n) {
-        data[idx] = value;
-    }
-}
-
-}  // namespace detail
 
 /**
  * @brief GPU Tensor with RAII memory management
@@ -36,7 +35,7 @@ __global__ void fill_kernel(T* data, T value, size_t n) {
  * @tparam T Element type (float, half, etc.)
  *
  * Features:
- * - Automatic GPU memory allocation/deallocation
+ * - Automatic GPU memory allocation/deallocation via MemoryPool
  * - Move semantics (no copy to prevent accidental copies)
  * - Host-device data transfer utilities
  * - Shape and stride information
@@ -58,7 +57,7 @@ public:
     explicit Tensor(const shape_type& shape)
         : shape_(shape), size_(compute_size(shape)), strides_(compute_strides(shape)) {
         if (size_ > 0) {
-            TC_CUDA_CHECK(cudaMalloc(&data_, size_ * sizeof(T)));
+            data_ = static_cast<T*>(MemoryPool::instance().allocate(size_ * sizeof(T)));
         }
     }
 
@@ -87,10 +86,10 @@ public:
      */
     Tensor(size_t d0, size_t d1, size_t d2, size_t d3) : Tensor(shape_type{d0, d1, d2, d3}) {}
 
-    /// Destructor - frees GPU memory
+    /// Destructor - returns memory to pool
     ~Tensor() {
         if (data_) {
-            cudaFree(data_);
+            MemoryPool::instance().deallocate(data_);
             data_ = nullptr;
         }
     }
@@ -109,7 +108,7 @@ public:
     Tensor& operator=(Tensor&& other) noexcept {
         if (this != &other) {
             if (data_) {
-                cudaFree(data_);
+                MemoryPool::instance().deallocate(data_);
             }
             data_ = other.data_;
             shape_ = std::move(other.shape_);
@@ -228,19 +227,12 @@ public:
     // ========================================================================
 
     /**
-     * @brief Fill tensor with value (uses GPU kernel for all types)
+     * @brief Fill tensor with value (uses optimized GPU kernel)
      */
     void fill(T value) {
         if (size_ == 0 || !data_)
             return;
-        if constexpr (sizeof(T) == 1) {
-            TC_CUDA_CHECK(cudaMemset(data_, static_cast<int>(value), bytes()));
-        } else {
-            constexpr int block = 256;
-            int grid = static_cast<int>((size_ + block - 1) / block);
-            detail::fill_kernel<<<grid, block>>>(data_, value, size_);
-            TC_CUDA_CHECK_LAST();
-        }
+        kernels::fill(data_, value, size_);
     }
 
     /**

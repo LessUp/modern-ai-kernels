@@ -1,6 +1,9 @@
 /**
  * @file bindings.cpp
  * @brief Python bindings for TensorCraft-HPC using pybind11
+ *
+ * Direct kernel bindings without shallow intermediate layer.
+ * Memory management uses MemoryPool for efficient allocation.
  */
 
 #include <initializer_list>
@@ -12,81 +15,108 @@
 #include <vector>
 
 #include "tensorcraft/core/cuda_check.hpp"
-
-#include "cuda_ops.hpp"
+#include "tensorcraft/kernels/elementwise.hpp"
+#include "tensorcraft/kernels/gemm.hpp"
+#include "tensorcraft/kernels/normalization.hpp"
+#include "tensorcraft/kernels/softmax.hpp"
+#include "tensorcraft/memory/memory_pool.hpp"
 
 namespace py = pybind11;
 using namespace tensorcraft;
 
-// Helper to convert numpy array to device pointer
+// ============================================================================
+// Memory Management (using MemoryPool)
+// ============================================================================
+
+/**
+ * @brief RAII wrapper for device memory using MemoryPool
+ *
+ * Replaces the previous DeviceArray/DeviceBuffer with unified
+ * PoolPtr-based implementation for reduced allocation overhead.
+ */
 template <typename T>
-T* numpy_to_device(py::array_t<T> arr, size_t& size) {
-    py::buffer_info buf = arr.request();
-    size = static_cast<size_t>(buf.size);
+class PooledDeviceMemory {
+public:
+    PooledDeviceMemory() = default;
 
-    T* d_ptr = nullptr;
-    TC_CUDA_CHECK(cudaMalloc(&d_ptr, size * sizeof(T)));
-    TC_CUDA_CHECK(cudaMemcpy(d_ptr, buf.ptr, size * sizeof(T), cudaMemcpyHostToDevice));
-    return d_ptr;
-}
+    /// Allocate uninitialized device memory
+    explicit PooledDeviceMemory(size_t count)
+        : ptr_(static_cast<T*>(MemoryPool::instance().allocate(count * sizeof(T)))),
+          count_(count) {}
 
-// Helper to copy device data to numpy array
-template <typename T>
-py::array_t<T> device_to_numpy(T* d_ptr, const std::vector<ssize_t>& shape) {
-    size_t size = 1;
-    for (auto s : shape)
-        size *= static_cast<size_t>(s);
-
-    py::array_t<T> result(shape);
-    py::buffer_info buf = result.request();
-    TC_CUDA_CHECK(cudaMemcpy(buf.ptr, d_ptr, size * sizeof(T), cudaMemcpyDeviceToHost));
-    return result;
-}
-
-// RAII wrapper for device memory
-template <typename T>
-struct DeviceArray {
-    T* ptr = nullptr;
-    size_t size = 0;
-
-    explicit DeviceArray(py::array_t<T> arr) { ptr = numpy_to_device(arr, size); }
-
-    ~DeviceArray() {
-        if (ptr)
-            cudaFree(ptr);
+    /// Allocate and copy from host
+    static PooledDeviceMemory from_host(const T* host_data, size_t count) {
+        PooledDeviceMemory mem(count);
+        TC_CUDA_CHECK(cudaMemcpy(mem.ptr_, host_data, count * sizeof(T), cudaMemcpyHostToDevice));
+        return mem;
     }
 
-    DeviceArray(const DeviceArray&) = delete;
-    DeviceArray& operator=(const DeviceArray&) = delete;
+    /// Allocate and copy from numpy array
+    static PooledDeviceMemory from_numpy(py::array_t<T> arr) {
+        py::buffer_info buf = arr.request();
+        return from_host(static_cast<const T*>(buf.ptr), static_cast<size_t>(buf.size));
+    }
+
+    ~PooledDeviceMemory() {
+        if (ptr_) {
+            MemoryPool::instance().deallocate(ptr_);
+        }
+    }
+
+    // Move only
+    PooledDeviceMemory(PooledDeviceMemory&& other) noexcept
+        : ptr_(other.ptr_), count_(other.count_) {
+        other.ptr_ = nullptr;
+        other.count_ = 0;
+    }
+
+    PooledDeviceMemory& operator=(PooledDeviceMemory&& other) noexcept {
+        if (this != &other) {
+            if (ptr_) {
+                MemoryPool::instance().deallocate(ptr_);
+            }
+            ptr_ = other.ptr_;
+            count_ = other.count_;
+            other.ptr_ = nullptr;
+            other.count_ = 0;
+        }
+        return *this;
+    }
+
+    PooledDeviceMemory(const PooledDeviceMemory&) = delete;
+    PooledDeviceMemory& operator=(const PooledDeviceMemory&) = delete;
+
+    T* get() { return ptr_; }
+    const T* get() const { return ptr_; }
+    size_t size() const { return count_; }
+    size_t bytes() const { return count_ * sizeof(T); }
+
+    /// Copy to host
+    void to_host(T* host_data) const {
+        TC_CUDA_CHECK(cudaMemcpy(host_data, ptr_, bytes(), cudaMemcpyDeviceToHost));
+    }
+
+    /// Copy to numpy array with given shape
+    py::array_t<T> to_numpy(const std::vector<ssize_t>& shape) const {
+        py::array_t<T> result(shape);
+        py::buffer_info buf = result.request();
+        to_host(static_cast<T*>(buf.ptr));
+        return result;
+    }
+
+    explicit operator bool() const { return ptr_ != nullptr; }
+
+private:
+    T* ptr_ = nullptr;
+    size_t count_ = 0;
 };
 
-template <typename T>
-struct DeviceBuffer {
-    T* ptr = nullptr;
-    size_t size = 0;
+// Type alias for common float memory
+using FloatDeviceMemory = PooledDeviceMemory<float>;
 
-    explicit DeviceBuffer(size_t count) : size(count) {
-        TC_CUDA_CHECK(cudaMalloc(&ptr, size * sizeof(T)));
-    }
-
-    ~DeviceBuffer() {
-        if (ptr)
-            cudaFree(ptr);
-    }
-
-    DeviceBuffer(const DeviceBuffer&) = delete;
-    DeviceBuffer& operator=(const DeviceBuffer&) = delete;
-};
-
-py::array_t<float> copy_float_output(const DeviceBuffer<float>& output,
-                                     const std::vector<ssize_t>& shape) {
-    return device_to_numpy(output.ptr, shape);
-}
-
-py::array_t<float> copy_float_output(const DeviceBuffer<float>& output,
-                                     std::initializer_list<ssize_t> shape) {
-    return device_to_numpy(output.ptr, std::vector<ssize_t>(shape));
-}
+// ============================================================================
+// Utility Functions
+// ============================================================================
 
 void sync_cuda() {
     TC_CUDA_CHECK(cudaDeviceSynchronize());
@@ -124,15 +154,30 @@ size_t matrix_output_size(int rows, int cols) {
     return static_cast<size_t>(rows) * static_cast<size_t>(cols);
 }
 
+// Parse GEMM version string to enum
+kernels::GemmVersion parse_gemm_version(const std::string& name) {
+    if (name == "naive")
+        return kernels::GemmVersion::Naive;
+    if (name == "tiled")
+        return kernels::GemmVersion::Tiled;
+    if (name == "double_buffer")
+        return kernels::GemmVersion::DoubleBuffer;
+    throw std::invalid_argument("Unsupported GEMM version: " + name);
+}
+
+// ============================================================================
+// Operation Templates
+// ============================================================================
+
 template <typename Launcher>
 py::array_t<float> run_shape_preserving_float_op(py::array_t<float> input, Launcher&& launch) {
     py::buffer_info buf = input.request();
-    DeviceArray<float> d_input(input);
-    DeviceBuffer<float> d_output(array_size(buf));
+    FloatDeviceMemory d_input = FloatDeviceMemory::from_numpy(input);
+    FloatDeviceMemory d_output(array_size(buf));
 
-    launch(d_input.ptr, d_output.ptr, array_size(buf));
+    launch(d_input.get(), d_output.get(), array_size(buf));
     sync_cuda();
-    return copy_float_output(d_output, array_shape(buf));
+    return d_output.to_numpy(array_shape(buf));
 }
 
 template <typename Launcher>
@@ -143,13 +188,13 @@ py::array_t<float> run_binary_float_op(py::array_t<float> a, py::array_t<float> 
 
     require_same_shape(buf_a, buf_b, "Input arrays must have the same shape");
 
-    DeviceArray<float> d_a(a);
-    DeviceArray<float> d_b(b);
-    DeviceBuffer<float> d_output(array_size(buf_a));
+    FloatDeviceMemory d_a = FloatDeviceMemory::from_numpy(a);
+    FloatDeviceMemory d_b = FloatDeviceMemory::from_numpy(b);
+    FloatDeviceMemory d_output(array_size(buf_a));
 
-    launch(d_a.ptr, d_b.ptr, d_output.ptr, array_size(buf_a));
+    launch(d_a.get(), d_b.get(), d_output.get(), array_size(buf_a));
     sync_cuda();
-    return copy_float_output(d_output, array_shape(buf_a));
+    return d_output.to_numpy(array_shape(buf_a));
 }
 
 template <typename Launcher>
@@ -162,12 +207,12 @@ py::array_t<float> run_matrix_float_op(py::array_t<float> input, Launcher&& laun
 
     int rows = static_cast<int>(buf.shape[0]);
     int cols = static_cast<int>(buf.shape[1]);
-    DeviceArray<float> d_input(input);
-    DeviceBuffer<float> d_output(matrix_output_size(rows, cols));
+    FloatDeviceMemory d_input = FloatDeviceMemory::from_numpy(input);
+    FloatDeviceMemory d_output(matrix_output_size(rows, cols));
 
-    launch(d_input.ptr, d_output.ptr, rows, cols);
+    launch(d_input.get(), d_output.get(), rows, cols);
     sync_cuda();
-    return copy_float_output(d_output, {cols, rows});
+    return d_output.to_numpy({cols, rows});
 }
 
 template <typename Launcher>
@@ -179,12 +224,12 @@ py::array_t<float> run_last_dim_float_op(py::array_t<float> input, Launcher&& la
 
     int cols = static_cast<int>(buf.shape[buf.ndim - 1]);
     int rows = static_cast<int>(buf.size / cols);
-    DeviceArray<float> d_input(input);
-    DeviceBuffer<float> d_output(array_size(buf));
+    FloatDeviceMemory d_input = FloatDeviceMemory::from_numpy(input);
+    FloatDeviceMemory d_output(array_size(buf));
 
-    launch(d_input.ptr, d_output.ptr, rows, cols);
+    launch(d_input.get(), d_output.get(), rows, cols);
     sync_cuda();
-    return copy_float_output(d_output, array_shape(buf));
+    return d_output.to_numpy(array_shape(buf));
 }
 
 template <typename Launcher>
@@ -198,12 +243,12 @@ py::array_t<float> run_norm_float_op(py::array_t<float> input, Launcher&& launch
 
     int hidden_size = static_cast<int>(buf.shape[buf.ndim - 1]);
     int batch_size = static_cast<int>(buf.size / hidden_size);
-    DeviceArray<float> d_input(input);
-    DeviceBuffer<float> d_output(array_size(buf));
+    FloatDeviceMemory d_input = FloatDeviceMemory::from_numpy(input);
+    FloatDeviceMemory d_output(array_size(buf));
 
-    launch(d_input.ptr, d_output.ptr, batch_size, hidden_size);
+    launch(d_input.get(), d_output.get(), batch_size, hidden_size);
     sync_cuda();
-    return copy_float_output(d_output, array_shape(buf));
+    return d_output.to_numpy(array_shape(buf));
 }
 
 template <typename Launcher>
@@ -224,45 +269,49 @@ py::array_t<float> run_gemm_float_op(py::array_t<float> A, py::array_t<float> B,
         throw std::runtime_error("Matrix dimensions don't match for multiplication");
     }
 
-    DeviceArray<float> d_A(A);
-    DeviceArray<float> d_B(B);
-    DeviceBuffer<float> d_C(matrix_output_size(M, N));
-    TC_CUDA_CHECK(cudaMemset(d_C.ptr, 0, matrix_output_size(M, N) * sizeof(float)));
+    FloatDeviceMemory d_A = FloatDeviceMemory::from_numpy(A);
+    FloatDeviceMemory d_B = FloatDeviceMemory::from_numpy(B);
+    FloatDeviceMemory d_C(matrix_output_size(M, N));
+    TC_CUDA_CHECK(cudaMemset(d_C.get(), 0, matrix_output_size(M, N) * sizeof(float)));
 
-    launch(d_A.ptr, d_B.ptr, d_C.ptr, M, N, K);
+    launch(d_A.get(), d_B.get(), d_C.get(), M, N, K);
     sync_cuda();
-    return copy_float_output(d_C, {M, N});
+    return d_C.to_numpy({M, N});
 }
+
+// ============================================================================
+// Python Functions
+// ============================================================================
 
 py::array_t<float> py_relu(py::array_t<float> input) {
     return run_shape_preserving_float_op(
-        input, [](const float* in, float* out, size_t n) { python_ops::relu(in, out, n); });
+        input, [](const float* in, float* out, size_t n) { kernels::relu(in, out, n); });
 }
 
 py::array_t<float> py_silu(py::array_t<float> input) {
     return run_shape_preserving_float_op(
-        input, [](const float* in, float* out, size_t n) { python_ops::silu(in, out, n); });
+        input, [](const float* in, float* out, size_t n) { kernels::silu(in, out, n); });
 }
 
 py::array_t<float> py_gelu(py::array_t<float> input) {
     return run_shape_preserving_float_op(
-        input, [](const float* in, float* out, size_t n) { python_ops::gelu(in, out, n); });
+        input, [](const float* in, float* out, size_t n) { kernels::gelu(in, out, n); });
 }
 
 py::array_t<float> py_sigmoid(py::array_t<float> input) {
     return run_shape_preserving_float_op(
-        input, [](const float* in, float* out, size_t n) { python_ops::sigmoid(in, out, n); });
+        input, [](const float* in, float* out, size_t n) { kernels::sigmoid(in, out, n); });
 }
 
 py::array_t<float> py_vector_add(py::array_t<float> a, py::array_t<float> b) {
     return run_binary_float_op(a, b, [](const float* lhs, const float* rhs, float* out, size_t n) {
-        python_ops::vector_add(lhs, rhs, out, n);
+        kernels::vector_add(lhs, rhs, out, n);
     });
 }
 
 py::array_t<float> py_softmax(py::array_t<float> input) {
     return run_last_dim_float_op(input, [](const float* in, float* out, int rows, int cols) {
-        python_ops::softmax(in, out, rows, cols);
+        kernels::softmax(in, out, rows, cols);
     });
 }
 
@@ -274,11 +323,11 @@ py::array_t<float> py_layernorm(py::array_t<float> input, py::array_t<float> gam
     require_vector_size(gamma.request(), hidden_size, "gamma");
     require_vector_size(beta.request(), hidden_size, "beta");
 
-    DeviceArray<float> d_gamma(gamma);
-    DeviceArray<float> d_beta(beta);
+    FloatDeviceMemory d_gamma = FloatDeviceMemory::from_numpy(gamma);
+    FloatDeviceMemory d_beta = FloatDeviceMemory::from_numpy(beta);
     return run_norm_float_op(input, [&](const float* in, float* out, int batch_size,
                                         int hidden_size_int) {
-        python_ops::layernorm(in, d_gamma.ptr, d_beta.ptr, out, batch_size, hidden_size_int, eps);
+        kernels::layernorm(in, d_gamma.get(), d_beta.get(), out, batch_size, hidden_size_int, eps);
     });
 }
 
@@ -289,10 +338,10 @@ py::array_t<float> py_rmsnorm(py::array_t<float> input, py::array_t<float> weigh
     ssize_t hidden_size = input_buf.shape[input_buf.ndim - 1];
     require_vector_size(weight.request(), hidden_size, "weight");
 
-    DeviceArray<float> d_weight(weight);
+    FloatDeviceMemory d_weight = FloatDeviceMemory::from_numpy(weight);
     return run_norm_float_op(
         input, [&](const float* in, float* out, int batch_size, int hidden_size_int) {
-            python_ops::rmsnorm(in, d_weight.ptr, out, batch_size, hidden_size_int, eps);
+            kernels::rmsnorm(in, d_weight.get(), out, batch_size, hidden_size_int, eps);
         });
 }
 
@@ -300,15 +349,19 @@ py::array_t<float> py_gemm(py::array_t<float> A, py::array_t<float> B, float alp
                            float beta = 0.0f, const std::string& version = "tiled") {
     return run_gemm_float_op(
         A, B, [&](const float* lhs, const float* rhs, float* out, int M, int N, int K) {
-            python_ops::gemm(lhs, rhs, out, M, N, K, alpha, beta, version.c_str());
+            kernels::launch_gemm(lhs, rhs, out, M, N, K, alpha, beta, parse_gemm_version(version));
         });
 }
 
 py::array_t<float> py_transpose(py::array_t<float> input) {
     return run_matrix_float_op(input, [](const float* in, float* out, int rows, int cols) {
-        python_ops::transpose(in, out, rows, cols);
+        kernels::transpose(in, out, rows, cols);
     });
 }
+
+// ============================================================================
+// Module Definition
+// ============================================================================
 
 PYBIND11_MODULE(tensorcraft_ops, m) {
     m.doc() = "TensorCraft-HPC: High-Performance AI Kernels";
