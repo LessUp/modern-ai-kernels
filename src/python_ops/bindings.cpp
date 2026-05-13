@@ -96,7 +96,9 @@ public:
 
     /// Copy to host
     void to_host(T* host_data) const {
-        TC_CUDA_CHECK(cudaMemcpy(host_data, ptr_, bytes(), cudaMemcpyDeviceToHost));
+        if (count_ > 0 && ptr_) {
+            TC_CUDA_CHECK(cudaMemcpy(host_data, ptr_, bytes(), cudaMemcpyDeviceToHost));
+        }
     }
 
     /// Copy to numpy array with given shape

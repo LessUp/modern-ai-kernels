@@ -9,6 +9,7 @@
  * All implementations are header-only for easy inclusion in test files.
  */
 
+#include <cassert>
 #include <cmath>
 #include <vector>
 
@@ -28,6 +29,11 @@ namespace reference {
 inline std::vector<float> gemm(const std::vector<float>& A, const std::vector<float>& B,
                                int M, int N, int K, float alpha = 1.0f, float beta = 0.0f,
                                const std::vector<float>& C = {}) {
+    // Validate input sizes to prevent out-of-bounds access
+    assert(A.size() >= static_cast<size_t>(M * K) && "A must have at least M*K elements");
+    assert(B.size() >= static_cast<size_t>(K * N) && "B must have at least K*N elements");
+    assert(C.empty() || C.size() >= static_cast<size_t>(M * N) && "C must have at least M*N elements if provided");
+
     std::vector<float> result(M * N, 0.0f);
 
     for (int m = 0; m < M; ++m) {
