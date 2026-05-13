@@ -105,7 +105,12 @@ jobs:
       - name: Install dependencies
         run: |
           apt-get update
-          apt-get install -y cmake ninja-build git zip
+          apt-get install -y cmake ninja-build git zip python3 python3-pip
+
+      - name: CPU Smoke Test
+        run: |
+          cmake --preset cpu-smoke
+          cmake --build --preset cpu-smoke --parallel 2
 
       - name: Configure
         run: |
@@ -115,6 +120,11 @@ jobs:
 
       - name: Build
         run: cmake --build build --parallel
+
+      - name: Test
+        run: |
+          cd build
+          ctest --output-on-failure --timeout 300
 
       - name: Package headers
         run: |

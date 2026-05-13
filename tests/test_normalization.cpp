@@ -11,10 +11,9 @@
 
 #include "tensorcraft/core/cuda_check.hpp"
 
-#include "cuda_test_ops.hpp"
+#include "tensorcraft/kernels/normalization.hpp"
 
 using namespace tensorcraft;
-using namespace tensorcraft::tests;
 
 class NormalizationTest : public ::testing::Test {
 protected:
@@ -63,7 +62,7 @@ TEST_F(NormalizationTest, LayerNormStatisticalProperties) {
     TC_CUDA_CHECK(
         cudaMemcpy(d_beta, h_beta.data(), hidden_size * sizeof(float), cudaMemcpyHostToDevice));
 
-    layernorm(d_input, d_gamma, d_beta, d_output, batch_size, hidden_size, eps);
+    kernels::layernorm(d_input, d_gamma, d_beta, d_output, batch_size, hidden_size, eps);
     TC_CUDA_CHECK(cudaDeviceSynchronize());
 
     TC_CUDA_CHECK(cudaMemcpy(h_output.data(), d_output, batch_size * hidden_size * sizeof(float),
@@ -117,7 +116,7 @@ TEST_F(NormalizationTest, LayerNormWithAffine) {
     TC_CUDA_CHECK(
         cudaMemcpy(d_beta, h_beta.data(), hidden_size * sizeof(float), cudaMemcpyHostToDevice));
 
-    layernorm(d_input, d_gamma, d_beta, d_output, batch_size, hidden_size, eps);
+    kernels::layernorm(d_input, d_gamma, d_beta, d_output, batch_size, hidden_size, eps);
     TC_CUDA_CHECK(cudaDeviceSynchronize());
 
     TC_CUDA_CHECK(cudaMemcpy(h_output.data(), d_output, batch_size * hidden_size * sizeof(float),
@@ -172,7 +171,7 @@ TEST_F(NormalizationTest, LayerNormGammaOnly) {
     TC_CUDA_CHECK(
         cudaMemcpy(d_gamma, h_gamma.data(), hidden_size * sizeof(float), cudaMemcpyHostToDevice));
 
-    layernorm(d_input, d_gamma, nullptr, d_output, batch_size, hidden_size, eps);
+    kernels::layernorm(d_input, d_gamma, nullptr, d_output, batch_size, hidden_size, eps);
     TC_CUDA_CHECK(cudaDeviceSynchronize());
 
     TC_CUDA_CHECK(cudaMemcpy(h_output.data(), d_output, batch_size * hidden_size * sizeof(float),
@@ -225,7 +224,7 @@ TEST_F(NormalizationTest, LayerNormBetaOnly) {
     TC_CUDA_CHECK(
         cudaMemcpy(d_beta, h_beta.data(), hidden_size * sizeof(float), cudaMemcpyHostToDevice));
 
-    layernorm(d_input, nullptr, d_beta, d_output, batch_size, hidden_size, eps);
+    kernels::layernorm(d_input, nullptr, d_beta, d_output, batch_size, hidden_size, eps);
     TC_CUDA_CHECK(cudaDeviceSynchronize());
 
     TC_CUDA_CHECK(cudaMemcpy(h_output.data(), d_output, batch_size * hidden_size * sizeof(float),
@@ -279,7 +278,7 @@ TEST_F(NormalizationTest, RMSNormCorrectness) {
     TC_CUDA_CHECK(
         cudaMemcpy(d_weight, h_weight.data(), hidden_size * sizeof(float), cudaMemcpyHostToDevice));
 
-    rmsnorm(d_input, d_weight, d_output, batch_size, hidden_size, eps);
+    kernels::rmsnorm(d_input, d_weight, d_output, batch_size, hidden_size, eps);
     TC_CUDA_CHECK(cudaDeviceSynchronize());
 
     TC_CUDA_CHECK(cudaMemcpy(h_output.data(), d_output, batch_size * hidden_size * sizeof(float),
@@ -341,7 +340,7 @@ TEST_F(NormalizationTest, BatchNormInference) {
     TC_CUDA_CHECK(
         cudaMemcpy(d_var, h_running_var.data(), C * sizeof(float), cudaMemcpyHostToDevice));
 
-    launch_batchnorm(d_input, d_gamma, d_beta, d_mean, d_var, d_output, N, C, H, W, eps, false);
+    kernels::launch_batchnorm(d_input, d_gamma, d_beta, d_mean, d_var, d_output, N, C, H, W, eps, false);
     TC_CUDA_CHECK(cudaDeviceSynchronize());
 
     TC_CUDA_CHECK(cudaMemcpy(h_output.data(), d_output, N * C * H * W * sizeof(float),

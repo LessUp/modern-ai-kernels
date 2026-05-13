@@ -36,11 +36,6 @@ __global__ void layernorm_kernel(const T* TC_RESTRICT input, const T* TC_RESTRIC
     const T* row_input = input + row * hidden_size;
     T* row_output = output + row * hidden_size;
 
-    __shared__ float shared[32];
-    const int lane = threadIdx.x % 32;
-    const int warp_id = threadIdx.x / 32;
-    const int num_warps = BLOCK_SIZE / 32;
-
     // ========================================================================
     // Phase 1: Compute mean
     // ========================================================================
@@ -50,24 +45,7 @@ __global__ void layernorm_kernel(const T* TC_RESTRICT input, const T* TC_RESTRIC
         thread_sum += to_float(row_input[i]);
     }
 
-    // Warp reduce
-    thread_sum = warp_reduce_sum(thread_sum);
-
-    if (lane == 0) {
-        shared[warp_id] = thread_sum;
-    }
-    __syncthreads();
-
-    if (warp_id == 0) {
-        thread_sum = (lane < num_warps) ? shared[lane] : 0.0f;
-        thread_sum = warp_reduce_sum(thread_sum);
-    }
-
-    __shared__ float mean;
-    if (threadIdx.x == 0) {
-        mean = thread_sum / hidden_size;
-    }
-    __syncthreads();
+    float mean = block_mean<BLOCK_SIZE>(thread_sum, hidden_size);
 
     // ========================================================================
     // Phase 2: Compute variance
@@ -79,24 +57,8 @@ __global__ void layernorm_kernel(const T* TC_RESTRICT input, const T* TC_RESTRIC
         thread_var += diff * diff;
     }
 
-    // Warp reduce
-    thread_var = warp_reduce_sum(thread_var);
-
-    if (lane == 0) {
-        shared[warp_id] = thread_var;
-    }
-    __syncthreads();
-
-    if (warp_id == 0) {
-        thread_var = (lane < num_warps) ? shared[lane] : 0.0f;
-        thread_var = warp_reduce_sum(thread_var);
-    }
-
-    __shared__ float inv_std;
-    if (threadIdx.x == 0) {
-        inv_std = rsqrtf(thread_var / hidden_size + eps);
-    }
-    __syncthreads();
+    float var = block_mean<BLOCK_SIZE>(thread_var, hidden_size);
+    float inv_std = rsqrtf(var + eps);
 
     // ========================================================================
     // Phase 3: Normalize and scale
@@ -120,31 +82,12 @@ __global__ void layernorm_no_affine_kernel(const T* TC_RESTRICT input, T* TC_RES
     const T* row_input = input + row * hidden_size;
     T* row_output = output + row * hidden_size;
 
-    __shared__ float shared[32];
-    const int lane = threadIdx.x % 32;
-    const int warp_id = threadIdx.x / 32;
-    const int num_warps = BLOCK_SIZE / 32;
-
     // Compute mean
     float thread_sum = 0.0f;
     for (int i = threadIdx.x; i < hidden_size; i += BLOCK_SIZE) {
         thread_sum += to_float(row_input[i]);
     }
-
-    thread_sum = warp_reduce_sum(thread_sum);
-    if (lane == 0)
-        shared[warp_id] = thread_sum;
-    __syncthreads();
-
-    if (warp_id == 0) {
-        thread_sum = (lane < num_warps) ? shared[lane] : 0.0f;
-        thread_sum = warp_reduce_sum(thread_sum);
-    }
-
-    __shared__ float mean;
-    if (threadIdx.x == 0)
-        mean = thread_sum / hidden_size;
-    __syncthreads();
+    float mean = block_mean<BLOCK_SIZE>(thread_sum, hidden_size);
 
     // Compute variance
     float thread_var = 0.0f;
@@ -152,21 +95,8 @@ __global__ void layernorm_no_affine_kernel(const T* TC_RESTRICT input, T* TC_RES
         float diff = to_float(row_input[i]) - mean;
         thread_var += diff * diff;
     }
-
-    thread_var = warp_reduce_sum(thread_var);
-    if (lane == 0)
-        shared[warp_id] = thread_var;
-    __syncthreads();
-
-    if (warp_id == 0) {
-        thread_var = (lane < num_warps) ? shared[lane] : 0.0f;
-        thread_var = warp_reduce_sum(thread_var);
-    }
-
-    __shared__ float inv_std;
-    if (threadIdx.x == 0)
-        inv_std = rsqrtf(thread_var / hidden_size + eps);
-    __syncthreads();
+    float var = block_mean<BLOCK_SIZE>(thread_var, hidden_size);
+    float inv_std = rsqrtf(var + eps);
 
     // Normalize
     for (int i = threadIdx.x; i < hidden_size; i += BLOCK_SIZE) {
@@ -192,11 +122,6 @@ __global__ void rmsnorm_kernel(const T* TC_RESTRICT input, const T* TC_RESTRICT 
     const T* row_input = input + row * hidden_size;
     T* row_output = output + row * hidden_size;
 
-    __shared__ float shared[32];
-    const int lane = threadIdx.x % 32;
-    const int warp_id = threadIdx.x / 32;
-    const int num_warps = BLOCK_SIZE / 32;
-
     // Compute sum of squares
     float thread_sum = 0.0f;
 
@@ -205,24 +130,8 @@ __global__ void rmsnorm_kernel(const T* TC_RESTRICT input, const T* TC_RESTRICT 
         thread_sum += val * val;
     }
 
-    // Warp reduce
-    thread_sum = warp_reduce_sum(thread_sum);
-
-    if (lane == 0) {
-        shared[warp_id] = thread_sum;
-    }
-    __syncthreads();
-
-    if (warp_id == 0) {
-        thread_sum = (lane < num_warps) ? shared[lane] : 0.0f;
-        thread_sum = warp_reduce_sum(thread_sum);
-    }
-
-    __shared__ float rms_inv;
-    if (threadIdx.x == 0) {
-        rms_inv = rsqrtf(thread_sum / hidden_size + eps);
-    }
-    __syncthreads();
+    float mean_sq = block_mean<BLOCK_SIZE>(thread_sum, hidden_size);
+    float rms_inv = rsqrtf(mean_sq + eps);
 
     // Normalize and scale
     for (int i = threadIdx.x; i < hidden_size; i += BLOCK_SIZE) {

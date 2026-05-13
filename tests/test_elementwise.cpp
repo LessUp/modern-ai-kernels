@@ -9,11 +9,9 @@
 #include <vector>
 
 #include "tensorcraft/core/cuda_check.hpp"
-
-#include "cuda_test_ops.hpp"
+#include "tensorcraft/kernels/elementwise.hpp"
 
 using namespace tensorcraft;
-using namespace tensorcraft::tests;
 
 class ElementwiseTest : public ::testing::Test {
 protected:
@@ -48,7 +46,7 @@ TEST_F(ElementwiseTest, VectorAddCorrectness) {
     TC_CUDA_CHECK(cudaMemcpy(d_a, h_a.data(), n * sizeof(float), cudaMemcpyHostToDevice));
     TC_CUDA_CHECK(cudaMemcpy(d_b, h_b.data(), n * sizeof(float), cudaMemcpyHostToDevice));
 
-    vector_add(d_a, d_b, d_c, n);
+    kernels::vector_add(d_a, d_b, d_c, n);
     TC_CUDA_CHECK(cudaDeviceSynchronize());
 
     TC_CUDA_CHECK(cudaMemcpy(h_c.data(), d_c, n * sizeof(float), cudaMemcpyDeviceToHost));
@@ -73,7 +71,7 @@ TEST_F(ElementwiseTest, ReLUCorrectness) {
 
     TC_CUDA_CHECK(cudaMemcpy(d_input, h_input.data(), n * sizeof(float), cudaMemcpyHostToDevice));
 
-    relu(d_input, d_output, n);
+    kernels::relu(d_input, d_output, n);
     TC_CUDA_CHECK(cudaDeviceSynchronize());
 
     TC_CUDA_CHECK(cudaMemcpy(h_output.data(), d_output, n * sizeof(float), cudaMemcpyDeviceToHost));
@@ -98,7 +96,7 @@ TEST_F(ElementwiseTest, SiLUCorrectness) {
 
     TC_CUDA_CHECK(cudaMemcpy(d_input, h_input.data(), n * sizeof(float), cudaMemcpyHostToDevice));
 
-    silu(d_input, d_output, n);
+    kernels::silu(d_input, d_output, n);
     TC_CUDA_CHECK(cudaDeviceSynchronize());
 
     TC_CUDA_CHECK(cudaMemcpy(h_output.data(), d_output, n * sizeof(float), cudaMemcpyDeviceToHost));
@@ -124,7 +122,7 @@ TEST_F(ElementwiseTest, GeLUCorrectness) {
 
     TC_CUDA_CHECK(cudaMemcpy(d_input, h_input.data(), n * sizeof(float), cudaMemcpyHostToDevice));
 
-    gelu(d_input, d_output, n);
+    kernels::gelu(d_input, d_output, n);
     TC_CUDA_CHECK(cudaDeviceSynchronize());
 
     TC_CUDA_CHECK(cudaMemcpy(h_output.data(), d_output, n * sizeof(float), cudaMemcpyDeviceToHost));
@@ -147,6 +145,6 @@ TEST_F(ElementwiseTest, EmptyInput) {
     float *d_input = nullptr, *d_output = nullptr;
 
     // Should not crash with empty input
-    relu(d_input, d_output, 0);
+    kernels::relu(d_input, d_output, 0);
     TC_CUDA_CHECK(cudaDeviceSynchronize());
 }

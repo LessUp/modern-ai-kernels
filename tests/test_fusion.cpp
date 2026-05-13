@@ -11,10 +11,9 @@
 
 #include "tensorcraft/core/cuda_check.hpp"
 
-#include "cuda_test_ops.hpp"
+#include "tensorcraft/kernels/fusion.hpp"
 
 using namespace tensorcraft;
-using namespace tensorcraft::tests;
 
 class FusionTest : public ::testing::Test {
 protected:
@@ -51,8 +50,8 @@ TEST_F(FusionTest, QuantizeDeQuantizeRoundTrip) {
 
     TC_CUDA_CHECK(cudaMemcpy(d_input, h_input.data(), N * sizeof(float), cudaMemcpyHostToDevice));
 
-    quantize_int8(d_input, d_q, scale, zero_point, N);
-    dequantize_int8(d_q, d_output, scale, zero_point, N);
+    kernels::quantize_int8(d_input, d_q, scale, zero_point, N);
+    kernels::dequantize_int8(d_q, d_output, scale, zero_point, N);
     TC_CUDA_CHECK(cudaDeviceSynchronize());
 
     std::vector<float> h_output(N);
@@ -84,7 +83,7 @@ TEST_F(FusionTest, QuantizeInt8Clamps) {
 
     TC_CUDA_CHECK(cudaMemcpy(d_input, h_input.data(), N * sizeof(float), cudaMemcpyHostToDevice));
 
-    quantize_int8(d_input, d_q, scale, zero_point, N);
+    kernels::quantize_int8(d_input, d_q, scale, zero_point, N);
     TC_CUDA_CHECK(cudaDeviceSynchronize());
 
     std::vector<int8_t> h_q(N);
@@ -129,7 +128,7 @@ TEST_F(FusionTest, GemmBiasReLU) {
     TC_CUDA_CHECK(cudaMemcpy(d_B, h_B.data(), K * N * sizeof(float), cudaMemcpyHostToDevice));
     TC_CUDA_CHECK(cudaMemcpy(d_bias, h_bias.data(), N * sizeof(float), cudaMemcpyHostToDevice));
 
-    gemm_bias_relu(d_A, d_B, d_bias, d_C, (size_t)M, (size_t)N, (size_t)K);
+    kernels::gemm_bias_relu(d_A, d_B, d_bias, d_C, (size_t)M, (size_t)N, (size_t)K);
     TC_CUDA_CHECK(cudaDeviceSynchronize());
 
     std::vector<float> h_C(M * N);

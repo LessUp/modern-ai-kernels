@@ -10,11 +10,9 @@
 #include <vector>
 
 #include "tensorcraft/core/cuda_check.hpp"
-
-#include "cuda_test_ops.hpp"
+#include "tensorcraft/kernels/softmax.hpp"
 
 using namespace tensorcraft;
-using namespace tensorcraft::tests;
 
 class SoftmaxTest : public ::testing::Test {
 protected:
@@ -76,7 +74,7 @@ TEST_F(SoftmaxTest, RowSumInvariant) {
     TC_CUDA_CHECK(
         cudaMemcpy(d_input, h_input.data(), rows * cols * sizeof(float), cudaMemcpyHostToDevice));
 
-    softmax(d_input, d_output, rows, cols);
+    kernels::softmax(d_input, d_output, rows, cols);
     TC_CUDA_CHECK(cudaDeviceSynchronize());
 
     TC_CUDA_CHECK(
@@ -111,7 +109,7 @@ TEST_F(SoftmaxTest, NumericalCorrectness) {
     TC_CUDA_CHECK(
         cudaMemcpy(d_input, h_input.data(), rows * cols * sizeof(float), cudaMemcpyHostToDevice));
 
-    softmax(d_input, d_output, rows, cols);
+    kernels::softmax(d_input, d_output, rows, cols);
     TC_CUDA_CHECK(cudaDeviceSynchronize());
 
     TC_CUDA_CHECK(
@@ -143,7 +141,7 @@ TEST_F(SoftmaxTest, LargeValues) {
     TC_CUDA_CHECK(
         cudaMemcpy(d_input, h_input.data(), rows * cols * sizeof(float), cudaMemcpyHostToDevice));
 
-    softmax(d_input, d_output, rows, cols);
+    kernels::softmax(d_input, d_output, rows, cols);
     TC_CUDA_CHECK(cudaDeviceSynchronize());
 
     TC_CUDA_CHECK(

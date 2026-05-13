@@ -11,7 +11,7 @@ add_executable(
   test_attention_docs_contract.cpp
   test_attention.cpp
   test_sparse.cpp
-  cuda_test_ops.cu)
+  test_warp_utils.cpp)
 
 target_link_libraries(tensorcraft_tests PRIVATE tensorcraft GTest::gtest
                                                 CUDA::cudart)
@@ -27,8 +27,6 @@ set_target_properties(
              CUDA_ARCHITECTURES "${CMAKE_CUDA_ARCHITECTURES}"
              CUDA_RUNTIME_LIBRARY Shared)
 
-set_source_files_properties(cuda_test_ops.cu PROPERTIES LANGUAGE CUDA)
-
 set_source_files_properties(
   test_main.cpp
   test_elementwise.cpp
@@ -40,6 +38,7 @@ set_source_files_properties(
   test_attention_docs_contract.cpp
   test_attention.cpp
   test_sparse.cpp
+  test_warp_utils.cpp
   PROPERTIES LANGUAGE CXX)
 
 include(GoogleTest)

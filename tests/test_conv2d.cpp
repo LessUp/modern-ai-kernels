@@ -10,10 +10,9 @@
 
 #include "tensorcraft/core/cuda_check.hpp"
 
-#include "cuda_test_ops.hpp"
+#include "tensorcraft/kernels/conv2d.hpp"
 
 using namespace tensorcraft;
-using namespace tensorcraft::tests;
 
 class Conv2DTest : public ::testing::Test {
 protected:
@@ -88,7 +87,7 @@ TEST_F(Conv2DTest, NaiveCorrectness) {
         cudaMemcpy(d_w, h_weight.data(), K * C * R * S * sizeof(float), cudaMemcpyHostToDevice));
     TC_CUDA_CHECK(cudaMemcpy(d_b, h_bias.data(), K * sizeof(float), cudaMemcpyHostToDevice));
 
-    conv2d(d_in, d_w, d_b, d_out, N, C, H, W, K, R, S, stride, pad);
+    kernels::conv2d(d_in, d_w, d_b, d_out, N, C, H, W, K, R, S, stride, pad);
     TC_CUDA_CHECK(cudaDeviceSynchronize());
 
     std::vector<float> h_out(N * K * OH * OW);
@@ -145,7 +144,7 @@ TEST_F(Conv2DTest, DepthwiseCorrectness) {
     TC_CUDA_CHECK(
         cudaMemcpy(d_w, h_weight.data(), C * R * S * sizeof(float), cudaMemcpyHostToDevice));
 
-    conv2d_depthwise(d_in, d_w, static_cast<const float*>(nullptr), d_out, N, C, H, W, R, S, stride,
+    kernels::conv2d_depthwise(d_in, d_w, static_cast<const float*>(nullptr), d_out, N, C, H, W, R, S, stride,
                      pad);
     TC_CUDA_CHECK(cudaDeviceSynchronize());
 
@@ -183,7 +182,7 @@ TEST_F(Conv2DTest, NoBias) {
     TC_CUDA_CHECK(
         cudaMemcpy(d_w, h_weight.data(), K * C * R * S * sizeof(float), cudaMemcpyHostToDevice));
 
-    conv2d(d_in, d_w, static_cast<const float*>(nullptr), d_out, N, C, H, W, K, R, S, stride, pad);
+    kernels::conv2d(d_in, d_w, static_cast<const float*>(nullptr), d_out, N, C, H, W, K, R, S, stride, pad);
     TC_CUDA_CHECK(cudaDeviceSynchronize());
 
     std::vector<float> h_out(N * K * OH * OW);
