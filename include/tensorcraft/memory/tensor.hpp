@@ -238,15 +238,19 @@ public:
     /**
      * @brief Zero the tensor
      */
-    void zero() { TC_CUDA_CHECK(cudaMemset(data_, 0, bytes())); }
+    void zero() {
+        if (data_ && size_ > 0) {
+            TC_CUDA_CHECK(cudaMemset(data_, 0, bytes()));
+        }
+    }
 
     /**
      * @brief Create a deep copy
      */
     Tensor clone() const {
         Tensor result(shape_);
-        if (size_ > 0) {
-            TC_CUDA_CHECK(cudaMemcpy(result.data_, data_, bytes(), cudaMemcpyDeviceToDevice));
+        if (size_ > 0 && data_) {
+            TC_CUDA_CHECK(cudaMemcpy(result.data(), data_, bytes(), cudaMemcpyDeviceToDevice));
         }
         return result;
     }

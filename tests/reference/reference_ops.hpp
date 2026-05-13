@@ -70,9 +70,10 @@ inline std::vector<float> softmax(const std::vector<float>& input, int rows, int
             sum += output[r * cols + c];
         }
 
-        // Normalize
+        // Normalize (handle edge case where sum == 0)
+        float inv_sum = (sum > 0.0f) ? (1.0f / sum) : 0.0f;
         for (int c = 0; c < cols; ++c) {
-            output[r * cols + c] /= sum;
+            output[r * cols + c] *= inv_sum;
         }
     }
 
@@ -122,7 +123,10 @@ inline std::vector<float> layernorm(const std::vector<float>& input,
                                     const std::vector<float>& beta,
                                     int batch_size, int hidden_size, float eps = 1e-5f) {
     std::vector<float> output(batch_size * hidden_size);
-    layernorm(input.data(), gamma.data(), beta.data(),
+    // Allow empty gamma/beta vectors (will use default values: gamma=1, beta=0)
+    const float* gamma_ptr = gamma.empty() ? nullptr : gamma.data();
+    const float* beta_ptr = beta.empty() ? nullptr : beta.data();
+    layernorm(input.data(), gamma_ptr, beta_ptr,
               output.data(), batch_size, hidden_size, eps);
     return output;
 }
@@ -160,7 +164,9 @@ inline std::vector<float> rmsnorm(const std::vector<float>& input,
                                   const std::vector<float>& weight,
                                   int batch_size, int hidden_size, float eps = 1e-6f) {
     std::vector<float> output(batch_size * hidden_size);
-    rmsnorm(input.data(), weight.data(), output.data(), batch_size, hidden_size, eps);
+    // Allow empty weight vector (will use default value: weight=1)
+    const float* weight_ptr = weight.empty() ? nullptr : weight.data();
+    rmsnorm(input.data(), weight_ptr, output.data(), batch_size, hidden_size, eps);
     return output;
 }
 

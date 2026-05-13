@@ -6,6 +6,7 @@
  * Memory management uses MemoryPool for efficient allocation.
  */
 
+#include <algorithm>
 #include <initializer_list>
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
@@ -47,7 +48,9 @@ public:
     /// Allocate and copy from host
     static PooledDeviceMemory from_host(const T* host_data, size_t count) {
         PooledDeviceMemory mem(count);
-        TC_CUDA_CHECK(cudaMemcpy(mem.ptr_, host_data, count * sizeof(T), cudaMemcpyHostToDevice));
+        if (count > 0 && mem.ptr_) {
+            TC_CUDA_CHECK(cudaMemcpy(mem.ptr_, host_data, count * sizeof(T), cudaMemcpyHostToDevice));
+        }
         return mem;
     }
 
@@ -154,13 +157,16 @@ size_t matrix_output_size(int rows, int cols) {
     return static_cast<size_t>(rows) * static_cast<size_t>(cols);
 }
 
-// Parse GEMM version string to enum
+// Parse GEMM version string to enum (case-insensitive)
 kernels::GemmVersion parse_gemm_version(const std::string& name) {
-    if (name == "naive")
+    std::string lower = name;
+    std::transform(lower.begin(), lower.end(), lower.begin(),
+                   [](unsigned char c) { return std::tolower(c); });
+    if (lower == "naive")
         return kernels::GemmVersion::Naive;
-    if (name == "tiled")
+    if (lower == "tiled")
         return kernels::GemmVersion::Tiled;
-    if (name == "double_buffer")
+    if (lower == "double_buffer")
         return kernels::GemmVersion::DoubleBuffer;
     throw std::invalid_argument("Unsupported GEMM version: " + name);
 }

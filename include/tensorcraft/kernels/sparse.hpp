@@ -78,15 +78,23 @@ public:
      * @param rows Number of rows
      * @param cols Number of columns
      * @param nnz Number of non-zero elements
+     * @param zero_init If true, initialize all arrays to zero (default: false)
      */
-    CSRMatrix(int rows, int cols, int nnz)
+    CSRMatrix(int rows, int cols, int nnz, bool zero_init = false)
         : rows_(rows), cols_(cols), nnz_(nnz) {
         if (nnz > 0) {
             values_ = static_cast<T*>(MemoryPool::instance().allocate(nnz * sizeof(T)));
             col_indices_ = static_cast<int*>(MemoryPool::instance().allocate(nnz * sizeof(int)));
+            if (zero_init) {
+                TC_CUDA_CHECK(cudaMemset(values_, 0, nnz * sizeof(T)));
+                TC_CUDA_CHECK(cudaMemset(col_indices_, 0, nnz * sizeof(int)));
+            }
         }
         if (rows > 0) {
             row_ptrs_ = static_cast<int*>(MemoryPool::instance().allocate((rows + 1) * sizeof(int)));
+            if (zero_init) {
+                TC_CUDA_CHECK(cudaMemset(row_ptrs_, 0, (rows + 1) * sizeof(int)));
+            }
         }
     }
 
