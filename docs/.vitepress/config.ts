@@ -184,11 +184,12 @@ function nav() {
       ]
     },
     {
-      text: 'Resources',
+      text: 'Learn',
       items: [
+        { text: 'Examples', link: '/en/examples/' },
+        { text: 'Benchmarks', link: '/en/benchmarks/' },
         { text: 'Papers & Citations', link: '/en/references/papers' },
-        { text: 'Learning Resources', link: '/en/references/resources' },
-        { text: 'Changelog', link: '/en/changelog' }
+        { text: 'Learning Resources', link: '/en/references/resources' }
       ]
     }
   ]
@@ -212,11 +213,12 @@ function navZh() {
       ]
     },
     {
-      text: '资源',
+      text: '学习',
       items: [
+        { text: '示例', link: '/zh/examples/' },
+        { text: '性能基准', link: '/zh/benchmarks/' },
         { text: '论文引用', link: '/zh/references/papers' },
-        { text: '学习资源', link: '/zh/references/resources' },
-        { text: '更新日志', link: '/zh/changelog' }
+        { text: '学习资源', link: '/zh/references/resources' }
       ]
     }
   ]
@@ -224,78 +226,154 @@ function navZh() {
 
 // English sidebar
 function sidebarEn() {
-  return [
-    {
-      text: 'Introduction',
-      items: [
-        { text: 'Getting Started', link: '/en/getting-started' },
-        { text: 'Architecture Overview', link: '/en/architecture' }
-      ]
-    },
-    {
-      text: 'Guides',
-      items: [
-        { text: 'Installation', link: '/en/guides/installation' },
-        { text: 'Quick Start', link: '/en/guides/quick-start' },
-        { text: 'Benchmarking', link: '/en/guides/benchmarking' }
-      ]
-    },
-    {
-      text: 'API Reference',
-      items: [
-        { text: 'GEMM Kernels', link: '/en/api/gemm' },
-        { text: 'Attention Kernels', link: '/en/api/attention' },
-        { text: 'Normalization', link: '/en/api/normalization' },
-        { text: 'Convolution', link: '/en/api/convolution' },
-        { text: 'Sparse Operations', link: '/en/api/sparse' },
-        { text: 'Quantization', link: '/en/api/quantization' }
-      ]
-    },
-    {
-      text: 'References',
-      items: [
-        { text: 'Papers & Citations', link: '/en/references/papers' },
-        { text: 'Learning Resources', link: '/en/references/resources' }
-      ]
-    }
-  ]
+  return {
+    '/en/examples/': [
+      {
+        text: 'Examples',
+        items: [
+          { text: 'Overview', link: '/en/examples/' },
+          { text: 'GEMM Tutorial', link: '/en/examples/gemm-tutorial' },
+          { text: 'FlashAttention', link: '/en/examples/flash-attention' },
+          { text: 'Python Bindings', link: '/en/examples/python-bindings' }
+        ]
+      }
+    ],
+    '/en/benchmarks/': [
+      {
+        text: 'Benchmarks',
+        items: [
+          { text: 'Overview', link: '/en/benchmarks/' },
+          { text: 'GEMM Performance', link: '/en/benchmarks/gemm' },
+          { text: 'Attention Performance', link: '/en/benchmarks/attention' }
+        ]
+      }
+    ],
+    '/en/api/': [
+      {
+        text: 'API Reference',
+        items: [
+          { text: 'GEMM Kernels', link: '/en/api/gemm' },
+          { text: 'Attention Kernels', link: '/en/api/attention' },
+          { text: 'Normalization', link: '/en/api/normalization' },
+          { text: 'Convolution', link: '/en/api/convolution' },
+          { text: 'Sparse Operations', link: '/en/api/sparse' },
+          { text: 'Quantization', link: '/en/api/quantization' }
+        ]
+      }
+    ],
+    '/en/': [
+      {
+        text: 'Introduction',
+        items: [
+          { text: 'Getting Started', link: '/en/getting-started' },
+          { text: 'Architecture Overview', link: '/en/architecture' }
+        ]
+      },
+      {
+        text: 'Guides',
+        items: [
+          { text: 'Installation', link: '/en/guides/installation' },
+          { text: 'Quick Start', link: '/en/guides/quick-start' },
+          { text: 'Benchmarking', link: '/en/guides/benchmarking' }
+        ]
+      },
+      {
+        text: 'API Reference',
+        items: [
+          { text: 'GEMM Kernels', link: '/en/api/gemm' },
+          { text: 'Attention Kernels', link: '/en/api/attention' },
+          { text: 'Normalization', link: '/en/api/normalization' },
+          { text: 'Convolution', link: '/en/api/convolution' },
+          { text: 'Sparse Operations', link: '/en/api/sparse' },
+          { text: 'Quantization', link: '/en/api/quantization' }
+        ]
+      },
+      {
+        text: 'Learn',
+        items: [
+          { text: 'Examples', link: '/en/examples/' },
+          { text: 'Benchmarks', link: '/en/benchmarks/' },
+          { text: 'Papers & Citations', link: '/en/references/papers' },
+          { text: 'Learning Resources', link: '/en/references/resources' }
+        ]
+      }
+    ]
+  }
 }
 
 // Chinese sidebar
 function sidebarZh() {
-  return [
-    {
-      text: '简介',
-      items: [
-        { text: '快速开始', link: '/zh/getting-started' },
-        { text: '架构概览', link: '/zh/architecture' }
-      ]
-    },
-    {
-      text: '指南',
-      items: [
-        { text: '安装说明', link: '/zh/guides/installation' },
-        { text: '快速入门', link: '/zh/guides/quick-start' },
-        { text: '性能测试', link: '/zh/guides/benchmarking' }
-      ]
-    },
-    {
-      text: 'API 参考',
-      items: [
-        { text: 'GEMM 内核', link: '/zh/api/gemm' },
-        { text: 'Attention 内核', link: '/zh/api/attention' },
-        { text: '归一化', link: '/zh/api/normalization' },
-        { text: '卷积', link: '/zh/api/convolution' },
-        { text: '稀疏操作', link: '/zh/api/sparse' },
-        { text: '量化', link: '/zh/api/quantization' }
-      ]
-    },
-    {
-      text: '参考资料',
-      items: [
-        { text: '论文引用', link: '/zh/references/papers' },
-        { text: '学习资源', link: '/zh/references/resources' }
-      ]
-    }
-  ]
+  return {
+    '/zh/examples/': [
+      {
+        text: '示例',
+        items: [
+          { text: '概述', link: '/zh/examples/' },
+          { text: 'GEMM 教程', link: '/zh/examples/gemm-tutorial' },
+          { text: 'FlashAttention', link: '/zh/examples/flash-attention' },
+          { text: 'Python 绑定', link: '/zh/examples/python-bindings' }
+        ]
+      }
+    ],
+    '/zh/benchmarks/': [
+      {
+        text: '性能基准',
+        items: [
+          { text: '概述', link: '/zh/benchmarks/' },
+          { text: 'GEMM 性能', link: '/zh/benchmarks/gemm' },
+          { text: 'Attention 性能', link: '/zh/benchmarks/attention' }
+        ]
+      }
+    ],
+    '/zh/api/': [
+      {
+        text: 'API 参考',
+        items: [
+          { text: 'GEMM 内核', link: '/zh/api/gemm' },
+          { text: 'Attention 内核', link: '/zh/api/attention' },
+          { text: '归一化', link: '/zh/api/normalization' },
+          { text: '卷积', link: '/zh/api/convolution' },
+          { text: '稀疏操作', link: '/zh/api/sparse' },
+          { text: '量化', link: '/zh/api/quantization' }
+        ]
+      }
+    ],
+    '/zh/': [
+      {
+        text: '简介',
+        items: [
+          { text: '快速开始', link: '/zh/getting-started' },
+          { text: '架构概览', link: '/zh/architecture' }
+        ]
+      },
+      {
+        text: '指南',
+        items: [
+          { text: '安装说明', link: '/zh/guides/installation' },
+          { text: '快速入门', link: '/zh/guides/quick-start' },
+          { text: '性能测试', link: '/zh/guides/benchmarking' }
+        ]
+      },
+      {
+        text: 'API 参考',
+        items: [
+          { text: 'GEMM 内核', link: '/zh/api/gemm' },
+          { text: 'Attention 内核', link: '/zh/api/attention' },
+          { text: '归一化', link: '/zh/api/normalization' },
+          { text: '卷积', link: '/zh/api/convolution' },
+          { text: '稀疏操作', link: '/zh/api/sparse' },
+          { text: '量化', link: '/zh/api/quantization' }
+        ]
+      },
+      {
+        text: '学习',
+        items: [
+          { text: '示例', link: '/zh/examples/' },
+          { text: '性能基准', link: '/zh/benchmarks/' },
+          { text: '论文引用', link: '/zh/references/papers' },
+          { text: '学习资源', link: '/zh/references/resources' }
+        ]
+      }
+    ]
+  }
 }

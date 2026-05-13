@@ -4,7 +4,7 @@ layout: home
 hero:
   name: TensorCraft-HPC
   text: Demystifying High-Performance AI Kernels
-  tagline: A readable C++/CUDA kernel repository for learning, validation, and packaging. Keep the fast paths, keep the docs honest, and keep the workflow small enough to maintain.
+  tagline: A header-only C++/CUDA library for learning modern AI operators — progressive optimization paths, readable code, OpenSpec-driven development.
   actions:
     - theme: brand
       text: Get Started
@@ -15,104 +15,71 @@ hero:
     - theme: alt
       text: Papers & Citations
       link: /en/references/papers
-
-features:
-  - icon: 🧮
-    title: GEMM Optimization
-    details: Progressive optimization from naive to tiled, double buffer, and Tensor Core (WMMA). Achieve 85-95% of cuBLAS performance.
-  - icon: 👁️
-    title: FlashAttention
-    details: Memory-efficient attention implementation with RoPE positional encoding and MoE router support. 80-90% cuDNN parity.
-  - icon: 📊
-    title: Normalization
-    details: LayerNorm, RMSNorm, BatchNorm, and Softmax with optimized fusion strategies. 90-95% cuDNN parity.
-  - icon: 🔄
-    title: Convolution
-    details: 2D/3D convolutions with Im2Col, Winograd, and depthwise separable optimizations.
-  - icon: 📉
-    title: Sparse Operations
-    details: CSR/CSC format support, SpMV, SpMM, and structured sparsity patterns for high-sparsity workloads.
-  - icon: ⚡
-    title: Quantization
-    details: INT8 and FP8 (CUDA 12.0+) quantized operations for reduced precision with minimal accuracy loss.
 ---
 
-<style>
-/* Additional landing page styles */
-.VPHero .name {
-  background: linear-gradient(135deg, #ffffff 0%, #76B900 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
+<script setup>
+import ArchitectureImg from '/images/diagrams/architecture.svg'
+import GEMMPathImg from '/images/diagrams/gemm-optimization-path.svg'
+import BenchmarksImg from '/images/diagrams/performance-benchmarks.svg'
+</script>
 
-.VPHero .text {
-  color: var(--vp-c-text-1);
-}
-
-.VPHero .tagline {
-  color: var(--vp-c-text-2);
-}
-</style>
-
-## Abstract {#abstract}
-
-<div class="abstract">
-<div class="abstract-title">Abstract</div>
-<div class="abstract-content">
-
-TensorCraft-HPC is a header-only C++/CUDA kernel library designed for learning, validating, and packaging modern AI operators. Unlike production libraries that prioritize raw performance, TensorCraft-HPC emphasizes **readability** and **progressive optimization paths**—each kernel evolves from a naive implementation to an optimized version, making the learning process explicit and accessible.
-
-The repository follows an **OpenSpec-driven development workflow**, where specifications in `openspec/specs/` serve as the authoritative source of truth. This approach ensures documentation stays synchronized with implementation and provides a clear contract for contributors.
-
-</div>
+<div class="home-hero-badges">
+  <span class="badge cuda">CUDA 11.0+</span>
+  <span class="badge arch">SM70-SM100</span>
+  <span class="badge header">Header-Only</span>
+  <span class="badge openspec">OpenSpec</span>
 </div>
 
-## Key Contributions {#contributions}
+## Why TensorCraft-HPC?
 
-<ul class="contributions">
-<li><strong>Educational Kernel Implementations</strong> — Progressive optimization paths from naive to Tensor Core for GEMM, FlashAttention-style memory-efficient attention, and fused normalization kernels.</li>
-<li><strong>Header-Only Architecture</strong> — Zero-build integration for C++ projects, with optional Python bindings via pybind11 for experimentation.</li>
-<li><strong>Multi-Architecture Support</strong> — CUDA kernels targeting SM70 (Volta) through SM100 (Blackwell), with compile-time feature detection.</li>
-<li><strong>OpenSpec Workflow</strong> — Specification-first development with acceptance criteria in `openspec/specs/` and change proposals in `openspec/changes/`.</li>
-<li><strong>Bilingual Documentation</strong> — Complete English and Chinese documentation with Mermaid architecture diagrams.</li>
-</ul>
+<div class="feature-grid">
 
-## Architecture Overview {#architecture}
+<div class="feature-card">
+  <h3>🎓 Educational Design</h3>
+  <p>Each kernel evolves from <strong>naive to optimized</strong>, making the learning process explicit and accessible. No magic, just clear code.</p>
+</div>
 
-```mermaid
-flowchart TB
-    subgraph UserAPI["User API Layer"]
-        CPP["C++ Headers<br/>(Header-Only)"]
-        PY["Python Bindings<br/>(tensorcraft_ops)"]
-    end
+<div class="feature-card">
+  <h3>🚀 Progressive Optimization</h3>
+  <p>GEMM implementation demonstrates 4 optimization stages: Naive → Tiled → Double Buffer → Tensor Core, achieving <strong>92% cuBLAS</strong>.</p>
+</div>
 
-    subgraph Kernels["Kernel Layer"]
-        GEMM["GEMM<br/>(Naive → Tensor Core)"]
-        ATTN["Attention<br/>(FlashAttention)"]
-        NORM["Normalization<br/>(Fused)"]
-        CONV["Convolution<br/>(Im2Col/Winograd)"]
-    end
+<div class="feature-card">
+  <h3>⚡ Zero-Build Integration</h3>
+  <p>Header-only architecture — just <code>#include "tensorcraft/"</code> in your project. Optional Python bindings via <code>pip install</code>.</p>
+</div>
 
-    subgraph Memory["Memory Layer"]
-        TENSOR["FloatTensor<br/>(RAII)"]
-        POOL["MemoryPool<br/>(Optional)"]
-    end
+<div class="feature-card">
+  <h3>📊 Multi-Architecture Support</h3>
+  <p>Compile-time feature detection for <strong>Volta (SM70)</strong> through <strong>Blackwell (SM100)</strong>, with Tensor Core, FP8, and BF16 support.</p>
+</div>
 
-    subgraph Hardware["Hardware Abstraction"]
-        SM70["SM70 (Volta)"]
-        SM80["SM80 (Ampere)"]
-        SM90["SM90 (Hopper)"]
-        SM100["SM100 (Blackwell)"]
-    end
+</div>
 
-    CPP --> Kernels
-    PY --> Kernels
-    Kernels --> Memory
-    Memory --> Hardware
-```
+## Architecture
 
-## Quick Start {#quick-start}
+<div class="diagram-container">
+  <img :src="ArchitectureImg" alt="TensorCraft-HPC Architecture" />
+</div>
+
+## GEMM Optimization Path
+
+<div class="diagram-container">
+  <img :src="GEMMPathImg" alt="GEMM Optimization Path" />
+</div>
+
+## Performance Benchmarks
+
+<div class="diagram-container">
+  <img :src="BenchmarksImg" alt="Performance Benchmarks" />
+</div>
+
+<div class="benchmark-note">
+  <span class="note-icon">📊</span>
+  <span>Benchmarks measured on A100 80GB, CUDA 12.4, FP16 Tensor Core enabled. Relative performance vs NVIDIA libraries.</span>
+</div>
+
+## Quick Start
 
 ::: code-group
 ```bash [Install]
@@ -154,7 +121,7 @@ output = tc.flash_attention(Q, K, V)
 ```
 :::
 
-## Project Status {#status}
+## Project Status
 
 | Aspect | Status |
 |--------|--------|
@@ -164,7 +131,7 @@ output = tc.flash_attention(Q, K, V)
 | CUDA Support | 11.0 - 13.1 |
 | Architecture Support | SM70 - SM100 (Volta → Blackwell) |
 
-## Citation {#citation}
+## Citation
 
 If you use TensorCraft-HPC in your research or learning materials, please cite:
 
@@ -177,6 +144,134 @@ If you use TensorCraft-HPC in your research or learning materials, please cite:
 }
 ```
 
-## References {#references}
+<style>
+.home-hero-badges {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
 
-See [Papers & Citations](/en/references/papers) for a comprehensive list of academic papers and open-source projects referenced in this repository.
+.badge {
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-family: var(--vp-font-family-mono);
+}
+
+.badge.cuda {
+  background: var(--vp-c-brand-soft);
+  color: var(--vp-c-brand-1);
+  border: 1px solid var(--vp-c-brand-1);
+}
+
+.badge.arch {
+  background: rgba(0, 212, 255, 0.1);
+  color: #00D4FF;
+  border: 1px solid #00D4FF;
+}
+
+.badge.header {
+  background: rgba(255, 197, 23, 0.1);
+  color: #FFB800;
+  border: 1px solid #FFB800;
+}
+
+.badge.openspec {
+  background: rgba(142, 208, 0, 0.1);
+  color: #8ED000;
+  border: 1px solid #8ED000;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.feature-card {
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-border);
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.2s ease;
+}
+
+.feature-card:hover {
+  border-color: var(--vp-c-brand-1);
+  transform: translateY(-2px);
+}
+
+.feature-card h3 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--vp-c-text-1);
+}
+
+.feature-card p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--vp-c-text-2);
+}
+
+.feature-card code {
+  background: var(--vp-c-brand-soft);
+  color: var(--vp-c-brand-1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.diagram-container {
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-border);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 24px 0;
+  text-align: center;
+}
+
+.diagram-container img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.benchmark-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-border);
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--vp-c-text-3);
+  margin-top: 16px;
+}
+
+.note-icon {
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  .feature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .home-hero-badges {
+    gap: 8px;
+  }
+
+  .badge {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+}
+</style>

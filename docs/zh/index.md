@@ -4,7 +4,7 @@ layout: home
 hero:
   name: TensorCraft-HPC
   text: 解密高性能 AI 内核
-  tagline: 一个可读的 C++/CUDA 内核库，用于学习、验证和打包。保持快速路径，保持文档诚实，保持工作流足够小以维护。
+  tagline: 一个仅头文件的 C++/CUDA 库，用于学习现代 AI 算子 — 渐进式优化路径、可读代码、OpenSpec 驱动开发。
   actions:
     - theme: brand
       text: 快速开始
@@ -15,95 +15,71 @@ hero:
     - theme: alt
       text: 论文引用
       link: /zh/references/papers
-
-features:
-  - icon: 🧮
-    title: GEMM 优化
-    details: 从朴素实现到分块、双缓冲、Tensor Core (WMMA) 的渐进式优化。达到 cuBLAS 性能的 85-95%。
-  - icon: 👁️
-    title: FlashAttention
-    details: 内存高效的注意力实现，支持 RoPE 位置编码和 MoE 路由。达到 cuDNN 性能的 80-90%。
-  - icon: 📊
-    title: 归一化
-    details: LayerNorm、RMSNorm、BatchNorm 和 Softmax，采用优化的融合策略。达到 cuDNN 性能的 90-95%。
-  - icon: 🔄
-    title: 卷积
-    details: 2D/3D 卷积，支持 Im2Col、Winograd 和深度可分离优化。
-  - icon: 📉
-    title: 稀疏操作
-    details: CSR/CSC 格式支持，SpMV、SpMM 和结构化稀疏模式。
-  - icon: ⚡
-    title: 量化
-    details: INT8 和 FP8 (CUDA 12.0+) 量化操作，精度损失最小。
 ---
 
-<style>
-.VPHero .name {
-  background: linear-gradient(135deg, #ffffff 0%, #76B900 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-</style>
+<script setup>
+import ArchitectureImg from '/images/diagrams/architecture.svg'
+import GEMMPathImg from '/images/diagrams/gemm-optimization-path.svg'
+import BenchmarksImg from '/images/diagrams/performance-benchmarks.svg'
+</script>
 
-## 摘要 {#abstract}
-
-<div class="abstract">
-<div class="abstract-title">摘要</div>
-<div class="abstract-content">
-
-TensorCraft-HPC 是一个仅头文件的 C++/CUDA 内核库，专为学习、验证和打包现代 AI 算子而设计。与优先考虑原始性能的生产库不同，TensorCraft-HPC 强调**可读性**和**渐进式优化路径**——每个内核从朴素实现演进到优化版本，使学习过程明确且易于理解。
-
-该仓库遵循 **OpenSpec 驱动的开发工作流**，其中 `openspec/specs/` 中的规范作为权威的真实来源。这种方法确保文档与实现保持同步，并为贡献者提供清晰的契约。
-
-</div>
+<div class="home-hero-badges">
+  <span class="badge cuda">CUDA 11.0+</span>
+  <span class="badge arch">SM70-SM100</span>
+  <span class="badge header">仅头文件</span>
+  <span class="badge openspec">OpenSpec</span>
 </div>
 
-## 主要贡献 {#contributions}
+## 为什么选择 TensorCraft-HPC？
 
-<ul class="contributions">
-<li><strong>教育性内核实现</strong> — 从朴素到 Tensor Core 的渐进式优化路径，包括 GEMM、FlashAttention 风格的内存高效注意力和融合归一化内核。</li>
-<li><strong>仅头文件架构</strong> — C++ 项目零构建集成，通过 pybind11 提供可选的 Python 绑定用于实验。</li>
-<li><strong>多架构支持</strong> — CUDA 内核目标为 SM70 (Volta) 到 SM100 (Blackwell)，具有编译时特性检测。</li>
-<li><strong>OpenSpec 工作流</strong> — 规范优先开发，验收标准在 `openspec/specs/`，变更提案在 `openspec/changes/`。</li>
-<li><strong>双语文档</strong> — 完整的中英文文档，配有 Mermaid 架构图。</li>
-</ul>
+<div class="feature-grid">
 
-## 架构概览 {#architecture}
+<div class="feature-card">
+  <h3>🎓 教育性设计</h3>
+  <p>每个内核从<strong>朴素实现到优化版本</strong>渐进演进，让学习过程清晰可见。没有魔法，只有清晰的代码。</p>
+</div>
 
-```mermaid
-flowchart TB
-    subgraph UserAPI["用户 API 层"]
-        CPP["C++ 头文件<br/>(仅头文件)"]
-        PY["Python 绑定<br/>(tensorcraft_ops)"]
-    end
+<div class="feature-card">
+  <h3>🚀 渐进式优化</h3>
+  <p>GEMM 实现展示 4 个优化阶段：朴素 → 分块 → 双缓冲 → Tensor Core，达到 <strong>92% cuBLAS</strong> 性能。</p>
+</div>
 
-    subgraph Kernels["内核层"]
-        GEMM["GEMM<br/>(朴素 → Tensor Core)"]
-        ATTN["Attention<br/>(FlashAttention)"]
-        NORM["归一化<br/>(融合)"]
-        CONV["卷积<br/>(Im2Col/Winograd)"]
-    end
+<div class="feature-card">
+  <h3>⚡ 零构建集成</h3>
+  <p>仅头文件架构 — 只需 <code>#include "tensorcraft/"</code> 即可使用。可选 Python 绑定通过 <code>pip install</code> 安装。</p>
+</div>
 
-    subgraph Memory["内存层"]
-        TENSOR["FloatTensor<br/>(RAII)"]
-        POOL["MemoryPool<br/>(可选)"]
-    end
+<div class="feature-card">
+  <h3>📊 多架构支持</h3>
+  <p>编译时特性检测，支持 <strong>Volta (SM70)</strong> 到 <strong>Blackwell (SM100)</strong>，包含 Tensor Core、FP8 和 BF16 支持。</p>
+</div>
 
-    subgraph Hardware["硬件抽象"]
-        SM70["SM70 (Volta)"]
-        SM80["SM80 (Ampere)"]
-        SM90["SM90 (Hopper)"]
-        SM100["SM100 (Blackwell)"]
-    end
+</div>
 
-    CPP --> Kernels
-    PY --> Kernels
-    Kernels --> Memory
-    Memory --> Hardware
-```
+## 架构设计
 
-## 快速开始 {#quick-start}
+<div class="diagram-container">
+  <img :src="ArchitectureImg" alt="TensorCraft-HPC 架构" />
+</div>
+
+## GEMM 优化路径
+
+<div class="diagram-container">
+  <img :src="GEMMPathImg" alt="GEMM 优化路径" />
+</div>
+
+## 性能基准
+
+<div class="diagram-container">
+  <img :src="BenchmarksImg" alt="性能基准" />
+</div>
+
+<div class="benchmark-note">
+  <span class="note-icon">📊</span>
+  <span>基准测试在 A100 80GB、CUDA 12.4、FP16 Tensor Core 环境下测量。相对性能对比 NVIDIA 库。</span>
+</div>
+
+## 快速开始
 
 ::: code-group
 ```bash [安装]
@@ -145,7 +121,7 @@ output = tc.flash_attention(Q, K, V)
 ```
 :::
 
-## 项目状态 {#status}
+## 项目状态
 
 | 方面 | 状态 |
 |------|------|
@@ -155,7 +131,7 @@ output = tc.flash_attention(Q, K, V)
 | CUDA 支持 | 11.0 - 13.1 |
 | 架构支持 | SM70 - SM100 (Volta → Blackwell) |
 
-## 引用 {#citation}
+## 引用
 
 如果您在研究或学习材料中使用 TensorCraft-HPC，请引用：
 
@@ -168,6 +144,134 @@ output = tc.flash_attention(Q, K, V)
 }
 ```
 
-## 参考资料 {#references}
+<style>
+.home-hero-badges {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
 
-参见 [论文引用](/zh/references/papers) 获取本仓库引用的学术论文和开源项目完整列表。
+.badge {
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-family: var(--vp-font-family-mono);
+}
+
+.badge.cuda {
+  background: var(--vp-c-brand-soft);
+  color: var(--vp-c-brand-1);
+  border: 1px solid var(--vp-c-brand-1);
+}
+
+.badge.arch {
+  background: rgba(0, 212, 255, 0.1);
+  color: #00D4FF;
+  border: 1px solid #00D4FF;
+}
+
+.badge.header {
+  background: rgba(255, 197, 23, 0.1);
+  color: #FFB800;
+  border: 1px solid #FFB800;
+}
+
+.badge.openspec {
+  background: rgba(142, 208, 0, 0.1);
+  color: #8ED000;
+  border: 1px solid #8ED000;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.feature-card {
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-border);
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.2s ease;
+}
+
+.feature-card:hover {
+  border-color: var(--vp-c-brand-1);
+  transform: translateY(-2px);
+}
+
+.feature-card h3 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--vp-c-text-1);
+}
+
+.feature-card p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--vp-c-text-2);
+}
+
+.feature-card code {
+  background: var(--vp-c-brand-soft);
+  color: var(--vp-c-brand-1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.diagram-container {
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-border);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 24px 0;
+  text-align: center;
+}
+
+.diagram-container img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.benchmark-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-border);
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--vp-c-text-3);
+  margin-top: 16px;
+}
+
+.note-icon {
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  .feature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .home-hero-badges {
+    gap: 8px;
+  }
+
+  .badge {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+}
+</style>

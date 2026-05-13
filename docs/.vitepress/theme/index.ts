@@ -9,6 +9,7 @@ import './style.css'
 import GPUTimeline from './components/GPUTimeline.vue'
 import BenchmarkChart from './components/BenchmarkChart.vue'
 import CodePreview from './components/CodePreview.vue'
+import OptimizationPath from './components/OptimizationPath.vue'
 
 export default {
   extends: DefaultTheme,
@@ -17,7 +18,8 @@ export default {
       // Custom slots for landing page
       'home-features-after': () => h('div', { class: 'nvidia-home-extra' }, [
         h(GPUTimeline),
-        h(BenchmarkChart)
+        h(BenchmarkChart),
+        h(OptimizationPath)
       ])
     })
   },
@@ -26,5 +28,6 @@ export default {
     app.component('GPUTimeline', GPUTimeline)
     app.component('BenchmarkChart', BenchmarkChart)
     app.component('CodePreview', CodePreview)
+    app.component('OptimizationPath', OptimizationPath)
   }
 } satisfies Theme

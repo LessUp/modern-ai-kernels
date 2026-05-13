@@ -1,11 +1,11 @@
 /**
- * TensorCraft-HPC - NVIDIA-Inspired Theme
- * Professional dark theme with NVIDIA green accents
- * Academic paper style for documentation
+ * TensorCraft-HPC - Modern Dual-Mode Theme
+ * Inspired by kimi-cli design philosophy
+ * NVIDIA green brand color with clean, professional styling
  */
 
 /* ========================================
-   NVIDIA Color Palette
+   CSS Variables - Light Mode (Default)
    ======================================== */
 
 :root {
@@ -13,71 +13,70 @@
   --nvidia-green: #76B900;
   --nvidia-green-light: #8ED000;
   --nvidia-green-dark: #5A9100;
-  --nvidia-green-glow: rgba(118, 185, 0, 0.3);
-
-  /* Dark Theme Base */
-  --vp-c-black: #000000;
-  --vp-c-black-pure: #000000;
-  --vp-c-black-soft: #0a0a0a;
-  --vp-c-black-mute: #0d0d0d;
-
-  --vp-c-gray: #1a1a1a;
-  --vp-c-gray-dark: #111111;
-  --vp-c-gray-darker: #0a0a0a;
-  --vp-c-gray-light: #2a2a2a;
-  --vp-c-gray-lighter: #333333;
+  --nvidia-green-glow: rgba(118, 185, 0, 0.2);
 
   /* Brand Colors - Override VitePress defaults */
-  --vp-c-brand-1: var(--nvidia-green);
-  --vp-c-brand-2: var(--nvidia-green-light);
-  --vp-c-brand-3: var(--nvidia-green-dark);
-  --vp-c-brand-soft: rgba(118, 185, 0, 0.14);
+  --vp-c-brand-1: #5A9100;
+  --vp-c-brand-2: #76B900;
+  --vp-c-brand-3: #8ED000;
+  --vp-c-brand-soft: rgba(90, 145, 0, 0.14);
 
-  /* Text Colors */
-  --vp-c-text-1: rgba(255, 255, 255, 0.95);
-  --vp-c-text-2: rgba(255, 255, 255, 0.75);
-  --vp-c-text-3: rgba(255, 255, 255, 0.55);
-  --vp-c-text-4: rgba(255, 255, 255, 0.35);
+  /* Light Mode Base Colors */
+  --vp-c-white: #ffffff;
+  --vp-c-black: #000000;
+
+  --vp-c-gray: #f6f8fa;
+  --vp-c-gray-dark: #e8eaed;
+  --vp-c-gray-darker: #d0d7de;
+  --vp-c-gray-light: #57606a;
+  --vp-c-gray-lighter: #24292f;
 
   /* Background Colors */
-  --vp-c-bg: var(--vp-c-black-soft);
-  --vp-c-bg-soft: var(--vp-c-black-mute);
-  --vp-c-bg-mute: var(--vp-c-gray);
-  --vp-c-bg-alt: var(--vp-c-black-pure);
-  --vp-c-bg-elv: var(--vp-c-gray-dark);
+  --vp-c-bg: #ffffff;
+  --vp-c-bg-soft: #f6f8fa;
+  --vp-c-bg-mute: #f0f2f4;
+  --vp-c-bg-alt: #f6f8fa;
+  --vp-c-bg-elv: #ffffff;
+
+  /* Text Colors */
+  --vp-c-text-1: #24292f;
+  --vp-c-text-2: #57606a;
+  --vp-c-text-3: #8b949e;
+  --vp-c-text-4: #6e7681;
 
   /* Border Colors */
-  --vp-c-border: rgba(255, 255, 255, 0.08);
-  --vp-c-border-light: rgba(255, 255, 255, 0.12);
-  --vp-c-divider: rgba(255, 255, 255, 0.06);
+  --vp-c-border: #d0d7de;
+  --vp-c-border-light: #e8eaed;
+  --vp-c-divider: #d0d7de;
+  --vp-c-gutter: #d0d7de;
 
   /* Shadow */
-  --vp-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.5);
-  --vp-shadow-2: 0 2px 4px rgba(0, 0, 0, 0.5);
-  --vp-shadow-3: 0 4px 8px rgba(0, 0, 0, 0.5);
-  --vp-shadow-4: 0 8px 16px rgba(0, 0, 0, 0.5);
+  --vp-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --vp-shadow-2: 0 2px 4px rgba(0, 0, 0, 0.04);
+  --vp-shadow-3: 0 4px 8px rgba(0, 0, 0, 0.04);
+  --vp-shadow-4: 0 8px 16px rgba(0, 0, 0, 0.04);
 
   /* Code Colors */
-  --vp-code-line-highlight-color: rgba(118, 185, 0, 0.1);
-  --vp-code-color: var(--nvidia-green);
-  --vp-code-bg: var(--vp-c-gray);
+  --vp-code-line-highlight-color: rgba(118, 185, 0, 0.08);
+  --vp-code-color: #5A9100;
+  --vp-code-bg: #f6f8fa;
 
   /* Button Colors */
-  --vp-button-brand-border: var(--nvidia-green);
-  --vp-button-brand-text: #000000;
-  --vp-button-brand-bg: var(--nvidia-green);
-  --vp-button-brand-hover-border: var(--nvidia-green-light);
-  --vp-button-brand-hover-text: #000000;
-  --vp-button-brand-hover-bg: var(--nvidia-green-light);
-  --vp-button-brand-active-border: var(--nvidia-green-dark);
-  --vp-button-brand-active-text: #000000;
-  --vp-button-brand-active-bg: var(--nvidia-green-dark);
+  --vp-button-brand-border: #5A9100;
+  --vp-button-brand-text: #ffffff;
+  --vp-button-brand-bg: #5A9100;
+  --vp-button-brand-hover-border: #76B900;
+  --vp-button-brand-hover-text: #ffffff;
+  --vp-button-brand-hover-bg: #76B900;
+  --vp-button-brand-active-border: #4a7a00;
+  --vp-button-brand-active-text: #ffffff;
+  --vp-button-brand-active-bg: #4a7a00;
 
   /* Custom Block Colors */
-  --vp-custom-block-tip-border: var(--nvidia-green);
-  --vp-custom-block-tip-text: var(--vp-c-text-1);
-  --vp-custom-block-tip-bg: rgba(118, 185, 0, 0.08);
-  --vp-custom-block-tip-code-bg: rgba(118, 185, 0, 0.15);
+  --vp-custom-block-tip-border: #5A9100;
+  --vp-custom-block-tip-text: #24292f;
+  --vp-custom-block-tip-bg: rgba(118, 185, 0, 0.06);
+  --vp-custom-block-tip-code-bg: rgba(118, 185, 0, 0.12);
 
   /* Font Stack */
   --vp-font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
@@ -89,16 +88,105 @@
   --spacing-md: 16px;
   --spacing-lg: 24px;
   --spacing-xl: 32px;
+  --spacing-2xl: 40px;
 
   /* Custom Border Radius */
   --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* Custom Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.2s ease;
+  --transition-slow: 0.3s ease;
+
+  /* Custom Colors for Homepage */
+  --tag-bg: rgba(118, 185, 0, 0.1);
+  --tag-text: #5A9100;
+
+  /* Hero Section - Clean design */
+  --vp-home-hero-name-color: #5A9100;
+  --vp-home-hero-name-background: transparent;
+  --vp-home-hero-image-background-image: none;
+  --vp-home-hero-image-filter: none;
 }
 
-/* Force Dark Mode */
+/* ========================================
+   Dark Mode Variables
+   ======================================== */
+
+.dark {
+  /* NVIDIA Brand Colors - Slightly brighter for dark mode */
+  --nvidia-green: #8ED000;
+  --nvidia-green-light: #A8F000;
+  --nvidia-green-dark: #76B900;
+  --nvidia-green-glow: rgba(142, 208, 0, 0.25);
+
+  /* Brand Colors */
+  --vp-c-brand-1: #8ED000;
+  --vp-c-brand-2: #76B900;
+  --vp-c-brand-3: #A8F000;
+  --vp-c-brand-soft: rgba(142, 208, 0, 0.16);
+
+  /* Dark Mode Base */
+  --vp-c-bg: #0d1117;
+  --vp-c-bg-soft: #161b22;
+  --vp-c-bg-mute: #1a1f26;
+  --vp-c-bg-alt: #0a0c10;
+  --vp-c-bg-elv: #161b22;
+
+  /* Text Colors */
+  --vp-c-text-1: rgba(255, 255, 255, 0.95);
+  --vp-c-text-2: rgba(255, 255, 255, 0.75);
+  --vp-c-text-3: rgba(255, 255, 255, 0.55);
+  --vp-c-text-4: rgba(255, 255, 255, 0.35);
+
+  /* Border Colors */
+  --vp-c-border: rgba(255, 255, 255, 0.1);
+  --vp-c-border-light: rgba(255, 255, 255, 0.15);
+  --vp-c-divider: rgba(255, 255, 255, 0.08);
+  --vp-c-gutter: rgba(255, 255, 255, 0.08);
+
+  /* Shadow */
+  --vp-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --vp-shadow-2: 0 2px 4px rgba(0, 0, 0, 0.5);
+  --vp-shadow-3: 0 4px 8px rgba(0, 0, 0, 0.5);
+  --vp-shadow-4: 0 8px 16px rgba(0, 0, 0, 0.5);
+
+  /* Code Colors */
+  --vp-code-line-highlight-color: rgba(142, 208, 0, 0.1);
+  --vp-code-color: #8ED000;
+  --vp-code-bg: #161b22;
+
+  /* Button Colors */
+  --vp-button-brand-border: #8ED000;
+  --vp-button-brand-text: #000000;
+  --vp-button-brand-bg: #8ED000;
+  --vp-button-brand-hover-border: #A8F000;
+  --vp-button-brand-hover-text: #000000;
+  --vp-button-brand-hover-bg: #A8F000;
+  --vp-button-brand-active-border: #76B900;
+  --vp-button-brand-active-text: #000000;
+  --vp-button-brand-active-bg: #76B900;
+
+  /* Custom Block Colors */
+  --vp-custom-block-tip-border: #8ED000;
+  --vp-custom-block-tip-text: rgba(255, 255, 255, 0.95);
+  --vp-custom-block-tip-bg: rgba(142, 208, 0, 0.08);
+  --vp-custom-block-tip-code-bg: rgba(142, 208, 0, 0.15);
+
+  /* Custom Colors */
+  --tag-bg: rgba(142, 208, 0, 0.12);
+  --tag-text: #8ED000;
+
+  /* Hero Section */
+  --vp-home-hero-name-color: #8ED000;
+}
+
+/* Force proper color-scheme */
 html {
-  color-scheme: dark;
+  color-scheme: light dark;
 }
 
 /* ========================================
@@ -116,63 +204,10 @@ code, pre, .vp-code-group {
   font-family: var(--vp-font-family-mono);
 }
 
-/* Headings with NVIDIA accent */
+/* Headings */
 h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
   letter-spacing: -0.02em;
-}
-
-/* Main title gradient */
-.VPHero .name {
-  background: linear-gradient(135deg, #ffffff 0%, var(--nvidia-green) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* ========================================
-   Layout Customizations
-   ======================================== */
-
-/* Navigation bar */
-.VPNav {
-  background: rgba(0, 0, 0, 0.9) !important;
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--vp-c-border);
-}
-
-.VPNav .VPNavBarTitle {
-  font-weight: 700;
-}
-
-.VPNav .VPNavBarTitle .text {
-  color: var(--nvidia-green);
-}
-
-.VPNav .VPNavBarTitle:hover .text {
-  color: var(--nvidia-green-light);
-}
-
-/* Active nav link */
-.VPNavBarMenuLink.active {
-  color: var(--nvidia-green) !important;
-}
-
-.VPNavBarMenuLink:hover {
-  color: var(--nvidia-green-light);
-}
-
-/* Sidebar */
-.VPSidebar {
-  background: var(--vp-c-black-pure) !important;
-}
-
-.VPSidebarItem.is-active > .item > .link > .text {
-  color: var(--nvidia-green) !important;
-}
-
-.VPSidebarItem .link:hover .text {
-  color: var(--nvidia-green-light);
 }
 
 /* ========================================
@@ -180,186 +215,352 @@ h1, h2, h3, h4, h5, h6 {
    ======================================== */
 
 .VPHero {
-  padding-bottom: 64px !important;
+  padding: calc(var(--vp-nav-height) + 48px) var(--spacing-lg) 48px;
+}
+
+.VPHero .name {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+  color: var(--vp-c-brand-1);
+}
+
+.VPHero .text {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--vp-c-text-1);
+  margin-top: var(--spacing-sm);
 }
 
 .VPHero .tagline {
-  font-size: 1.25rem;
+  font-size: 14px;
+  line-height: 1.6;
   color: var(--vp-c-text-2);
-  margin-bottom: 2rem;
+  margin-top: var(--spacing-md);
+  max-width: 600px;
 }
 
-.VPHero .image-bg {
-  background: radial-gradient(circle at center, var(--nvidia-green-glow), transparent 70%);
-  opacity: 0.5;
+.VPHero .image {
+  display: none;
 }
 
-/* Hero image with glow effect */
-.VPHero .image-container img {
-  filter: drop-shadow(0 0 40px var(--nvidia-green-glow));
+/* Buttons */
+.VPHero .actions {
+  margin-top: var(--spacing-xl);
+  gap: var(--spacing-sm);
 }
 
-/* Hero actions */
-.VPHero .actions .action {
-  margin: 0 0.5rem;
+.VPHero .VPButton {
+  border-radius: var(--radius-sm);
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all var(--transition-fast);
 }
 
-.VPHero .actions .action .VPButton.brand {
-  background: var(--nvidia-green);
-  border-color: var(--nvidia-green);
-  color: #000;
-  font-weight: 600;
+.VPHero .VPButton.medium.brand {
+  background: var(--vp-c-brand-1);
+  border: none;
+  color: #ffffff;
 }
 
-.VPHero .actions .action .VPButton.brand:hover {
-  background: var(--nvidia-green-light);
-  border-color: var(--nvidia-green-light);
+.VPHero .VPButton.medium.brand:hover {
+  background: var(--vp-c-brand-2);
 }
 
-.VPHero .actions .action .VPButton.alt {
+.VPHero .VPButton.medium.alt {
+  border: 1px solid var(--vp-c-border);
   background: transparent;
-  border-color: var(--vp-c-border);
   color: var(--vp-c-text-1);
 }
 
-.VPHero .actions .action .VPButton.alt:hover {
-  border-color: var(--nvidia-green);
-  color: var(--nvidia-green);
+.VPHero .VPButton.medium.alt:hover {
+  border-color: var(--vp-c-brand-1);
+  color: var(--vp-c-brand-1);
 }
 
 /* ========================================
    Feature Cards
    ======================================== */
 
-.VPFeatures .item {
-  transition: all 0.3s ease;
+.VPFeatures {
+  padding: 48px var(--spacing-lg);
 }
 
-.VPFeatures .item:hover {
-  transform: translateY(-4px);
+.VPFeatures .container {
+  max-width: 1200px;
 }
 
-.VPFeature {
-  background: var(--vp-c-gray) !important;
-  border: 1px solid var(--vp-c-border) !important;
-  border-radius: 12px !important;
-  transition: all 0.3s ease;
+.VPFeatures .VPFeature {
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-md);
+  background: var(--vp-c-bg);
+  border: 1px solid var(--vp-c-border);
+  transition: all var(--transition-normal);
 }
 
-.VPFeature:hover {
-  border-color: var(--nvidia-green) !important;
-  box-shadow: 0 0 30px var(--nvidia-green-glow);
+.VPFeatures .VPFeature:hover {
+  border-color: var(--vp-c-brand-1);
+  box-shadow: 0 4px 12px rgba(118, 185, 0, 0.1);
+  transform: translateY(-2px);
 }
 
 .VPFeature .icon {
-  color: var(--nvidia-green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  font-size: 20px;
+  margin-bottom: var(--spacing-sm);
+  color: var(--vp-c-brand-1);
 }
 
 .VPFeature .title {
-  color: var(--vp-c-text-1);
+  font-size: 16px;
   font-weight: 600;
+  margin-bottom: var(--spacing-xs);
+  color: var(--vp-c-text-1);
 }
 
 .VPFeature .details {
+  font-size: 14px;
+  line-height: 1.6;
   color: var(--vp-c-text-2);
 }
 
 /* ========================================
-   Code Blocks & Syntax Highlighting
+   Navigation
    ======================================== */
 
-.vp-code-group .tabs label {
-  font-family: var(--vp-font-family-mono);
-  font-size: 0.85rem;
+.VPNav {
+  background: var(--vp-c-bg);
+  border-bottom: 1px solid var(--vp-c-border);
 }
 
-.vp-code-group .tabs label.active {
-  color: var(--nvidia-green);
-  border-color: var(--nvidia-green);
+.VPNavBarMenuLink,
+.VPNavBarMenuGroup .button {
+  font-weight: 500;
+  font-size: 14px;
 }
 
-/* Inline code */
-:not(pre) > code {
-  background: rgba(118, 185, 0, 0.1);
-  border: 1px solid rgba(118, 185, 0, 0.2);
-  border-radius: 4px;
-  padding: 0.125rem 0.375rem;
-  color: var(--nvidia-green);
+.VPNavBarMenuLink.active,
+.VPNavBarMenuGroup.open .button {
+  color: var(--vp-c-brand-1);
 }
 
-/* Copy button */
-.vp-code-group .copy {
-  background: var(--vp-c-gray-light);
-  border: 1px solid var(--vp-c-border);
+.VPNavBarTitle .text {
+  color: var(--vp-c-brand-1);
+  font-weight: 700;
 }
 
-.vp-code-group .copy:hover {
-  background: var(--vp-c-gray-lighter);
-}
-
-.vp-code-group .copy.copied {
-  color: var(--nvidia-green);
-  border-color: var(--nvidia-green);
+.VPNavBarTitle:hover .text {
+  color: var(--vp-c-brand-2);
 }
 
 /* ========================================
-   Custom Blocks (Tips, Warnings)
+   Sidebar
    ======================================== */
 
-.custom-block {
-  border-radius: 8px;
-  margin: 1rem 0;
+.VPSidebar {
+  padding: var(--spacing-lg) var(--spacing-md) 96px;
 }
 
-.custom-block.tip {
-  border-left: 4px solid var(--nvidia-green);
-  background: rgba(118, 185, 0, 0.05);
+.VPSidebarGroup {
+  margin-bottom: var(--spacing-md);
 }
 
-.custom-block.tip .custom-block-title {
-  color: var(--nvidia-green);
+.VPSidebarGroup .title {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--vp-c-text-3);
+  padding: var(--spacing-sm) 14px;
 }
 
-.custom-block.warning {
-  border-left: 4px solid #FFB800;
-  background: rgba(255, 184, 0, 0.05);
+.VPSidebarItem .text {
+  font-size: 14px;
+  padding: var(--spacing-xs) 14px;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
 }
 
-.custom-block.danger {
-  border-left: 4px solid #FF4757;
-  background: rgba(255, 71, 87, 0.05);
+.VPSidebarItem .text:hover {
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-brand-1);
 }
 
-.custom-block.info {
-  border-left: 4px solid #00D4FF;
-  background: rgba(0, 212, 255, 0.05);
+.VPSidebarItem.is-active .text {
+  background: var(--vp-c-brand-soft);
+  color: var(--vp-c-brand-1);
+  font-weight: 500;
+}
+
+/* ========================================
+   Content Styling
+   ======================================== */
+
+.VPDoc {
+  padding: var(--spacing-xl) var(--spacing-lg) 96px;
+}
+
+.VPDoc .content {
+  max-width: 720px;
+}
+
+.VPDoc h1 {
+  font-size: 40px;
+  font-weight: 700;
+  letter-spacing: -1px;
+  margin-bottom: var(--spacing-lg);
+}
+
+.VPDoc h2 {
+  font-size: 28px;
+  font-weight: 600;
+  margin-top: 48px;
+  margin-bottom: 20px;
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--vp-c-divider);
+}
+
+.VPDoc h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-top: var(--spacing-xl);
+  margin-bottom: var(--spacing-md);
+}
+
+.VPDoc p {
+  font-size: 16px;
+  line-height: 1.8;
+  margin-bottom: var(--spacing-md);
+}
+
+.VPDoc a {
+  color: var(--vp-c-brand-1);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--transition-fast);
+}
+
+.VPDoc a:hover {
+  border-bottom-color: var(--vp-c-brand-1);
+}
+
+.VPDoc code {
+  font-size: 14px;
+  padding: 2px var(--spacing-xs);
+  border-radius: var(--radius-sm);
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-brand-1);
+}
+
+.VPDoc pre code {
+  font-size: 14px;
+  padding: 0;
+  background: transparent;
+  color: var(--vp-c-text-1);
+}
+
+/* Custom Blocks */
+.VPDoc .custom-block {
+  border-radius: var(--radius-lg);
+  padding: 20px var(--spacing-lg);
+  margin: var(--spacing-lg) 0;
+}
+
+.VPDoc .custom-block.info {
+  background: var(--vp-c-bg-soft);
+  border-left: 4px solid var(--vp-c-brand-1);
+}
+
+.VPDoc .custom-block.tip {
+  background: var(--vp-custom-block-tip-bg);
+  border-left: 4px solid var(--vp-c-brand-1);
+}
+
+.VPDoc .custom-block.warning {
+  background: rgba(255, 197, 23, 0.1);
+  border-left: 4px solid #ffc517;
+}
+
+.VPDoc .custom-block.danger {
+  background: rgba(255, 84, 84, 0.1);
+  border-left: 4px solid #ff5454;
 }
 
 /* ========================================
    Tables
    ======================================== */
 
-.vp-doc table {
-  border: 1px solid var(--vp-c-border);
-  border-radius: 8px;
+.VPDoc table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: var(--spacing-lg) 0;
+  border-radius: var(--radius-lg);
   overflow: hidden;
+  border: 1px solid var(--vp-c-border);
 }
 
-.vp-doc th {
-  background: var(--vp-c-gray);
+.VPDoc th {
+  background: var(--vp-c-bg-soft);
   font-weight: 600;
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
-  color: var(--nvidia-green);
+  text-align: left;
+  padding: 14px 18px;
+  font-size: 14px;
+  border-bottom: 1px solid var(--vp-c-border);
 }
 
-.vp-doc td {
-  border-top: 1px solid var(--vp-c-border);
+.VPDoc td {
+  padding: var(--spacing-sm) 18px;
+  font-size: 14px;
+  border-bottom: 1px solid var(--vp-c-border);
 }
 
-.vp-doc tr:hover td {
-  background: rgba(118, 185, 0, 0.05);
+.VPDoc tr:last-child td {
+  border-bottom: none;
+}
+
+.VPDoc tr:hover td {
+  background: var(--vp-c-bg-soft);
+}
+
+/* ========================================
+   Search
+   ======================================== */
+
+.VPLocalSearchBox {
+  backdrop-filter: blur(20px);
+}
+
+.VPLocalSearchBox .backdrop {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.VPLocalSearchBox .shell {
+  border-radius: var(--radius-xl);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* ========================================
+   Footer
+   ======================================== */
+
+.VPFooter {
+  padding: var(--spacing-2xl) var(--spacing-lg);
+  background: var(--vp-c-bg-alt);
+}
+
+.VPFooter .message,
+.VPFooter .copyright {
+  font-size: 14px;
+  color: var(--vp-c-text-3);
 }
 
 /* ========================================
@@ -367,8 +568,8 @@ h1, h2, h3, h4, h5, h6 {
    ======================================== */
 
 .mermaid {
-  background: var(--vp-c-gray);
-  border-radius: 8px;
+  background: var(--vp-c-bg-soft);
+  border-radius: var(--radius-md);
   padding: 1.5rem;
   margin: 1rem 0;
   border: 1px solid var(--vp-c-border);
@@ -377,53 +578,6 @@ h1, h2, h3, h4, h5, h6 {
 
 .mermaid svg {
   max-width: 100%;
-}
-
-/* ========================================
-   Local Search
-   ======================================== */
-
-.VPLocalSearchBox {
-  background: rgba(0, 0, 0, 0.9) !important;
-  backdrop-filter: blur(20px);
-}
-
-.VPLocalSearchBox .search-input {
-  background: var(--vp-c-gray);
-  border: 1px solid var(--vp-c-border);
-  border-radius: 8px;
-}
-
-.VPLocalSearchBox .search-input:focus {
-  border-color: var(--nvidia-green);
-  box-shadow: 0 0 0 3px var(--nvidia-green-glow);
-}
-
-.VPLocalSearchBox .result.selected {
-  background: rgba(118, 185, 0, 0.1);
-}
-
-/* ========================================
-   Footer
-   ======================================== */
-
-.VPDocFooter {
-  border-top: 1px solid var(--vp-c-border);
-}
-
-.VPDocFooter .pager-link {
-  background: var(--vp-c-gray);
-  border: 1px solid var(--vp-c-border);
-  border-radius: 8px;
-  transition: all 0.3s ease;
-}
-
-.VPDocFooter .pager-link:hover {
-  border-color: var(--nvidia-green);
-}
-
-.VPDocFooter .pager-link:hover .title {
-  color: var(--nvidia-green);
 }
 
 /* ========================================
@@ -436,9 +590,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .vp-badge.tip {
-  background: rgba(118, 185, 0, 0.15);
-  border-color: var(--nvidia-green);
-  color: var(--nvidia-green);
+  background: var(--vp-c-brand-soft);
+  border-color: var(--vp-c-brand-1);
+  color: var(--vp-c-brand-1);
 }
 
 /* ========================================
@@ -462,8 +616,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .api-method.post {
-  background: rgba(118, 185, 0, 0.15);
-  color: var(--nvidia-green);
+  background: var(--vp-c-brand-soft);
+  color: var(--vp-c-brand-1);
 }
 
 .api-param {
@@ -471,24 +625,112 @@ h1, h2, h3, h4, h5, h6 {
   align-items: baseline;
   gap: 1rem;
   padding: 0.75rem;
-  background: var(--vp-c-gray);
-  border-radius: 8px;
+  background: var(--vp-c-bg-soft);
+  border-radius: var(--radius-md);
   margin: 0.5rem 0;
 }
 
 .api-param-name {
   font-family: var(--vp-font-family-mono);
-  color: var(--nvidia-green);
+  color: var(--vp-c-brand-1);
   min-width: 150px;
 }
 
 .api-param-type {
   font-family: var(--vp-font-family-mono);
   color: var(--vp-c-text-3);
-  background: var(--vp-c-gray-light);
+  background: var(--vp-c-bg-mute);
   padding: 0.125rem 0.375rem;
   border-radius: 4px;
   font-size: 0.75rem;
+}
+
+/* ========================================
+   Academic Paper Style
+   ======================================== */
+
+/* Citation style */
+.citation {
+  font-size: 0.875rem;
+  padding: 1rem 1.25rem;
+  background: var(--vp-c-bg-soft);
+  border-left: 3px solid var(--vp-c-brand-1);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  margin: 1rem 0;
+}
+
+.citation-author {
+  font-weight: 600;
+  color: var(--vp-c-text-1);
+}
+
+.citation-title {
+  font-style: italic;
+  color: var(--vp-c-text-2);
+}
+
+.citation-link {
+  color: var(--vp-c-brand-1);
+  text-decoration: none;
+}
+
+.citation-link:hover {
+  text-decoration: underline;
+}
+
+/* Abstract box */
+.abstract {
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-border);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.abstract-title {
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--vp-c-brand-1);
+  margin-bottom: 0.75rem;
+}
+
+.abstract-content {
+  font-style: italic;
+  color: var(--vp-c-text-2);
+  line-height: 1.7;
+}
+
+/* Contribution list */
+.contributions {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0;
+}
+
+.contributions li {
+  position: relative;
+  padding-left: 2rem;
+  margin-bottom: 1rem;
+}
+
+.contributions li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--vp-c-brand-1);
+  font-weight: 700;
+}
+
+/* ========================================
+   NVIDIA Home Extra Section
+   ======================================== */
+
+.nvidia-home-extra {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
 }
 
 /* ========================================
@@ -553,108 +795,39 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ========================================
-   Academic Paper Style Additions
+   Responsive Design
    ======================================== */
 
-/* Citation style */
-.citation {
-  font-size: 0.875rem;
-  padding: 1rem 1.25rem;
-  background: var(--vp-c-gray);
-  border-left: 3px solid var(--nvidia-green);
-  border-radius: 0 8px 8px 0;
-  margin: 1rem 0;
-}
+@media (max-width: 960px) {
+  .VPHero {
+    padding: calc(var(--vp-nav-height) + 60px) var(--spacing-lg) 60px;
+  }
 
-.citation-author {
-  font-weight: 600;
-  color: var(--vp-c-text-1);
-}
-
-.citation-title {
-  font-style: italic;
-  color: var(--vp-c-text-2);
-}
-
-.citation-link {
-  color: var(--nvidia-green);
-  text-decoration: none;
-}
-
-.citation-link:hover {
-  text-decoration: underline;
-}
-
-/* Abstract box */
-.abstract {
-  background: var(--vp-c-gray);
-  border: 1px solid var(--vp-c-border);
-  border-radius: 8px;
-  padding: 1.5rem;
-  margin: 1.5rem 0;
-}
-
-.abstract-title {
-  font-weight: 700;
-  font-size: 0.875rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--nvidia-green);
-  margin-bottom: 0.75rem;
-}
-
-.abstract-content {
-  font-style: italic;
-  color: var(--vp-c-text-2);
-  line-height: 1.7;
-}
-
-/* Contribution list */
-.contributions {
-  list-style: none;
-  padding: 0;
-  margin: 1.5rem 0;
-}
-
-.contributions li {
-  position: relative;
-  padding-left: 2rem;
-  margin-bottom: 1rem;
-}
-
-.contributions li::before {
-  content: '✓';
-  position: absolute;
-  left: 0;
-  color: var(--nvidia-green);
-  font-weight: 700;
-}
-
-/* ========================================
-   NVIDIA Home Extra Section
-   ======================================== */
-
-.nvidia-home-extra {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 2rem;
-}
-
-/* ========================================
-   Responsive Adjustments
-   ======================================== */
-
-@media (max-width: 768px) {
   .VPHero .name {
-    font-size: 2.5rem;
+    font-size: 28px;
   }
 
-  .VPHero .tagline {
-    font-size: 1.125rem;
+  .VPHero .text {
+    font-size: 15px;
   }
 
-  .VPFeature {
-    padding: 1.25rem !important;
+  .VPDoc h1 {
+    font-size: 32px;
+  }
+
+  .VPDoc h2 {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 640px) {
+  .VPHero .name {
+    font-size: 24px;
+    letter-spacing: -1px;
+  }
+
+  .VPFeatures .VPFeature {
+    padding: var(--spacing-md);
   }
 
   .nvidia-home-extra {
