@@ -1,68 +1,89 @@
 # TensorCraft-HPC Documentation
 
-This directory contains the Jekyll-based GitHub Pages site for TensorCraft-HPC.
-
-The site is intentionally split into:
-
-- a landing page that explains the repository quickly
-- language-specific documentation hubs under `en/` and `zh/`
-- thin `reference/` wrappers that point back to canonical root governance documents
+This directory contains the VitePress-based GitHub Pages site for TensorCraft-HPC.
 
 ## Structure
 
 ```
 docs/
-├── _config.yml              # Jekyll configuration
-├── _layouts/                # Custom Jekyll layouts
-│   ├── landing.html         # Landing page layout
-│   └── docs.html            # Documentation page layout
-├── _includes/               # Reusable components
-├── assets/
-│   └── css/
-│       ├── landing.scss     # Landing page styles
-│       └── docs.scss        # Documentation styles
-├── assets/js/
-│   ├── landing.js           # Landing page interactions
-│   └── docs.js              # Documentation interactions
-├── en/                      # English documentation
-├── zh/                      # Chinese documentation
-├── 404.html                 # Custom 404 page
-└── index.html               # Landing page
+├── .vitepress/           # VitePress configuration
+│   ├── config.ts         # Main config (i18n, plugins, theme)
+│   ├── theme/            # Custom NVIDIA-style theme
+│   │   ├── index.ts      # Theme entry
+│   │   ├── style.css     # NVIDIA green dark theme
+│   │   └── components/   # Vue components
+│   └── dist/             # Build output (gitignored)
+├── en/                   # English documentation
+│   ├── index.md          # Landing page
+│   ├── getting-started.md
+│   ├── architecture.md
+│   ├── api/              # API reference
+│   ├── guides/           # User guides
+│   └── references/       # Papers, resources
+├── zh/                   # Chinese documentation (mirrors en/)
+├── public/               # Static assets (images)
+├── index.md              # Root redirect page
+└── package.json          # npm dependencies
 ```
 
-## Local Development
+## Development
 
 ```bash
-cd docs
-bundle install
-bundle exec jekyll serve --livereload --incremental
-# Open http://localhost:4000
+# Install dependencies
+npm install
+
+# Start dev server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
 ```
+
+## Deployment
+
+GitHub Actions workflow in `.github/workflows/pages.yml` handles:
+- Node.js 20 setup
+- VitePress build
+- GitHub Pages deployment
+
+## Features
+
+- **NVIDIA-style dark theme** with green brand color (#76B900)
+- **Mermaid diagrams** for architecture visualization
+- **Local search** built-in
+- **LLM-ready docs** (`llms.txt`, `llms-full.txt`)
+- **Bilingual** (English + Chinese)
 
 ## Adding Documentation
 
 1. Create a new `.md` file in the appropriate language directory
-2. Add frontmatter:
+2. Add frontmatter if needed:
 
    ```yaml
    ---
    title: Your Page Title
-   lang: en  # or zh
    ---
    ```
 
 3. Write your content in Markdown
-4. Prefer linking to a canonical root document instead of duplicating long governance content
-5. The docs layout will automatically add the sidebar navigation and TOC
+4. Use Mermaid for diagrams:
 
-## Style Guide
+   ```mermaid
+   flowchart LR
+       A --> B
+   ```
 
-- Use clear, concise language
-- Include code examples where relevant
-- Follow existing document structures
-- Add alerts for important notes:
-  - `{: .note }` - Informational
-  - `{: .tip }` - Helpful tip
-  - `{: .warning }` - Warning
-  - `{: .danger }` - Critical warning
-  - `{: .important }` - Important note
+5. Use custom blocks for tips:
+
+   ```markdown
+   ::: tip
+   Helpful tip here
+   :::
+
+   ::: warning
+   Warning message
+   :::
+   ```
