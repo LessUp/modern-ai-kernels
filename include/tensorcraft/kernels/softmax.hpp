@@ -17,10 +17,6 @@
 namespace tensorcraft {
 namespace kernels {
 
-// Import warp utilities into kernels namespace for backward compatibility
-using tensorcraft::warp_reduce_max;
-using tensorcraft::warp_reduce_sum;
-
 // ============================================================================
 // Online Softmax Kernel
 // ============================================================================
@@ -64,7 +60,7 @@ __global__ void softmax_kernel(const T* TC_RESTRICT input, T* TC_RESTRICT output
     }
 
     // Warp reduce max
-    thread_max = warp_reduce_max(thread_max);
+    thread_max = tensorcraft::warp_reduce_max(thread_max);
 
     // Store warp results to shared memory
     if (lane == 0) {
@@ -75,7 +71,7 @@ __global__ void softmax_kernel(const T* TC_RESTRICT input, T* TC_RESTRICT output
     // Final reduction in first warp
     if (warp_id == 0) {
         thread_max = (lane < num_warps) ? shared_max[lane] : -FLT_MAX;
-        thread_max = warp_reduce_max(thread_max);
+        thread_max = tensorcraft::warp_reduce_max(thread_max);
     }
 
     __shared__ float row_max;
@@ -97,7 +93,7 @@ __global__ void softmax_kernel(const T* TC_RESTRICT input, T* TC_RESTRICT output
     }
 
     // Warp reduce sum
-    thread_sum = warp_reduce_sum(thread_sum);
+    thread_sum = tensorcraft::warp_reduce_sum(thread_sum);
 
     if (lane == 0) {
         shared_sum[warp_id] = thread_sum;
@@ -106,7 +102,7 @@ __global__ void softmax_kernel(const T* TC_RESTRICT input, T* TC_RESTRICT output
 
     if (warp_id == 0) {
         thread_sum = (lane < num_warps) ? shared_sum[lane] : 0.0f;
-        thread_sum = warp_reduce_sum(thread_sum);
+        thread_sum = tensorcraft::warp_reduce_sum(thread_sum);
     }
 
     __shared__ float row_sum;
