@@ -27,6 +27,11 @@ namespace kernels {
  *
  * Thread mapping: each row of Q is handled by BLOCK_N threads cooperatively.
  * Output accumulator lives in shared memory to avoid excessive register pressure.
+ *
+ * @tparam T Data type (float, half, etc.)
+ * @tparam BLOCK_M Number of query rows per block
+ * @tparam BLOCK_N Number of key/value rows per block
+ * @tparam HEAD_DIM Head dimension (64, 128, or 256)
  */
 template <typename T, int BLOCK_M = 32, int BLOCK_N = 32, int HEAD_DIM = 64>
 __global__ void flash_attention_kernel(const T* TC_RESTRICT Q,  // [batch, heads, seq_len, head_dim]
@@ -244,6 +249,10 @@ __global__ void rope_precompute_cache_kernel(float* TC_RESTRICT cos_cache,  // [
  * @brief PagedAttention kernel for non-contiguous KV cache
  *
  * Supports paged memory layout for efficient KV cache management.
+ *
+ * @tparam T Data type
+ * @tparam BLOCK_SIZE Number of tokens per block in the paged cache
+ * @tparam HEAD_DIM Head dimension (64, 128, or 256)
  */
 template <typename T, int BLOCK_SIZE = 16, int HEAD_DIM = 64>
 __global__ void paged_attention_kernel(
@@ -408,6 +417,24 @@ __global__ void moe_router_kernel(const T* TC_RESTRICT gate_logits,   // [batch,
 
 /**
  * @brief Launch FlashAttention kernel
+ *
+ * Supports head_dim values of 64, 128, and 256 via runtime dispatch to
+ * compile-time-specialized kernel instantiations. This provides:
+ * - Leverage: single launcher interface for all head dimensions
+ * - Locality: head_dim-specific optimizations concentrated in template instantiations
+ * - Early error detection: unsupported head_dim fails at launch time
+ *
+ * @tparam T Data type
+ * @param Q Query tensor [batch, heads, seq_len, head_dim]
+ * @param K Key tensor [batch, heads, seq_len, head_dim]
+ * @param V Value tensor [batch, heads, seq_len, head_dim]
+ * @param O Output tensor [batch, heads, seq_len, head_dim]
+ * @param batch_size Number of sequences in batch
+ * @param num_heads Number of attention heads
+ * @param seq_len Sequence length
+ * @param head_dim Head dimension (must be 64, 128, or 256)
+ * @param scale Softmax scale factor (typically 1/sqrt(head_dim))
+ * @param stream CUDA stream
  */
 template <typename T>
 void launch_flash_attention(const T* Q, const T* K, const T* V, T* O, int batch_size, int num_heads,
@@ -415,26 +442,38 @@ void launch_flash_attention(const T* Q, const T* K, const T* V, T* O, int batch_
     if (batch_size == 0 || seq_len == 0)
         return;
 
-    // Use fixed head_dim=64 for now
-    constexpr int BLOCK_M = 32;
-    constexpr int BLOCK_N = 32;
-    constexpr int HEAD_DIM = 64;
-
-    static_assert(BLOCK_M * BLOCK_N <= 1024, "FlashAttention block size exceeds CUDA limit");
-    if (head_dim != HEAD_DIM) {
-        throw std::invalid_argument(
-            "FlashAttention: head_dim must be 64 (current implementation is template-specialized). "
-            "Support for other head dimensions requires additional kernel instantiations.");
-    }
     if (num_heads <= 0) {
         throw std::invalid_argument("FlashAttention requires num_heads > 0");
     }
 
+    constexpr int BLOCK_M = 32;
+    constexpr int BLOCK_N = 32;
+
+    static_assert(BLOCK_M * BLOCK_N <= 1024, "FlashAttention block size exceeds CUDA limit");
+
     dim3 block(BLOCK_N, BLOCK_M);
     dim3 grid((seq_len + BLOCK_M - 1) / BLOCK_M, 1, batch_size * num_heads);
 
-    flash_attention_kernel<T, BLOCK_M, BLOCK_N, HEAD_DIM>
-        <<<grid, block, 0, stream>>>(Q, K, V, O, batch_size, num_heads, seq_len, scale);
+    // Runtime dispatch to compile-time head_dim instantiations
+    // Each specialization can be independently optimized
+    switch (head_dim) {
+    case 64:
+        flash_attention_kernel<T, BLOCK_M, BLOCK_N, 64>
+            <<<grid, block, 0, stream>>>(Q, K, V, O, batch_size, num_heads, seq_len, scale);
+        break;
+    case 128:
+        flash_attention_kernel<T, BLOCK_M, BLOCK_N, 128>
+            <<<grid, block, 0, stream>>>(Q, K, V, O, batch_size, num_heads, seq_len, scale);
+        break;
+    case 256:
+        flash_attention_kernel<T, BLOCK_M, BLOCK_N, 256>
+            <<<grid, block, 0, stream>>>(Q, K, V, O, batch_size, num_heads, seq_len, scale);
+        break;
+    default:
+        throw std::invalid_argument(
+            "FlashAttention: unsupported head_dim=" + std::to_string(head_dim) +
+            ". Supported values: 64, 128, 256. Add a new case to launch_flash_attention for additional dimensions.");
+    }
 
     TC_CUDA_CHECK_LAST();
 }

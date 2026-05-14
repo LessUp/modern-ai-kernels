@@ -3,7 +3,7 @@
  * @brief Python bindings for TensorCraft-HPC using pybind11
  *
  * Direct kernel bindings without shallow intermediate layer.
- * Memory management uses MemoryPool for efficient allocation.
+ * Memory management uses Allocator abstraction for flexibility.
  */
 
 #include <algorithm>
@@ -20,84 +20,63 @@
 #include "tensorcraft/kernels/gemm.hpp"
 #include "tensorcraft/kernels/normalization.hpp"
 #include "tensorcraft/kernels/softmax.hpp"
-#include "tensorcraft/memory/memory_pool.hpp"
+#include "tensorcraft/memory/allocator.hpp"
 
 namespace py = pybind11;
 using namespace tensorcraft;
 
 // ============================================================================
-// Memory Management (using MemoryPool)
+// Memory Management (using Allocator abstraction)
 // ============================================================================
 
 /**
- * @brief RAII wrapper for device memory using MemoryPool
+ * @brief RAII wrapper for device memory using Allocator
  *
- * Replaces the previous DeviceArray/DeviceBuffer with unified
- * PoolPtr-based implementation for reduced allocation overhead.
+ * Uses PoolAllocator by default for efficient memory pooling.
+ * This is a thin wrapper around AllocatorPtr with Python-specific utilities.
  */
-template <typename T>
-class PooledDeviceMemory {
+template <typename T, typename Allocator = PoolAllocator>
+class DeviceMemory {
 public:
-    PooledDeviceMemory() = default;
+    DeviceMemory() = default;
 
     /// Allocate uninitialized device memory
-    explicit PooledDeviceMemory(size_t count)
-        : ptr_(static_cast<T*>(MemoryPool::instance().allocate(count * sizeof(T)))),
-          count_(count) {}
+    explicit DeviceMemory(size_t count)
+        : ptr_(count, Allocator::instance()), count_(count) {}
 
     /// Allocate and copy from host
-    static PooledDeviceMemory from_host(const T* host_data, size_t count) {
-        PooledDeviceMemory mem(count);
-        if (count > 0 && mem.ptr_) {
-            TC_CUDA_CHECK(cudaMemcpy(mem.ptr_, host_data, count * sizeof(T), cudaMemcpyHostToDevice));
+    static DeviceMemory from_host(const T* host_data, size_t count) {
+        DeviceMemory mem(count);
+        if (count > 0 && mem.ptr_.get()) {
+            TC_CUDA_CHECK(cudaMemcpy(mem.ptr_.get(), host_data, count * sizeof(T), cudaMemcpyHostToDevice));
         }
         return mem;
     }
 
     /// Allocate and copy from numpy array
-    static PooledDeviceMemory from_numpy(py::array_t<T> arr) {
+    static DeviceMemory from_numpy(py::array_t<T> arr) {
         py::buffer_info buf = arr.request();
         return from_host(static_cast<const T*>(buf.ptr), static_cast<size_t>(buf.size));
     }
 
-    ~PooledDeviceMemory() {
-        if (ptr_) {
-            MemoryPool::instance().deallocate(ptr_);
-        }
-    }
+    // Default destructor - AllocatorPtr handles deallocation
 
     // Move only
-    PooledDeviceMemory(PooledDeviceMemory&& other) noexcept
-        : ptr_(other.ptr_), count_(other.count_) {
-        other.ptr_ = nullptr;
-        other.count_ = 0;
-    }
+    DeviceMemory(DeviceMemory&&) noexcept = default;
+    DeviceMemory& operator=(DeviceMemory&&) noexcept = default;
 
-    PooledDeviceMemory& operator=(PooledDeviceMemory&& other) noexcept {
-        if (this != &other) {
-            if (ptr_) {
-                MemoryPool::instance().deallocate(ptr_);
-            }
-            ptr_ = other.ptr_;
-            count_ = other.count_;
-            other.ptr_ = nullptr;
-            other.count_ = 0;
-        }
-        return *this;
-    }
+    DeviceMemory(const DeviceMemory&) = delete;
+    DeviceMemory& operator=(const DeviceMemory&) = delete;
 
-    PooledDeviceMemory(const PooledDeviceMemory&) = delete;
-    PooledDeviceMemory& operator=(const PooledDeviceMemory&) = delete;
-
-    T* get() { return ptr_; }
-    const T* get() const { return ptr_; }
+    T* get() { return ptr_.get(); }
+    const T* get() const { return ptr_.get(); }
     size_t size() const { return count_; }
     size_t bytes() const { return count_ * sizeof(T); }
 
     /// Copy to host
     void to_host(T* host_data) const {
-        if (count_ > 0 && ptr_) {
-            TC_CUDA_CHECK(cudaMemcpy(host_data, ptr_, bytes(), cudaMemcpyDeviceToHost));
+        if (count_ > 0 && ptr_.get()) {
+            TC_CUDA_CHECK(cudaMemcpy(host_data, ptr_.get(), bytes(), cudaMemcpyDeviceToHost));
         }
     }
 
@@ -109,15 +88,15 @@ public:
         return result;
     }
 
-    explicit operator bool() const { return ptr_ != nullptr; }
+    explicit operator bool() const { return ptr_.get() != nullptr; }
 
 private:
-    T* ptr_ = nullptr;
+    AllocatorPtr<T, Allocator> ptr_;
     size_t count_ = 0;
 };
 
-// Type alias for common float memory
-using FloatDeviceMemory = PooledDeviceMemory<float>;
+// Type alias for common float memory (using pool allocator by default)
+using FloatDeviceMemory = DeviceMemory<float>;
 
 // ============================================================================
 // Utility Functions

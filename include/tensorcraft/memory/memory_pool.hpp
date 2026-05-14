@@ -16,6 +16,17 @@
 
 namespace tensorcraft {
 
+// Forward declaration for allocator.hpp
+class MemoryPool;
+
+namespace detail {
+
+/// MemoryPool accessor implementations
+inline void* memory_pool_allocate(size_t bytes);
+inline void memory_pool_deallocate(void* ptr);
+
+}  // namespace detail
+
 /**
  * @brief Thread-safe GPU memory pool
  *
@@ -322,5 +333,21 @@ private:
     T* ptr_ = nullptr;
     size_t count_ = 0;
 };
+
+// ============================================================================
+// MemoryPool accessor implementations (for allocator.hpp)
+// ============================================================================
+
+namespace detail {
+
+inline void* memory_pool_allocate(size_t bytes) {
+    return MemoryPool::instance().allocate(bytes);
+}
+
+inline void memory_pool_deallocate(void* ptr) {
+    MemoryPool::instance().deallocate(ptr);
+}
+
+}  // namespace detail
 
 }  // namespace tensorcraft

@@ -6,58 +6,82 @@
  * Provides a type-safe tensor class that automatically manages
  * GPU memory allocation and deallocation using RAII.
  *
- * Memory allocation uses MemoryPool for reduced allocation overhead.
+ * Memory allocation is configurable via the Allocator template parameter,
+ * creating a Seam for different allocation strategies:
+ * - PoolAllocator (default): Uses MemoryPool for reduced overhead
+ * - DirectAllocator: Uses cudaMalloc directly
+ * - Custom allocators for testing or special use cases
  */
 
 #include <cassert>
+#include <functional>
 #include <memory>
 #include <numeric>
+#include <optional>
+#include <type_traits>
 #include <vector>
 
 #include "../core/cuda_check.hpp"
 #include "../core/type_traits.hpp"
-#include "memory_pool.hpp"
-
-// Forward declare kernels::fill for use in Tensor::fill()
-// This avoids a circular dependency on memory_ops.hpp
-namespace tensorcraft {
-namespace kernels {
-template <typename T>
-void fill(T* data, T value, size_t n, cudaStream_t stream = nullptr);
-}
-}  // namespace tensorcraft
+#include "allocator.hpp"
+#include "../kernels/memory_ops.hpp"
 
 namespace tensorcraft {
+
+// ============================================================================
+// Tensor Class
+// ============================================================================
 
 /**
  * @brief GPU Tensor with RAII memory management
  *
  * @tparam T Element type (float, half, etc.)
+ * @tparam Allocator Memory allocator type (default: PoolAllocator)
  *
  * Features:
- * - Automatic GPU memory allocation/deallocation via MemoryPool
+ * - Automatic GPU memory allocation/deallocation via configurable allocator
  * - Move semantics (no copy to prevent accidental copies)
  * - Host-device data transfer utilities
  * - Shape and stride information
+ *
+ * The Allocator Seam enables:
+ * - Testing with mock allocators
+ * - Different memory strategies (pooled vs direct)
+ * - Custom allocation for special hardware (UVM, stream-ordered)
  */
-template <typename T>
+template <typename T, typename Allocator = PoolAllocator>
 class Tensor {
 public:
     using value_type = T;
     using size_type = size_t;
     using shape_type = std::vector<size_t>;
+    using allocator_type = Allocator;
 
     /// Default constructor (empty tensor)
     Tensor() = default;
 
     /**
-     * @brief Construct tensor with given shape
+     * @brief Construct tensor with given shape using default allocator
      * @param shape Dimensions of the tensor
      */
     explicit Tensor(const shape_type& shape)
-        : shape_(shape), size_(compute_size(shape)), strides_(compute_strides(shape)) {
+        : shape_(shape), size_(compute_size(shape)), strides_(compute_strides(shape)),
+          allocator_(Allocator::instance()) {
         if (size_ > 0) {
-            data_ = static_cast<T*>(MemoryPool::instance().allocate(size_ * sizeof(T)));
+            data_ = static_cast<T*>(allocator_.allocate(size_ * sizeof(T)));
+        }
+    }
+
+    /**
+     * @brief Construct tensor with given shape and custom allocator
+     * @param shape Dimensions of the tensor
+     * @param allocator Allocator instance to use
+     */
+    Tensor(const shape_type& shape, Allocator& allocator)
+        : shape_(shape), size_(compute_size(shape)), strides_(compute_strides(shape)),
+          allocator_(allocator) {
+        if (size_ > 0) {
+            data_ = static_cast<T*>(allocator_.allocate(size_ * sizeof(T)));
         }
     }
 
@@ -86,10 +110,10 @@ public:
      */
     Tensor(size_t d0, size_t d1, size_t d2, size_t d3) : Tensor(shape_type{d0, d1, d2, d3}) {}
 
-    /// Destructor - returns memory to pool
+    /// Destructor - returns memory via allocator
     ~Tensor() {
-        if (data_) {
-            MemoryPool::instance().deallocate(data_);
+        if (data_ && allocator_.has_value()) {
+            allocator_.value().get().deallocate(data_);
             data_ = nullptr;
         }
     }
@@ -99,23 +123,27 @@ public:
         : data_(other.data_),
           shape_(std::move(other.shape_)),
           strides_(std::move(other.strides_)),
-          size_(other.size_) {
+          size_(other.size_),
+          allocator_(std::move(other.allocator_)) {
         other.data_ = nullptr;
         other.size_ = 0;
+        other.allocator_.reset();
     }
 
     // Move assignment
     Tensor& operator=(Tensor&& other) noexcept {
         if (this != &other) {
-            if (data_) {
-                MemoryPool::instance().deallocate(data_);
+            if (data_ && allocator_.has_value()) {
+                allocator_.value().get().deallocate(data_);
             }
             data_ = other.data_;
             shape_ = std::move(other.shape_);
             strides_ = std::move(other.strides_);
             size_ = other.size_;
+            allocator_ = std::move(other.allocator_);
             other.data_ = nullptr;
             other.size_ = 0;
+            other.allocator_.reset();
         }
         return *this;
     }
@@ -227,12 +255,27 @@ public:
     // ========================================================================
 
     /**
-     * @brief Fill tensor with value (uses optimized GPU kernel)
+     * @brief Fill tensor with a uniform value
+     *
+     * Uses the high-performance vectorized fill kernel from kernels::fill.
+     * For zero-fill, zero() is slightly more efficient.
+     *
+     * @param value Value to fill all elements with
+     * @param stream CUDA stream (optional)
      */
-    void fill(T value) {
+    void fill(T value, cudaStream_t stream = nullptr) {
         if (size_ == 0 || !data_)
             return;
-        kernels::fill(data_, value, size_);
+
+        // Special case: zero is efficiently handled by cudaMemset
+        if constexpr (std::is_same_v<T, int8_t> || std::is_same_v<T, uint8_t>) {
+            TC_CUDA_CHECK(cudaMemsetAsync(data_, static_cast<int>(value), bytes(), stream));
+        } else if (value == T(0)) {
+            TC_CUDA_CHECK(cudaMemsetAsync(data_, 0, bytes(), stream));
+        } else {
+            // Use high-performance vectorized fill kernel
+            kernels::fill(data_, value, size_, stream);
+        }
     }
 
     /**
@@ -329,6 +372,9 @@ private:
     shape_type shape_;
     shape_type strides_;
     size_type size_ = 0;
+
+    /// Allocator reference (wrapped in optional for empty tensor case)
+    std::optional<std::reference_wrapper<Allocator>> allocator_;
 };
 
 // Type aliases for common tensor types
