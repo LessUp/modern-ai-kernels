@@ -1,192 +1,116 @@
 /**
- * TensorCraft-HPC - Modern Dual-Mode Theme
- * Inspired by kimi-cli design philosophy
- * NVIDIA green brand color with clean, professional styling
+ * TensorCraft-HPC - Technical Whitepaper Theme
+ *
+ * Design Philosophy:
+ * - Professional, academic feel
+ * - Restrained color palette
+ * - Focus on content readability
+ * - Minimal decorative elements
  */
 
 /* ========================================
-   CSS Variables - Light Mode (Default)
+   CSS Variables - Light Mode
    ======================================== */
 
 :root {
-  /* NVIDIA Brand Colors */
-  --nvidia-green: #76B900;
-  --nvidia-green-light: #8ED000;
-  --nvidia-green-dark: #5A9100;
-  --nvidia-green-glow: rgba(118, 185, 0, 0.2);
+  /* Brand Colors - Deep, professional green */
+  --vp-c-brand-1: #2E7D32;
+  --vp-c-brand-2: #388E3C;
+  --vp-c-brand-3: #43A047;
+  --vp-c-brand-soft: rgba(46, 125, 50, 0.08);
 
-  /* Brand Colors - Override VitePress defaults */
-  --vp-c-brand-1: #5A9100;
-  --vp-c-brand-2: #76B900;
-  --vp-c-brand-3: #8ED000;
-  --vp-c-brand-soft: rgba(90, 145, 0, 0.14);
+  /* Typography - Serif for content, Mono for code */
+  --vp-font-family-base: 'Source Serif 4', 'Noto Serif SC', 'Source Serif Pro', Georgia, 'Times New Roman', serif;
+  --vp-font-family-mono: 'JetBrains Mono', 'Fira Code', Consolas, Monaco, 'Andale Mono', monospace;
 
-  /* Light Mode Base Colors */
-  --vp-c-white: #ffffff;
-  --vp-c-black: #000000;
-
-  --vp-c-gray: #f6f8fa;
-  --vp-c-gray-dark: #e8eaed;
-  --vp-c-gray-darker: #d0d7de;
-  --vp-c-gray-light: #57606a;
-  --vp-c-gray-lighter: #24292f;
-
-  /* Background Colors */
+  /* Light Mode Base */
   --vp-c-bg: #ffffff;
-  --vp-c-bg-soft: #f6f8fa;
-  --vp-c-bg-mute: #f0f2f4;
-  --vp-c-bg-alt: #f6f8fa;
-  --vp-c-bg-elv: #ffffff;
+  --vp-c-bg-soft: #fafafa;
+  --vp-c-bg-mute: #f5f5f5;
+  --vp-c-bg-alt: #fafafa;
 
-  /* Text Colors */
-  --vp-c-text-1: #24292f;
-  --vp-c-text-2: #57606a;
-  --vp-c-text-3: #8b949e;
-  --vp-c-text-4: #6e7681;
+  --vp-c-text-1: #1a1a1a;
+  --vp-c-text-2: #424242;
+  --vp-c-text-3: #757575;
 
-  /* Border Colors */
-  --vp-c-border: #d0d7de;
-  --vp-c-border-light: #e8eaed;
-  --vp-c-divider: #d0d7de;
-  --vp-c-gutter: #d0d7de;
+  --vp-c-border: #e0e0e0;
+  --vp-c-divider: #e0e0e0;
 
-  /* Shadow */
-  --vp-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --vp-shadow-2: 0 2px 4px rgba(0, 0, 0, 0.04);
-  --vp-shadow-3: 0 4px 8px rgba(0, 0, 0, 0.04);
-  --vp-shadow-4: 0 8px 16px rgba(0, 0, 0, 0.04);
+  /* Code blocks */
+  --vp-code-bg: #f5f5f5;
+  --vp-code-color: #2E7D32;
 
-  /* Code Colors */
-  --vp-code-line-highlight-color: rgba(118, 185, 0, 0.08);
-  --vp-code-color: #5A9100;
-  --vp-code-bg: #f6f8fa;
+  /* Custom block colors */
+  --vp-custom-block-tip-border: #2E7D32;
+  --vp-custom-block-tip-bg: rgba(46, 125, 50, 0.05);
+  --vp-custom-block-info-border: #1565C0;
+  --vp-custom-block-info-bg: rgba(21, 101, 192, 0.05);
+  --vp-custom-block-warning-border: #F57C00;
+  --vp-custom-block-warning-bg: rgba(245, 124, 0, 0.05);
+  --vp-custom-block-danger-border: #C62828;
+  --vp-custom-block-danger-bg: rgba(198, 40, 40, 0.05);
 
-  /* Button Colors */
-  --vp-button-brand-border: #5A9100;
-  --vp-button-brand-text: #ffffff;
-  --vp-button-brand-bg: #5A9100;
-  --vp-button-brand-hover-border: #76B900;
-  --vp-button-brand-hover-text: #ffffff;
-  --vp-button-brand-hover-bg: #76B900;
-  --vp-button-brand-active-border: #4a7a00;
-  --vp-button-brand-active-text: #ffffff;
-  --vp-button-brand-active-bg: #4a7a00;
+  /* Button */
+  --vp-button-brand-bg: #2E7D32;
+  --vp-button-brand-border: #2E7D32;
+  --vp-button-brand-hover-bg: #388E3C;
+  --vp-button-brand-hover-border: #388E3C;
 
-  /* Custom Block Colors */
-  --vp-custom-block-tip-border: #5A9100;
-  --vp-custom-block-tip-text: #24292f;
-  --vp-custom-block-tip-bg: rgba(118, 185, 0, 0.06);
-  --vp-custom-block-tip-code-bg: rgba(118, 185, 0, 0.12);
-
-  /* Font Stack */
-  --vp-font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-  --vp-font-family-mono: 'JetBrains Mono', 'Fira Code', Consolas, Monaco, monospace;
-
-  /* Custom Spacing */
-  --spacing-xs: 8px;
-  --spacing-sm: 12px;
-  --spacing-md: 16px;
-  --spacing-lg: 24px;
-  --spacing-xl: 32px;
-  --spacing-2xl: 40px;
-
-  /* Custom Border Radius */
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
-
-  /* Custom Transitions */
-  --transition-fast: 0.15s ease;
-  --transition-normal: 0.2s ease;
-  --transition-slow: 0.3s ease;
-
-  /* Custom Colors for Homepage */
-  --tag-bg: rgba(118, 185, 0, 0.1);
-  --tag-text: #5A9100;
-
-  /* Hero Section - Clean design */
-  --vp-home-hero-name-color: #5A9100;
+  /* Hero - No decorative gradients */
+  --vp-home-hero-name-color: #2E7D32;
   --vp-home-hero-name-background: transparent;
   --vp-home-hero-image-background-image: none;
   --vp-home-hero-image-filter: none;
 }
 
 /* ========================================
-   Dark Mode Variables
+   Dark Mode
    ======================================== */
 
 .dark {
-  /* NVIDIA Brand Colors - Slightly brighter for dark mode */
-  --nvidia-green: #8ED000;
-  --nvidia-green-light: #A8F000;
-  --nvidia-green-dark: #76B900;
-  --nvidia-green-glow: rgba(142, 208, 0, 0.25);
-
-  /* Brand Colors */
-  --vp-c-brand-1: #8ED000;
-  --vp-c-brand-2: #76B900;
-  --vp-c-brand-3: #A8F000;
-  --vp-c-brand-soft: rgba(142, 208, 0, 0.16);
+  /* Brand - Slightly brighter for dark mode */
+  --vp-c-brand-1: #4CAF50;
+  --vp-c-brand-2: #66BB6A;
+  --vp-c-brand-3: #81C784;
+  --vp-c-brand-soft: rgba(76, 175, 80, 0.12);
 
   /* Dark Mode Base */
   --vp-c-bg: #0d1117;
   --vp-c-bg-soft: #161b22;
   --vp-c-bg-mute: #1a1f26;
   --vp-c-bg-alt: #0a0c10;
-  --vp-c-bg-elv: #161b22;
 
-  /* Text Colors */
-  --vp-c-text-1: rgba(255, 255, 255, 0.95);
-  --vp-c-text-2: rgba(255, 255, 255, 0.75);
-  --vp-c-text-3: rgba(255, 255, 255, 0.55);
-  --vp-c-text-4: rgba(255, 255, 255, 0.35);
+  --vp-c-text-1: #e6e6e6;
+  --vp-c-text-2: #b3b3b3;
+  --vp-c-text-3: #808080;
 
-  /* Border Colors */
-  --vp-c-border: rgba(255, 255, 255, 0.1);
-  --vp-c-border-light: rgba(255, 255, 255, 0.15);
-  --vp-c-divider: rgba(255, 255, 255, 0.08);
-  --vp-c-gutter: rgba(255, 255, 255, 0.08);
+  --vp-c-border: #30363d;
+  --vp-c-divider: #21262d;
 
-  /* Shadow */
-  --vp-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.5);
-  --vp-shadow-2: 0 2px 4px rgba(0, 0, 0, 0.5);
-  --vp-shadow-3: 0 4px 8px rgba(0, 0, 0, 0.5);
-  --vp-shadow-4: 0 8px 16px rgba(0, 0, 0, 0.5);
-
-  /* Code Colors */
-  --vp-code-line-highlight-color: rgba(142, 208, 0, 0.1);
-  --vp-code-color: #8ED000;
+  /* Code blocks */
   --vp-code-bg: #161b22;
+  --vp-code-color: #4CAF50;
 
-  /* Button Colors */
-  --vp-button-brand-border: #8ED000;
+  /* Custom block colors */
+  --vp-custom-block-tip-border: #4CAF50;
+  --vp-custom-block-tip-bg: rgba(76, 175, 80, 0.08);
+  --vp-custom-block-info-border: #42A5F5;
+  --vp-custom-block-info-bg: rgba(66, 165, 245, 0.08);
+  --vp-custom-block-warning-border: #FFA726;
+  --vp-custom-block-warning-bg: rgba(255, 167, 38, 0.08);
+  --vp-custom-block-danger-border: #EF5350;
+  --vp-custom-block-danger-bg: rgba(239, 83, 80, 0.08);
+
+  /* Button */
+  --vp-button-brand-bg: #4CAF50;
+  --vp-button-brand-border: #4CAF50;
+  --vp-button-brand-hover-bg: #66BB6A;
+  --vp-button-brand-hover-border: #66BB6A;
   --vp-button-brand-text: #000000;
-  --vp-button-brand-bg: #8ED000;
-  --vp-button-brand-hover-border: #A8F000;
   --vp-button-brand-hover-text: #000000;
-  --vp-button-brand-hover-bg: #A8F000;
-  --vp-button-brand-active-border: #76B900;
-  --vp-button-brand-active-text: #000000;
-  --vp-button-brand-active-bg: #76B900;
 
-  /* Custom Block Colors */
-  --vp-custom-block-tip-border: #8ED000;
-  --vp-custom-block-tip-text: rgba(255, 255, 255, 0.95);
-  --vp-custom-block-tip-bg: rgba(142, 208, 0, 0.08);
-  --vp-custom-block-tip-code-bg: rgba(142, 208, 0, 0.15);
-
-  /* Custom Colors */
-  --tag-bg: rgba(142, 208, 0, 0.12);
-  --tag-text: #8ED000;
-
-  /* Hero Section */
-  --vp-home-hero-name-color: #8ED000;
-}
-
-/* Force proper color-scheme */
-html {
-  color-scheme: light dark;
+  /* Hero */
+  --vp-home-hero-name-color: #4CAF50;
 }
 
 /* ========================================
@@ -197,300 +121,107 @@ body {
   font-family: var(--vp-font-family-base);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
-/* Code blocks */
+/* Headings - Serif for academic feel */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--vp-font-family-base);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* Code - Monospace */
 code, pre, .vp-code-group {
   font-family: var(--vp-font-family-mono);
-}
-
-/* Headings */
-h1, h2, h3, h4, h5, h6 {
-  font-weight: 600;
-  letter-spacing: -0.02em;
-}
-
-/* ========================================
-   Hero Section (Landing Page)
-   ======================================== */
-
-.VPHero {
-  padding: calc(var(--vp-nav-height) + 48px) var(--spacing-lg) 48px;
-}
-
-.VPHero .name {
-  font-size: 32px;
-  font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: -0.5px;
-  color: var(--vp-c-brand-1);
-}
-
-.VPHero .text {
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 1.5;
-  color: var(--vp-c-text-1);
-  margin-top: var(--spacing-sm);
-}
-
-.VPHero .tagline {
-  font-size: 14px;
-  line-height: 1.6;
-  color: var(--vp-c-text-2);
-  margin-top: var(--spacing-md);
-  max-width: 600px;
-}
-
-.VPHero .image {
-  display: none;
-}
-
-/* Buttons */
-.VPHero .actions {
-  margin-top: var(--spacing-xl);
-  gap: var(--spacing-sm);
-}
-
-.VPHero .VPButton {
-  border-radius: var(--radius-sm);
-  padding: 8px 16px;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all var(--transition-fast);
-}
-
-.VPHero .VPButton.medium.brand {
-  background: var(--vp-c-brand-1);
-  border: none;
-  color: #ffffff;
-}
-
-.VPHero .VPButton.medium.brand:hover {
-  background: var(--vp-c-brand-2);
-}
-
-.VPHero .VPButton.medium.alt {
-  border: 1px solid var(--vp-c-border);
-  background: transparent;
-  color: var(--vp-c-text-1);
-}
-
-.VPHero .VPButton.medium.alt:hover {
-  border-color: var(--vp-c-brand-1);
-  color: var(--vp-c-brand-1);
-}
-
-/* ========================================
-   Feature Cards
-   ======================================== */
-
-.VPFeatures {
-  padding: 48px var(--spacing-lg);
-}
-
-.VPFeatures .container {
-  max-width: 1200px;
-}
-
-.VPFeatures .VPFeature {
-  padding: var(--spacing-lg);
-  border-radius: var(--radius-md);
-  background: var(--vp-c-bg);
-  border: 1px solid var(--vp-c-border);
-  transition: all var(--transition-normal);
-}
-
-.VPFeatures .VPFeature:hover {
-  border-color: var(--vp-c-brand-1);
-  box-shadow: 0 4px 12px rgba(118, 185, 0, 0.1);
-  transform: translateY(-2px);
-}
-
-.VPFeature .icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  font-size: 20px;
-  margin-bottom: var(--spacing-sm);
-  color: var(--vp-c-brand-1);
-}
-
-.VPFeature .title {
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: var(--spacing-xs);
-  color: var(--vp-c-text-1);
-}
-
-.VPFeature .details {
-  font-size: 14px;
-  line-height: 1.6;
-  color: var(--vp-c-text-2);
-}
-
-/* ========================================
-   Navigation
-   ======================================== */
-
-.VPNav {
-  background: var(--vp-c-bg);
-  border-bottom: 1px solid var(--vp-c-border);
-}
-
-.VPNavBarMenuLink,
-.VPNavBarMenuGroup .button {
-  font-weight: 500;
-  font-size: 14px;
-}
-
-.VPNavBarMenuLink.active,
-.VPNavBarMenuGroup.open .button {
-  color: var(--vp-c-brand-1);
-}
-
-.VPNavBarTitle .text {
-  color: var(--vp-c-brand-1);
-  font-weight: 700;
-}
-
-.VPNavBarTitle:hover .text {
-  color: var(--vp-c-brand-2);
-}
-
-/* ========================================
-   Sidebar
-   ======================================== */
-
-.VPSidebar {
-  padding: var(--spacing-lg) var(--spacing-md) 96px;
-}
-
-.VPSidebarGroup {
-  margin-bottom: var(--spacing-md);
-}
-
-.VPSidebarGroup .title {
-  font-size: 13px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--vp-c-text-3);
-  padding: var(--spacing-sm) 14px;
-}
-
-.VPSidebarItem .text {
-  font-size: 14px;
-  padding: var(--spacing-xs) 14px;
-  border-radius: var(--radius-md);
-  transition: all var(--transition-fast);
-}
-
-.VPSidebarItem .text:hover {
-  background: var(--vp-c-bg-soft);
-  color: var(--vp-c-brand-1);
-}
-
-.VPSidebarItem.is-active .text {
-  background: var(--vp-c-brand-soft);
-  color: var(--vp-c-brand-1);
-  font-weight: 500;
 }
 
 /* ========================================
    Content Styling
    ======================================== */
 
-.VPDoc {
-  padding: var(--spacing-xl) var(--spacing-lg) 96px;
-}
-
+/* Document content */
 .VPDoc .content {
-  max-width: 720px;
+  max-width: 800px;
 }
 
-.VPDoc h1 {
-  font-size: 40px;
-  font-weight: 700;
-  letter-spacing: -1px;
-  margin-bottom: var(--spacing-lg);
-}
-
-.VPDoc h2 {
-  font-size: 28px;
-  font-weight: 600;
-  margin-top: 48px;
-  margin-bottom: 20px;
-  padding-bottom: var(--spacing-sm);
-  border-bottom: 1px solid var(--vp-c-divider);
-}
-
-.VPDoc h3 {
-  font-size: 20px;
-  font-weight: 600;
-  margin-top: var(--spacing-xl);
-  margin-bottom: var(--spacing-md);
-}
-
+/* Paragraphs - Optimal reading width */
 .VPDoc p {
-  font-size: 16px;
-  line-height: 1.8;
-  margin-bottom: var(--spacing-md);
+  line-height: 1.75;
+  margin-bottom: 1.25rem;
 }
 
+/* Links */
 .VPDoc a {
   color: var(--vp-c-brand-1);
   text-decoration: none;
   border-bottom: 1px solid transparent;
-  transition: border-color var(--transition-fast);
+  transition: border-color 0.2s ease;
 }
 
 .VPDoc a:hover {
   border-bottom-color: var(--vp-c-brand-1);
 }
 
+/* Inline code */
 .VPDoc code {
-  font-size: 14px;
-  padding: 2px var(--spacing-xs);
-  border-radius: var(--radius-sm);
-  background: var(--vp-c-bg-soft);
-  color: var(--vp-c-brand-1);
+  font-size: 0.9em;
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  background: var(--vp-code-bg);
+  color: var(--vp-code-color);
 }
 
 .VPDoc pre code {
-  font-size: 14px;
   padding: 0;
   background: transparent;
-  color: var(--vp-c-text-1);
+  color: inherit;
 }
 
-/* Custom Blocks */
-.VPDoc .custom-block {
-  border-radius: var(--radius-lg);
-  padding: 20px var(--spacing-lg);
-  margin: var(--spacing-lg) 0;
-}
+/* ========================================
+   Custom Blocks
+   ======================================== */
 
-.VPDoc .custom-block.info {
+/* Abstract block (for whitepaper) */
+.abstract {
   background: var(--vp-c-bg-soft);
-  border-left: 4px solid var(--vp-c-brand-1);
+  border: 1px solid var(--vp-c-border);
+  border-radius: 8px;
+  padding: 1.5rem 2rem;
+  margin: 2rem 0;
+  font-style: italic;
 }
 
-.VPDoc .custom-block.tip {
+.abstract p:first-child {
+  font-weight: 600;
+  font-style: normal;
+  margin-bottom: 1rem;
+}
+
+/* Tip/Info/Warning blocks */
+.custom-block {
+  border-radius: 8px;
+  margin: 1.5rem 0;
+}
+
+.custom-block.tip {
   background: var(--vp-custom-block-tip-bg);
-  border-left: 4px solid var(--vp-c-brand-1);
+  border-left: 4px solid var(--vp-custom-block-tip-border);
 }
 
-.VPDoc .custom-block.warning {
-  background: rgba(255, 197, 23, 0.1);
-  border-left: 4px solid #ffc517;
+.custom-block.info {
+  background: var(--vp-custom-block-info-bg);
+  border-left: 4px solid var(--vp-custom-block-info-border);
 }
 
-.VPDoc .custom-block.danger {
-  background: rgba(255, 84, 84, 0.1);
-  border-left: 4px solid #ff5454;
+.custom-block.warning {
+  background: var(--vp-custom-block-warning-bg);
+  border-left: 4px solid var(--vp-custom-block-warning-border);
+}
+
+.custom-block.danger {
+  background: var(--vp-custom-block-danger-bg);
+  border-left: 4px solid var(--vp-custom-block-danger-border);
 }
 
 /* ========================================
@@ -499,27 +230,22 @@ h1, h2, h3, h4, h5, h6 {
 
 .VPDoc table {
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  margin: var(--spacing-lg) 0;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  border: 1px solid var(--vp-c-border);
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.95em;
 }
 
 .VPDoc th {
   background: var(--vp-c-bg-soft);
   font-weight: 600;
   text-align: left;
-  padding: 14px 18px;
-  font-size: 14px;
-  border-bottom: 1px solid var(--vp-c-border);
+  padding: 0.75rem 1rem;
+  border-bottom: 2px solid var(--vp-c-border);
 }
 
 .VPDoc td {
-  padding: var(--spacing-sm) 18px;
-  font-size: 14px;
-  border-bottom: 1px solid var(--vp-c-border);
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--vp-c-divider);
 }
 
 .VPDoc tr:last-child td {
@@ -531,36 +257,25 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ========================================
-   Search
+   Navigation
    ======================================== */
 
-.VPLocalSearchBox {
-  backdrop-filter: blur(20px);
+.VPNavBarTitle .text {
+  font-weight: 600;
+  color: var(--vp-c-brand-1);
 }
 
-.VPLocalSearchBox .backdrop {
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
-}
-
-.VPLocalSearchBox .shell {
-  border-radius: var(--radius-xl);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+.VPNavBarMenuLink.active {
+  color: var(--vp-c-brand-1);
 }
 
 /* ========================================
-   Footer
+   Sidebar
    ======================================== */
 
-.VPFooter {
-  padding: var(--spacing-2xl) var(--spacing-lg);
-  background: var(--vp-c-bg-alt);
-}
-
-.VPFooter .message,
-.VPFooter .copyright {
-  font-size: 14px;
-  color: var(--vp-c-text-3);
+.VPSidebarItem.is-active .text {
+  color: var(--vp-c-brand-1);
+  font-weight: 500;
 }
 
 /* ========================================
@@ -569,10 +284,9 @@ h1, h2, h3, h4, h5, h6 {
 
 .mermaid {
   background: var(--vp-c-bg-soft);
-  border-radius: var(--radius-md);
+  border-radius: 8px;
   padding: 1.5rem;
-  margin: 1rem 0;
-  border: 1px solid var(--vp-c-border);
+  margin: 1.5rem 0;
   text-align: center;
 }
 
@@ -581,257 +295,87 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ========================================
-   Badges
+   Citation Style (for academic references)
    ======================================== */
 
-.vp-badge {
-  font-family: var(--vp-font-family-mono);
-  font-size: 0.75rem;
-}
-
-.vp-badge.tip {
-  background: var(--vp-c-brand-soft);
-  border-color: var(--vp-c-brand-1);
-  color: var(--vp-c-brand-1);
-}
-
-/* ========================================
-   API Documentation Styles
-   ======================================== */
-
-.api-method {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.25rem 0.75rem;
-  border-radius: 4px;
-  font-family: var(--vp-font-family-mono);
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-.api-method.get {
-  background: rgba(0, 212, 255, 0.15);
-  color: #00D4FF;
-}
-
-.api-method.post {
-  background: var(--vp-c-brand-soft);
-  color: var(--vp-c-brand-1);
-}
-
-.api-param {
-  display: flex;
-  align-items: baseline;
-  gap: 1rem;
-  padding: 0.75rem;
-  background: var(--vp-c-bg-soft);
-  border-radius: var(--radius-md);
-  margin: 0.5rem 0;
-}
-
-.api-param-name {
-  font-family: var(--vp-font-family-mono);
-  color: var(--vp-c-brand-1);
-  min-width: 150px;
-}
-
-.api-param-type {
-  font-family: var(--vp-font-family-mono);
-  color: var(--vp-c-text-3);
-  background: var(--vp-c-bg-mute);
-  padding: 0.125rem 0.375rem;
-  border-radius: 4px;
-  font-size: 0.75rem;
-}
-
-/* ========================================
-   Academic Paper Style
-   ======================================== */
-
-/* Citation style */
 .citation {
-  font-size: 0.875rem;
   padding: 1rem 1.25rem;
   background: var(--vp-c-bg-soft);
   border-left: 3px solid var(--vp-c-brand-1);
-  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  border-radius: 0 6px 6px 0;
   margin: 1rem 0;
+  font-size: 0.95em;
 }
 
 .citation-author {
   font-weight: 600;
-  color: var(--vp-c-text-1);
 }
 
 .citation-title {
   font-style: italic;
-  color: var(--vp-c-text-2);
 }
 
 .citation-link {
   color: var(--vp-c-brand-1);
-  text-decoration: none;
 }
 
-.citation-link:hover {
-  text-decoration: underline;
-}
+/* ========================================
+   Hero Section
+   ======================================== */
 
-/* Abstract box */
-.abstract {
-  background: var(--vp-c-bg-soft);
-  border: 1px solid var(--vp-c-border);
-  border-radius: var(--radius-md);
-  padding: 1.5rem;
-  margin: 1.5rem 0;
-}
-
-.abstract-title {
+.VPHero .name {
   font-weight: 700;
-  font-size: 0.875rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--vp-c-brand-1);
-  margin-bottom: 0.75rem;
+  letter-spacing: -0.02em;
 }
 
-.abstract-content {
-  font-style: italic;
-  color: var(--vp-c-text-2);
-  line-height: 1.7;
+.VPHero .text {
+  font-weight: 500;
 }
 
-/* Contribution list */
-.contributions {
-  list-style: none;
-  padding: 0;
-  margin: 1.5rem 0;
-}
-
-.contributions li {
-  position: relative;
-  padding-left: 2rem;
-  margin-bottom: 1rem;
-}
-
-.contributions li::before {
-  content: '✓';
-  position: absolute;
-  left: 0;
-  color: var(--vp-c-brand-1);
-  font-weight: 700;
+.VPHero .tagline {
+  color: var(--vp-c-text-3);
 }
 
 /* ========================================
-   NVIDIA Home Extra Section
+   Features (Homepage)
    ======================================== */
 
-.nvidia-home-extra {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 2rem;
+.VPFeature {
+  border-radius: 8px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.VPFeature:hover {
+  transform: translateY(-2px);
+}
+
+.VPFeature .title {
+  font-weight: 600;
 }
 
 /* ========================================
-   Animations
+   Footer
    ======================================== */
 
-@keyframes nvidia-pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.6;
-  }
-}
-
-@keyframes nvidia-glow {
-  0%, 100% {
-    box-shadow: 0 0 20px var(--nvidia-green-glow);
-  }
-  50% {
-    box-shadow: 0 0 40px var(--nvidia-green-glow);
-  }
-}
-
-.nvidia-pulse {
-  animation: nvidia-pulse 2s ease-in-out infinite;
-}
-
-.nvidia-glow {
-  animation: nvidia-glow 3s ease-in-out infinite;
-}
-
-/* GPU Timeline Animation */
-@keyframes timeline-slide {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-.gpu-timeline-item {
-  animation: timeline-slide 0.5s ease-out forwards;
-}
-
-/* Benchmark Chart Animation */
-@keyframes bar-grow {
-  from {
-    transform: scaleX(0);
-  }
-  to {
-    transform: scaleX(1);
-  }
-}
-
-.benchmark-bar {
-  transform-origin: left;
-  animation: bar-grow 1s ease-out forwards;
+.VPFooter {
+  border-top: 1px solid var(--vp-c-divider);
 }
 
 /* ========================================
-   Responsive Design
+   Responsive
    ======================================== */
 
-@media (max-width: 960px) {
-  .VPHero {
-    padding: calc(var(--vp-nav-height) + 60px) var(--spacing-lg) 60px;
+@media (max-width: 768px) {
+  .VPDoc .content {
+    max-width: 100%;
   }
 
-  .VPHero .name {
-    font-size: 28px;
+  .VPDoc p {
+    line-height: 1.65;
   }
 
-  .VPHero .text {
-    font-size: 15px;
-  }
-
-  .VPDoc h1 {
-    font-size: 32px;
-  }
-
-  .VPDoc h2 {
-    font-size: 24px;
-  }
-}
-
-@media (max-width: 640px) {
-  .VPHero .name {
-    font-size: 24px;
-    letter-spacing: -1px;
-  }
-
-  .VPFeatures .VPFeature {
-    padding: var(--spacing-md);
-  }
-
-  .nvidia-home-extra {
-    padding: 0 1rem;
+  .abstract {
+    padding: 1rem 1.25rem;
   }
 }
 
@@ -849,5 +393,14 @@ h1, h2, h3, h4, h5, h6 {
 
   .VPContent {
     padding: 0 !important;
+  }
+
+  body {
+    font-size: 12pt;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: underline;
   }
 }
