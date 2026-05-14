@@ -10,58 +10,18 @@
 
 #include "tensorcraft/core/cuda_check.hpp"
 #include "tensorcraft/kernels/attention.hpp"
+#include "test_utils.hpp"
 
 using namespace tensorcraft::kernels;
-
-// Helper to allocate and copy data to GPU
-template <typename T>
-class DeviceBuffer {
-public:
-    explicit DeviceBuffer(size_t count) : size_(count) {
-        TC_CUDA_CHECK(cudaMalloc(&ptr_, count * sizeof(T)));
-    }
-
-    ~DeviceBuffer() {
-        if (ptr_)
-            cudaFree(ptr_);
-    }
-
-    void copy_from_host(const T* host_data) {
-        TC_CUDA_CHECK(cudaMemcpy(ptr_, host_data, size_ * sizeof(T), cudaMemcpyHostToDevice));
-    }
-
-    void copy_to_host(T* host_data) const {
-        TC_CUDA_CHECK(cudaMemcpy(host_data, ptr_, size_ * sizeof(T), cudaMemcpyDeviceToHost));
-    }
-
-    T* get() { return ptr_; }
-    const T* get() const { return ptr_; }
-    size_t size() const { return size_; }
-
-    DeviceBuffer(const DeviceBuffer&) = delete;
-    DeviceBuffer& operator=(const DeviceBuffer&) = delete;
-
-private:
-    T* ptr_ = nullptr;
-    size_t size_ = 0;
-};
+using tensorcraft::test::DeviceBuffer;
+using tensorcraft::test::CudaTest;
 
 // ============================================================================
 // FlashAttention Tests
 // ============================================================================
 
-class FlashAttentionTest : public ::testing::Test {
+class FlashAttentionTest : public CudaTest {
 protected:
-    void SetUp() override {
-        // Check CUDA device availability
-        int device_count = 0;
-        cudaError_t err = cudaGetDeviceCount(&device_count);
-        if (err != cudaSuccess || device_count == 0) {
-            GTEST_SKIP() << "No CUDA device available, skipping FlashAttention tests";
-        }
-        cudaSetDevice(0);
-    }
-
     // Reference implementation of FlashAttention for validation
     void reference_attention(const float* Q, const float* K, const float* V, float* O, int batch,
                              int heads, int seq, int head_dim) {

@@ -203,6 +203,101 @@ modern-ai-kernels/
 
 ---
 
+## Architectural Decisions
+
+### Decision: Allocator Seam for Memory Management (ARCH-008)
+
+**Context:** Tensor classes need flexible memory allocation strategies for different use cases (production pooling, testing isolation, custom hardware).
+
+**Decision:** Introduce an `Allocator` abstraction layer between `Tensor` and `MemoryPool`.
+
+```cpp
+template <typename T, typename Allocator = PoolAllocator>
+class Tensor { ... };
+```
+
+**Consequences:**
+- ✅ Enables testing with `DirectAllocator` (isolated memory)
+- ✅ Supports custom allocators for special hardware (UVM, stream-ordered)
+- ✅ Maintains backward compatibility with default `PoolAllocator`
+
+**Related Files:** `include/tensorcraft/memory/allocator.hpp`, `tensor.hpp`
+
+---
+
+### Decision: CSRMatrix Direct MemoryPool Usage (ARCH-009)
+
+**Context:** `CSRMatrix` manages three arrays (`values`, `col_indices`, `row_ptrs`) of different types.
+
+**Decision:** `CSRMatrix` uses `MemoryPool` directly without the `Allocator` template parameter.
+
+**Rationale:**
+1. **Complexity Trade-off:** Adding `Allocator` template would complicate the interface for minimal practical benefit
+2. **Sparse Matrix Use Case:** Typically used in batch processing where memory pooling provides clear performance benefit
+3. **Consistency with Dense Operations:** Most sparse operations follow similar allocation patterns
+
+**Consequences:**
+- ⚠️ Cannot use `DirectAllocator` for testing isolation (minor limitation)
+- ✅ Simpler interface for users
+- ✅ Consistent performance characteristics
+
+**Future Consideration:** If testing isolation becomes necessary, can add `CSRMatrix<T, Allocator>` in a future version.
+
+**Related Files:** `include/tensorcraft/kernels/sparse.hpp`
+
+---
+
+### Decision: Operation Registry as Design Reserve (ARCH-010)
+
+**Context:** `op_registry.hpp` provides macros (`TC_REGISTER_UNARY_OP`, `TC_REGISTER_BINARY_OP`) for declarative operation registration.
+
+**Decision:** Keep the registry infrastructure as a **design reserve** for future use.
+
+**Current State:**
+- Macros are defined but not yet used in production code
+- `ops::` namespace provides factory functions for operation entries
+- Python bindings are currently hand-written
+
+**Rationale:**
+1. **Low Maintenance Cost:** ~220 lines of code with minimal dependencies
+2. **Future Value:** Can auto-generate Python bindings when operation count grows
+3. **Similar to PyTorch:** Registry pattern proven in production frameworks
+
+**When to Activate:**
+- Operation count exceeds ~20 (current: ~10)
+- Need for automatic Python binding generation
+- Need for runtime operation discovery
+
+**Related Files:** `include/tensorcraft/kernels/op_registry.hpp`
+
+---
+
+### Decision: Unified Test Infrastructure (ARCH-011)
+
+**Context:** Test files previously used manual `cudaMalloc`/`cudaFree` patterns.
+
+**Decision:** Provide `test_utils.hpp` with `DeviceBuffer<T, Allocator>` and `CudaTest` base class.
+
+**Usage:**
+```cpp
+#include "test_utils.hpp"
+using tensorcraft::test::DeviceBuffer;
+using tensorcraft::test::CudaTest;
+
+class MyTest : public CudaTest { ... };
+```
+
+**Consequences:**
+- ✅ Unified test memory management
+- ✅ `DirectAllocator` provides test isolation from production `MemoryPool`
+- ✅ Common CUDA device setup via `CudaTest` base class
+
+**Migration Status:** `test_attention.cpp` migrated; other tests can follow incrementally.
+
+**Related Files:** `tests/test_utils.hpp`, `tests/test_attention.cpp`
+
+---
+
 ## See Also
 
 - [Core Specifications](../core/spec.md) — Product requirements
