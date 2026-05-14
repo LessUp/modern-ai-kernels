@@ -2,32 +2,20 @@ import { h } from 'vue'
 import type { Theme } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
 
-// Import NVIDIA-style CSS
+// Technical whitepaper style
 import './style.css'
 
-// Import custom components
+// Custom components (available for use in markdown)
 import GPUTimeline from './components/GPUTimeline.vue'
 import BenchmarkChart from './components/BenchmarkChart.vue'
-import CodePreview from './components/CodePreview.vue'
 import OptimizationPath from './components/OptimizationPath.vue'
 
 export default {
   extends: DefaultTheme,
-  Layout: () => {
-    return h(DefaultTheme.Layout, null, {
-      // Custom slots for landing page
-      'home-features-after': () => h('div', { class: 'nvidia-home-extra' }, [
-        h(GPUTimeline),
-        h(BenchmarkChart),
-        h(OptimizationPath)
-      ])
-    })
-  },
   enhanceApp({ app }) {
-    // Register global components
+    // Register global components for use in markdown
     app.component('GPUTimeline', GPUTimeline)
     app.component('BenchmarkChart', BenchmarkChart)
-    app.component('CodePreview', CodePreview)
     app.component('OptimizationPath', OptimizationPath)
   }
 } satisfies Theme

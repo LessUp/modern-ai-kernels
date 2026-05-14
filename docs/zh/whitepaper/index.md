@@ -1,0 +1,150 @@
+# 技术白皮书
+
+::: abstract
+**摘要**
+
+TensorCraft-HPC 是一个仅头文件的 C++/CUDA 库，专为学习高性能 AI 内核实现而设计。本白皮书阐述了指导项目的架构决策、优化策略和性能分析。我们的目标是通过提供从朴素实现到生产级性能的清晰、渐进式优化路径，来解密 GPU 内核开发。
+
+**关键成果**
+
+- FP16 GEMM 在 Tensor Core 上达到 92% cuBLAS 性能
+- FlashAttention 达到 85% cuDNN 性能
+- 支持 NVIDIA SM70-SM100 架构
+- 通过仅头文件设计实现零构建复杂度
+:::
+
+---
+
+## 执行摘要
+
+现代 AI 系统关键依赖于高性能 GPU 内核来执行矩阵乘法、注意力和归一化等操作。然而，从理解数学到实现生产级性能的路径往往被复杂性所遮蔽。
+
+TensorCraft-HPC 通过以下方式解决这一差距：
+
+1. **显式演进**：每个内核经历明确定义的优化阶段
+2. **教育性清晰**：代码针对可读性优化，不仅是性能
+3. **OpenSpec 治理**：规范驱动实现，确保正确性
+
+---
+
+## 项目哲学
+
+### 为什么存在此项目
+
+CUDA 生态系统有优秀的生产库（cuBLAS、cuDNN、CUTLASS），但它们针对部署而非学习进行优化。当开发者问"如何编写高效的 GEMM 内核？"时，答案往往指向数千行模板元编程代码。
+
+TensorCraft-HPC 提供了另一种选择：从简单开始、逐步演进的内核，每一步优化都有理由和解释。
+
+### 设计原则
+
+| 原则 | 含义 |
+|------|------|
+| **可读性优先** | 代码注释解释*为什么*，不只是*是什么* |
+| **渐进式复杂度** | 每个阶段都是完整、可运行的内核 |
+| **规范驱动** | OpenSpec 文件在实现前定义契约 |
+| **零构建摩擦** | C++ 仅头文件，Python 可选 pip |
+
+---
+
+## 核心贡献
+
+### 1. 渐进式优化框架
+
+每个内核遵循文档化的优化路径：
+
+```
+朴素 → 分块 → 双缓冲 → Tensor Core → 生产级性能
+```
+
+每个阶段：
+- 是完整、可测试的实现
+- 有明确的性能特征
+- 演示特定的优化技术
+
+### 2. 多架构支持
+
+编译时特性检测启用：
+
+```cpp
+#if TENSORCRAFT_HAS_WMMA
+    // Tensor Core 路径 (SM70+)
+#elif TENSORCRAFT_HAS_FP8
+    // FP8 路径 (SM90+)
+#else
+    // 后备路径
+#endif
+```
+
+### 3. OpenSpec 工作流
+
+`openspec/specs/` 中的规范定义：
+
+- **需求 (Requirements)**：组件必须做什么
+- **契约 (Contracts)**：API 保证和不变量
+- **验收标准 (Acceptance Criteria)**：如何验证合规性
+
+---
+
+## 目标读者
+
+本白皮书面向：
+
+- **GPU 内核开发者**：寻求理解优化技术
+- **ML 基础设施工程师**：评估内核实现
+- **研究人员**：研究高性能计算模式
+- **学生**：学习 CUDA 编程
+
+---
+
+## 文档结构
+
+| 章节 | 内容 |
+|------|------|
+| [架构设计](/zh/whitepaper/architecture) | 系统设计、分层和扩展点 |
+| [性能分析](/zh/whitepaper/performance) | 基准测试方法和分析 |
+| [开发方法论](/zh/whitepaper/methodology) | OpenSpec 工作流和贡献指南 |
+
+---
+
+## 快速开始
+
+::: code-group
+```bash [克隆]
+git clone https://github.com/LessUp/modern-ai-kernels.git
+cd modern-ai-kernels
+```
+
+```cpp [C++]
+#include "tensorcraft/kernels/gemm.hpp"
+
+tensorcraft::FloatTensor A({4096, 4096});
+tensorcraft::FloatTensor B({4096, 4096});
+tensorcraft::FloatTensor C({4096, 4096});
+
+tensorcraft::kernels::gemm(A.data(), B.data(), C.data(), 4096, 4096, 4096);
+```
+
+```python [Python]
+import tensorcraft_ops as tc
+import numpy as np
+
+A = np.random.randn(4096, 4096).astype(np.float16)
+B = np.random.randn(4096, 4096).astype(np.float16)
+C = tc.gemm(A, B)  # GPU 加速
+```
+:::
+
+---
+
+## 引用
+
+如果您在学术工作中引用 TensorCraft-HPC：
+
+```bibtex
+@software{tensorcraft-hpc,
+  title = {TensorCraft-HPC: Demystifying High-Performance AI Kernels
+           with Modern C++ and CUDA},
+  author = {LessUp},
+  year = {2024},
+  url = {https://github.com/LessUp/modern-ai-kernels}
+}
