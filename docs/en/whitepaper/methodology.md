@@ -38,36 +38,26 @@ flowchart TB
 
 ---
 
-## Specification Structure
+## OpenSpec artifact model
 
-Each specification in `openspec/specs/` follows this template:
+TensorCraft-HPC uses OpenSpec in two layers:
 
-```yaml
-# openspec/specs/kernel-name.md
+1. **Accepted baseline specs** in `openspec/specs/` describe the repository's current contracts and
+   standards.
+2. **Active changes** in `openspec/changes/<name>/` describe what is being changed, why, and how it
+   will be implemented.
 
-## Summary
-Brief description of the component.
+An implementation-facing change set typically includes:
 
-## Requirements
-- Functional requirements (what it must do)
-- Non-functional requirements (performance, safety)
+| File | Purpose |
+|------|---------|
+| `proposal.md` | Why the change exists and which capabilities it modifies |
+| `design.md` | Key decisions, trade-offs, and implementation guidance |
+| `tasks.md` | Execution checklist and validation sequence |
+| `specs/<domain>/spec.md` | Delta requirements for any affected accepted spec |
 
-## Contract
-### Input
-- Parameter types and constraints
-
-### Output
-- Return type and guarantees
-
-### Invariants
-- Conditions that always hold
-
-## Acceptance Criteria
-- Test cases that verify compliance
-
-## References
-- Papers, documentation, related specs
-```
+This model matters for the showcase itself: structural Pages work, branding changes, and public
+workflow changes should all be traceable through OpenSpec instead of landing as unexplained edits.
 
 ---
 
@@ -198,18 +188,19 @@ repos:
         types: [c++]
 ```
 
-### CI Pipeline
+### CI pipeline
 
 ```mermaid
 flowchart LR
     PR["PR Submitted"] --> FORMAT["Format Check"]
-    FORMAT --> LINT["Lint Check"]
-    LINT --> BUILD["Build"]
-    BUILD --> TEST["Unit Tests"]
-    TEST --> BENCH["Benchmarks"]
-    BENCH --> DOCS["Docs Build"]
-    DOCS --> APPROVE["Ready for Review"]
+    FORMAT --> SMOKE["CPU Smoke Build"]
+    SMOKE --> WHEEL["Python Wheel Build"]
+    WHEEL --> DOCS["Docs / Pages Build"]
+    DOCS --> REVIEW["Ready for Review"]
 ```
+
+Hosted CI in this repository intentionally stops short of GPU benchmark execution. CUDA-dependent
+tests and benchmark review belong on local GPU-enabled machines.
 
 ---
 
@@ -285,8 +276,20 @@ User-facing documentation in `docs/` uses VitePress markdown with:
 
 ---
 
+## Showcase discipline
+
+Because this repository is also meant to serve as a technical portfolio artifact, methodology
+extends beyond code changes:
+
+- `README.md`, `README.zh-CN.md`, and GitHub Pages should present one coherent project identity
+- benchmark claims should always be paired with methodology or citations
+- structural documentation changes should be represented in OpenSpec, not hidden in ad-hoc copy edits
+- examples and commands should match the actual presets, files, and workflows in the repository
+
+This discipline is part of the engineering quality of the project, not a separate marketing layer.
+
 ## Getting Help
 
-- **Issues**: [GitHub Issues](https://github.com/LessUp/modern-ai-kernels/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/LessUp/modern-ai-kernels/discussions)
+- **Issues**: [GitHub Issues](https://github.com/AICL-Lab/modern-ai-kernels/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/AICL-Lab/modern-ai-kernels/discussions)
 - **Documentation**: [Online Docs](https://aicl-lab.github.io/modern-ai-kernels/)

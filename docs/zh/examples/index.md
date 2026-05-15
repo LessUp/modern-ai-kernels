@@ -25,7 +25,7 @@
 
 ```bash
 # 克隆并构建
-git clone https://github.com/LessUp/modern-ai-kernels.git
+git clone https://github.com/AICL-Lab/modern-ai-kernels.git
 cd modern-ai-kernels
 
 # 使用 CUDA 支持构建
@@ -58,4 +58,4 @@ python examples/python/gemm_demo.py
 
 - 查看 [API 参考](/zh/api/gemm) 获取详细文档
 - 浏览 [学习资源](/zh/references/resources) 获取更多教程
-- 如遇问题，在 [GitHub](https://github.com/LessUp/modern-ai-kernels/issues) 提交 issue
+- 如遇问题，在 [GitHub](https://github.com/AICL-Lab/modern-ai-kernels/issues) 提交 issue

@@ -5,8 +5,8 @@
       <stop offset="100%" style="stop-color:#76B900;stop-opacity:1" />
     </linearGradient>
     <linearGradient id="layerGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" style="stop-color:#1a1f26;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#0d1117;stop-opacity:1" />
+      <stop offset="0%" style="stop-color:#F4F7F1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:1" />
     </linearGradient>
     <filter id="glow">
       <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
@@ -21,19 +21,19 @@
   </defs>
 
   <!-- Background -->
-  <rect width="800" height="500" fill="#0d1117"/>
+  <rect width="800" height="500" fill="transparent"/>
 
   <!-- Grid pattern -->
   <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1a1f26" stroke-width="0.5"/>
+    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#DDE6DB" stroke-width="0.5"/>
   </pattern>
   <rect width="800" height="500" fill="url(#grid)" opacity="0.5"/>
 
   <!-- Title -->
-  <text x="400" y="35" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="24" font-weight="700" fill="#ffffff">
+  <text x="400" y="35" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="24" font-weight="700" fill="#1A1A1A">
     TensorCraft-HPC Architecture
   </text>
-  <text x="400" y="55" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#8b949e">
+  <text x="400" y="55" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#526167">
     Header-Only C++/CUDA Kernel Library
   </text>
 
@@ -43,19 +43,19 @@
     <text x="20" y="25" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="600" fill="#76B900">USER API LAYER</text>
 
     <!-- C++ Headers -->
-    <rect x="30" y="35" width="200" height="35" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1"/>
-    <text x="130" y="50" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#ffffff">C++ Headers</text>
-    <text x="130" y="63" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#8b949e">#include &lt;tensorcraft/&gt;</text>
+    <rect x="30" y="35" width="200" height="35" rx="6" fill="#FFFFFF" stroke="#C9D4C7" stroke-width="1"/>
+    <text x="130" y="50" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#1A1A1A">C++ Headers</text>
+    <text x="130" y="63" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#526167">#include &lt;tensorcraft/&gt;</text>
 
     <!-- Python Bindings -->
-    <rect x="250" y="35" width="200" height="35" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1"/>
-    <text x="350" y="50" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#ffffff">Python Bindings</text>
-    <text x="350" y="63" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#8b949e">import tensorcraft_ops</text>
+    <rect x="250" y="35" width="200" height="35" rx="6" fill="#FFFFFF" stroke="#C9D4C7" stroke-width="1"/>
+    <text x="350" y="50" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#1A1A1A">Python Bindings</text>
+    <text x="350" y="63" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#526167">import tensorcraft_ops</text>
 
     <!-- Examples -->
-    <rect x="470" y="35" width="200" height="35" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1"/>
-    <text x="570" y="50" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#ffffff">Examples</text>
-    <text x="570" y="63" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#8b949e">tutorials & samples</text>
+    <rect x="470" y="35" width="200" height="35" rx="6" fill="#FFFFFF" stroke="#C9D4C7" stroke-width="1"/>
+    <text x="570" y="50" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#1A1A1A">Examples</text>
+    <text x="570" y="63" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#526167">tutorials & samples</text>
   </g>
 
   <!-- Arrow 1 -->
@@ -74,34 +74,34 @@
     <!-- Kernel boxes -->
     <g transform="translate(20, 35)">
       <!-- GEMM -->
-      <rect x="0" y="0" width="155" height="70" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1"/>
-      <text x="77" y="20" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="600" fill="#ffffff">GEMM</text>
-      <text x="77" y="35" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#8b949e">Naive → Tensor Core</text>
-      <rect x="10" y="45" width="135" height="18" rx="3" fill="#0d1117"/>
+      <rect x="0" y="0" width="155" height="70" rx="6" fill="#FFFFFF" stroke="#C9D4C7" stroke-width="1"/>
+      <text x="77" y="20" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="600" fill="#1A1A1A">GEMM</text>
+      <text x="77" y="35" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#526167">Naive → Tensor Core</text>
+      <rect x="10" y="45" width="135" height="18" rx="3" fill="transparent"/>
       <rect x="10" y="45" width="130" height="18" rx="3" fill="url(#nvidiaGreen)" opacity="0.8"/>
       <text x="77" y="57" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#000">92% cuBLAS</text>
 
       <!-- Attention -->
-      <rect x="165" y="0" width="155" height="70" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1"/>
-      <text x="242" y="20" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="600" fill="#ffffff">FlashAttention</text>
-      <text x="242" y="35" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#8b949e">Memory-Efficient</text>
-      <rect x="175" y="45" width="135" height="18" rx="3" fill="#0d1117"/>
+      <rect x="165" y="0" width="155" height="70" rx="6" fill="#FFFFFF" stroke="#C9D4C7" stroke-width="1"/>
+      <text x="242" y="20" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="600" fill="#1A1A1A">FlashAttention</text>
+      <text x="242" y="35" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#526167">Memory-Efficient</text>
+      <rect x="175" y="45" width="135" height="18" rx="3" fill="transparent"/>
       <rect x="175" y="45" width="120" height="18" rx="3" fill="url(#nvidiaGreen)" opacity="0.8"/>
       <text x="242" y="57" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#000">85% cuDNN</text>
 
       <!-- Normalization -->
-      <rect x="330" y="0" width="155" height="70" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1"/>
-      <text x="407" y="20" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="600" fill="#ffffff">Normalization</text>
-      <text x="407" y="35" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#8b949e">LayerNorm, RMSNorm</text>
-      <rect x="340" y="45" width="135" height="18" rx="3" fill="#0d1117"/>
+      <rect x="330" y="0" width="155" height="70" rx="6" fill="#FFFFFF" stroke="#C9D4C7" stroke-width="1"/>
+      <text x="407" y="20" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="600" fill="#1A1A1A">Normalization</text>
+      <text x="407" y="35" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#526167">LayerNorm, RMSNorm</text>
+      <rect x="340" y="45" width="135" height="18" rx="3" fill="transparent"/>
       <rect x="340" y="45" width="132" height="18" rx="3" fill="url(#nvidiaGreen)" opacity="0.8"/>
       <text x="407" y="57" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#000">95% cuDNN</text>
 
       <!-- Conv + Sparse -->
-      <rect x="495" y="0" width="175" height="70" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1"/>
-      <text x="582" y="20" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="600" fill="#ffffff">Conv & Sparse</text>
-      <text x="582" y="35" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#8b949e">Im2Col, SpMM, CSR</text>
-      <rect x="505" y="45" width="155" height="18" rx="3" fill="#0d1117"/>
+      <rect x="495" y="0" width="175" height="70" rx="6" fill="#FFFFFF" stroke="#C9D4C7" stroke-width="1"/>
+      <text x="582" y="20" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="600" fill="#1A1A1A">Conv & Sparse</text>
+      <text x="582" y="35" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#526167">Im2Col, SpMM, CSR</text>
+      <rect x="505" y="45" width="155" height="18" rx="3" fill="transparent"/>
       <rect x="505" y="45" width="130" height="18" rx="3" fill="url(#nvidiaGreen)" opacity="0.8"/>
       <text x="582" y="57" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#000">78-88%</text>
     </g>
@@ -115,11 +115,11 @@
     <rect x="0" y="0" width="340" height="70" rx="8" fill="url(#layerGrad)" stroke="#76B900" stroke-width="1.5"/>
     <text x="20" y="25" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="600" fill="#76B900">MEMORY LAYER</text>
 
-    <rect x="30" y="35" width="130" height="25" rx="4" fill="#161b22" stroke="#30363d" stroke-width="1"/>
-    <text x="95" y="52" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#ffffff">FloatTensor</text>
+    <rect x="30" y="35" width="130" height="25" rx="4" fill="#FFFFFF" stroke="#C9D4C7" stroke-width="1"/>
+    <text x="95" y="52" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#1A1A1A">FloatTensor</text>
 
-    <rect x="180" y="35" width="130" height="25" rx="4" fill="#161b22" stroke="#30363d" stroke-width="1"/>
-    <text x="245" y="52" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#ffffff">MemoryPool</text>
+    <rect x="180" y="35" width="130" height="25" rx="4" fill="#FFFFFF" stroke="#C9D4C7" stroke-width="1"/>
+    <text x="245" y="52" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#1A1A1A">MemoryPool</text>
   </g>
 
   <!-- Layer 4: Hardware -->
@@ -129,35 +129,35 @@
 
     <!-- GPU badges -->
     <g transform="translate(20, 35)">
-      <rect x="0" y="0" width="55" height="25" rx="4" fill="#161b22" stroke="#76B900" stroke-width="1"/>
+      <rect x="0" y="0" width="55" height="25" rx="4" fill="#FFFFFF" stroke="#76B900" stroke-width="1"/>
       <text x="27" y="16" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#76B900">SM70</text>
 
-      <rect x="60" y="0" width="55" height="25" rx="4" fill="#161b22" stroke="#76B900" stroke-width="1"/>
+      <rect x="60" y="0" width="55" height="25" rx="4" fill="#FFFFFF" stroke="#76B900" stroke-width="1"/>
       <text x="87" y="16" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#76B900">SM80</text>
 
-      <rect x="120" y="0" width="55" height="25" rx="4" fill="#161b22" stroke="#76B900" stroke-width="1"/>
+      <rect x="120" y="0" width="55" height="25" rx="4" fill="#FFFFFF" stroke="#76B900" stroke-width="1"/>
       <text x="147" y="16" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#76B900">SM90</text>
 
-      <rect x="180" y="0" width="55" height="25" rx="4" fill="#161b22" stroke="#76B900" stroke-width="1"/>
+      <rect x="180" y="0" width="55" height="25" rx="4" fill="#FFFFFF" stroke="#76B900" stroke-width="1"/>
       <text x="207" y="16" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#76B900">SM100</text>
 
-      <rect x="240" y="0" width="60" height="25" rx="4" fill="#161b22" stroke="#30363d" stroke-width="1"/>
-      <text x="270" y="16" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#8b949e">CUDA 11-13</text>
+      <rect x="240" y="0" width="60" height="25" rx="4" fill="#FFFFFF" stroke="#C9D4C7" stroke-width="1"/>
+      <text x="270" y="16" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#526167">CUDA 11-13</text>
     </g>
   </g>
 
   <!-- Connection lines between Memory and Hardware -->
-  <path d="M 390 365 L 410 365" stroke="#30363d" stroke-width="1" stroke-dasharray="4,2"/>
+  <path d="M 390 365 L 410 365" stroke="#C9D4C7" stroke-width="1" stroke-dasharray="4,2"/>
 
   <!-- Legend -->
   <g transform="translate(50, 420)">
-    <text x="0" y="0" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#8b949e">Legend:</text>
+    <text x="0" y="0" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#526167">Legend:</text>
     <rect x="60" y="-8" width="12" height="12" rx="2" fill="url(#nvidiaGreen)"/>
-    <text x="78" y="0" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#8b949e">Performance vs NVIDIA libraries</text>
+    <text x="78" y="0" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#526167">Performance vs NVIDIA libraries</text>
   </g>
 
   <!-- Footer -->
-  <text x="400" y="480" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#6e7681">
+  <text x="400" y="480" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#526167">
     OpenSpec-Driven • Bilingual Docs • Header-Only • Zero-Build Integration
   </text>
 </svg>

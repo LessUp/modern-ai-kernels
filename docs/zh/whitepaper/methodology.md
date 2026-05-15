@@ -38,36 +38,23 @@ flowchart TB
 
 ---
 
-## 规范结构
+## OpenSpec 制品模型
 
-`openspec/specs/` 中的每个规范遵循此模板：
+TensorCraft-HPC 把 OpenSpec 分成两层：
 
-```yaml
-# openspec/specs/kernel-name.md
+1. `openspec/specs/` 中的**已接受基线规范**，描述仓库当前成立的契约和标准。
+2. `openspec/changes/<name>/` 中的**活动 change**，描述为什么要改、改什么、怎么实施。
 
-## Summary
-组件的简要描述。
+一个真正用于实现的 change 一般会包含：
 
-## Requirements
-- 功能需求（必须做什么）
-- 非功能需求（性能、安全性）
+| 文件 | 作用 |
+|------|------|
+| `proposal.md` | 说明为什么需要这个 change，以及影响哪些 capability |
+| `design.md` | 记录关键设计决策、取舍和实现约束 |
+| `tasks.md` | 给出执行清单与验证顺序 |
+| `specs/<domain>/spec.md` | 为受影响的 accepted spec 提供 delta requirement |
 
-## Contract
-### Input
-- 参数类型和约束
-
-### Output
-- 返回类型和保证
-
-### Invariants
-- 始终成立的条件
-
-## Acceptance Criteria
-- 验证合规性的测试用例
-
-## References
-- 论文、文档、相关规范
-```
+这点对本次展示站重构尤其重要：Pages、品牌、公开 workflow 这类结构性变化，也必须能在 OpenSpec 中被追踪，而不是只留下零散改动。
 
 ---
 
@@ -203,13 +190,13 @@ repos:
 ```mermaid
 flowchart LR
     PR["PR 提交"] --> FORMAT["格式检查"]
-    FORMAT --> LINT["静态检查"]
-    LINT --> BUILD["构建"]
-    BUILD --> TEST["单元测试"]
-    TEST --> BENCH["基准测试"]
-    BENCH --> DOCS["文档构建"]
-    DOCS --> APPROVE["准备审核"]
+    FORMAT --> SMOKE["CPU Smoke Build"]
+    SMOKE --> WHEEL["Python Wheel Build"]
+    WHEEL --> DOCS["Docs / Pages Build"]
+    DOCS --> REVIEW["准备审核"]
 ```
+
+本仓库的托管 CI 有意不执行 GPU benchmark。所有依赖 CUDA 设备的 benchmark 与性能判断，应该在本地 GPU 机器上完成。
 
 ---
 
@@ -284,8 +271,19 @@ void gemm(const T* A, const T* B, T* C,
 
 ---
 
+## 展示面一致性纪律
+
+由于这个仓库也被当作技术作品来展示，方法论不只约束代码实现，还约束公开表面的表达：
+
+- `README.md`、`README.zh-CN.md` 和 GitHub Pages 必须讲述同一个项目身份
+- benchmark 数字必须和方法说明、引用来源一起出现
+- 结构性文档变化要通过 OpenSpec 表达，而不是变成无来源的 copy 改动
+- 示例命令、构建预设、页面路径必须与仓库真实状态保持一致
+
+这不是“额外包装”，而是项目工程质量的一部分。
+
 ## 获取帮助
 
-- **问题**：[GitHub Issues](https://github.com/LessUp/modern-ai-kernels/issues)
-- **讨论**：[GitHub Discussions](https://github.com/LessUp/modern-ai-kernels/discussions)
+- **问题**：[GitHub Issues](https://github.com/AICL-Lab/modern-ai-kernels/issues)
+- **讨论**：[GitHub Discussions](https://github.com/AICL-Lab/modern-ai-kernels/discussions)
 - **文档**：[在线文档](https://aicl-lab.github.io/modern-ai-kernels/)

@@ -9,16 +9,16 @@ How to measure and analyze kernel performance in TensorCraft-HPC.
 ```bash
 # Build with benchmarks enabled
 cmake --preset release
-cmake --build --preset release
+cmake --build --preset release --parallel 2
 
 # Run GEMM benchmark
-./build/benchmarks/gemm_benchmark
+./build/release/benchmarks/gemm_benchmark
 
 # Run attention benchmark
-./build/benchmarks/attention_benchmark
+./build/release/benchmarks/attention_benchmark
 
-# Run normalization benchmark
-./build/benchmarks/norm_benchmark
+# Run convolution benchmark
+./build/release/benchmarks/conv_benchmark
 ```
 
 ### Benchmark Output
@@ -43,7 +43,7 @@ For detailed kernel analysis:
 
 ```bash
 # Profile a specific kernel
-ncu --set full -o profile_report ./build/benchmarks/gemm_benchmark
+ncu --set full -o profile_report ./build/release/benchmarks/gemm_benchmark
 
 # View report
 ncu-ui profile_report.ncu-rep
@@ -61,7 +61,7 @@ For timeline analysis:
 
 ```bash
 # System-wide profiling
-nsys profile -o timeline ./build/benchmarks/gemm_benchmark
+nsys profile -o timeline ./build/release/benchmarks/gemm_benchmark
 
 # View timeline
 nsys-ui timeline.qdrep

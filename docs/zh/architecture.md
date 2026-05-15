@@ -88,7 +88,7 @@ modern-ai-kernels/
 │       ├── fusion.hpp         # 融合内核
 │       ├── elementwise.hpp    # ReLU, GeLU 等
 │       ├── memory_ops.hpp     # 复制, 转置
-│       └── quantization.hpp   # INT8/FP8 量化
+│       └── fusion.hpp         # 融合算子与量化辅助能力
 ├── src/python_ops/            # Python 绑定 (pybind11)
 ├── tests/                     # 单元测试 (GoogleTest)
 ├── benchmarks/                # 性能基准
@@ -119,11 +119,11 @@ flowchart LR
     C -->|"使用 Tensor Core<br/>(WMMA)"| D
     D -->|"精细调整<br/>参数"| E
 
-    style A fill:#333,stroke:#76B900
-    style B fill:#333,stroke:#76B900
-    style C fill:#333,stroke:#76B900
-    style D fill:#76B900,stroke:#5a9100,color:#000
-    style E fill:#76B900,stroke:#5a9100,color:#000
+    style A fill:#F4F7F1,stroke:#2E7D32,color:#1A1A1A
+    style B fill:#F4F7F1,stroke:#2E7D32,color:#1A1A1A
+    style C fill:#F4F7F1,stroke:#2E7D32,color:#1A1A1A
+    style D fill:#76B900,stroke:#5A9100,color:#000
+    style E fill:#76B900,stroke:#5A9100,color:#000
 ```
 
 ### 性能特征
@@ -259,5 +259,7 @@ ctest --preset dev --output-on-failure
 ctest --preset dev -R gemm
 
 # 基准测试
-./build/benchmarks/gemm_benchmark
+cmake --preset release
+cmake --build --preset release --parallel 2
+./build/release/benchmarks/gemm_benchmark
 ```

@@ -4,10 +4,10 @@
 
 **用现代 C++ 与 CUDA 揭开高性能 AI 内核的神秘面纱**
 
-[English](README.md) | [简体中文](README.zh-CN.md) | [在线文档](https://lessup.github.io/modern-ai-kernels/)
+[English](README.md) | [简体中文](README.zh-CN.md) | [在线文档](https://aicl-lab.github.io/modern-ai-kernels/)
 
-[![CI](https://github.com/LessUp/modern-ai-kernels/actions/workflows/ci.yml/badge.svg)](https://github.com/LessUp/modern-ai-kernels/actions/workflows/ci.yml)
-[![Docs](https://github.com/LessUp/modern-ai-kernels/actions/workflows/pages.yml/badge.svg)](https://lessup.github.io/modern-ai-kernels/)
+[![CI](https://github.com/AICL-Lab/modern-ai-kernels/actions/workflows/ci.yml/badge.svg)](https://github.com/AICL-Lab/modern-ai-kernels/actions/workflows/ci.yml)
+[![Docs](https://github.com/AICL-Lab/modern-ai-kernels/actions/workflows/pages.yml/badge.svg)](https://aicl-lab.github.io/modern-ai-kernels/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![CUDA](https://img.shields.io/badge/CUDA-11.0%2B-76B900?logo=nvidia&logoColor=white)
 ![C++](https://img.shields.io/badge/C%2B%2B-17%2B-00599C?logo=c%2B%2B&logoColor=white)
@@ -15,7 +15,8 @@
 </div>
 
 TensorCraft-HPC 是一个**纯头文件 C++/CUDA AI 内核库**，用于学习、验证与封装现代 AI
-算子。仓库强调实现可读性、渐进式优化路径，以及适合收尾维护的轻量工程化表面。
+算子，同时也是一个面向面试展示、技术评审与学习导读的**技术白皮书 / 架构展示站**。仓库
+强调实现可读性、渐进式优化路径，以及 benchmark、引用资料、设计取舍这些“证据型内容”。
 
 **当前项目状态：** 仓库正在朝稳定收尾状态收敛，重点是代码可信、文档清晰、自动化可靠，
 而不是继续无边界扩张。
@@ -59,11 +60,12 @@ ctest --preset dev --output-on-failure
 
 ## 文档入口
 
-- **文档中心**: <https://lessup.github.io/modern-ai-kernels/>
-- **入门指南**: `docs/zh/getting-started/`
-- **架构与优化指南**: `docs/zh/guides/`
-- **API 文档**: `docs/zh/api/`
-- **英文文档**: `docs/en/`
+- **展示首页**: <https://aicl-lab.github.io/modern-ai-kernels/>
+- **技术白皮书**: <https://aicl-lab.github.io/modern-ai-kernels/zh/whitepaper/>
+- **架构概览**: <https://aicl-lab.github.io/modern-ai-kernels/zh/architecture>
+- **性能证据**: <https://aicl-lab.github.io/modern-ai-kernels/zh/benchmarks/>
+- **Kernel Atlas / API**: <https://aicl-lab.github.io/modern-ai-kernels/zh/api/gemm>
+- **英文文档**: <https://aicl-lab.github.io/modern-ai-kernels/en/>
 
 ## OpenSpec 开发流程
 

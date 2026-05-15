@@ -35,6 +35,24 @@
 
 ---
 
+## 应该如何理解这些数字
+
+这些 benchmark 表格主要回答两个问题：
+
+1. **实现是否足够认真？** 与 NVIDIA 库的相对性能可以用来判断内核结构是否合理。
+2. **项目是否仍然保持教育价值？** TensorCraft-HPC 不追求把所有复杂度都藏进模板元编程和自动调优里，
+   一部分性能空间会被有意地让给可读性和可解释性。
+
+因此，真正重要的不是某一个百分比本身，而是：优化路径是否连贯、实现是否讲得清楚、证据是否表达诚实。
+
+## Benchmark 使用注意
+
+- 这些结果更适合被视为**代表性测量**，而不是在所有 GPU 和工具链上的统一保证。
+- GitHub 托管 CI 没有 CUDA 设备，所以 benchmark 复现应在本地 GPU 机器上完成。
+- Pages 和 README 中的性能数字必须和方法说明、限制条件一起出现，而不是孤立地作为宣传语。
+
+---
+
 ## GEMM 性能
 
 ### FP16 Tensor Core (A100)
@@ -185,30 +203,35 @@ float sum = warp_reduce_sum(val);
 
 ```bash
 # 构建基准测试
-cmake --preset dev
-cmake --build --preset dev
+cmake --preset release
+cmake --build --preset release --parallel 2
 
 # 运行 GEMM 基准测试
-./build/benchmarks/gemm_benchmark --benchmark_filter="FP16"
+./build/release/benchmarks/gemm_benchmark --benchmark_filter="FP16"
 
 # 运行所有基准测试
-ctest --preset dev -R benchmark
+ctest --preset release -R benchmark
 ```
 
 ---
 
-## 性能回归
+## Benchmark 回归策略
 
-TensorCraft-HPC 包含自动化性能回归测试：
+TensorCraft-HPC 目前把性能回归检查视为**本地 GPU 机器上的工程纪律**，而不是托管 CI 的强保证。
 
-```yaml
-# .github/workflows/benchmark.yml
-- name: Run benchmarks
-  run: |
-    ./build/benchmarks/gemm_benchmark --benchmark_format=json > results.json
-    python scripts/check_regression.py results.json baseline.json
-```
+这样做是有意的：
 
-阈值：
-- **警告**：>5% 回归
-- **失败**：>10% 回归
+- 仓库会自动验证 CPU smoke build、打包和 Pages
+- benchmark 二进制需要带 CUDA 的本地机器
+- 性能判断应该结合 profiler 结果和方法说明，而不是只依赖一个托管 workflow 的绿灯
+
+如果要做严肃的回归检查，请固定机器、驱动、CUDA 版本和参考库版本，再进行对比。
+
+## 什么样的结果更有说服力
+
+| 信号 | 为什么重要 |
+|------|------------|
+| 相邻输入规模下相对性能稳定 | 说明内核结构是连贯的，而不是只对一个点做了过拟合 |
+| 能解释性能差距来自哪里 | 体现工程判断，而不是盲目追求“数字好看” |
+| 对不支持场景有明确说明 | 比夸大 headline 数字更能建立信任 |
+| 代码、文档、命令路径保持一致 | 更适合面试展示、代码审查和社区评估 |
