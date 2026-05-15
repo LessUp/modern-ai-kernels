@@ -15,41 +15,49 @@ aligned with that direction.
 ## 2. Implementation
 
 - [x] 2.1 Create the `elevate-project-showcase` OpenSpec change set
-- [ ] 2.2 Redesign docs information architecture and homepage narrative
-- [ ] 2.3 Rebuild the VitePress theme and showcase components
-- [ ] 2.4 Repair public branding, links, metadata, and deployment-path consistency
-- [ ] 2.5 Replace light/dark-incompatible diagrams with theme-safe assets or components
-- [ ] 2.6 Expand whitepaper, benchmark-evidence, and references content
+- [x] 2.2 Redesign docs information architecture and homepage narrative
+- [x] 2.3 Rebuild the VitePress theme and showcase components
+- [x] 2.4 Repair public branding, links, metadata, and deployment-path consistency
+- [x] 2.5 Replace light/dark-incompatible diagrams with theme-safe assets or components
+- [x] 2.6 Expand whitepaper, benchmark-evidence, and references content
 
 ## 3. Testing
 
-- [ ] 3.1 Run `npm ci` in `docs/` if needed for a clean docs toolchain
-- [ ] 3.2 Run `npm run build` in `docs/`
-- [ ] 3.3 Run `cmake --preset cpu-smoke`
-- [ ] 3.4 Run `cmake --build --preset cpu-smoke --parallel 2`
-- [ ] 3.5 Run `python3 -m build --wheel`
+- [x] 3.1 Run `npm ci` in `docs/` if needed for a clean docs toolchain
+- [x] 3.2 Run `npm run build` in `docs/`
+- [x] 3.3 Run `cmake --preset cpu-smoke`
+- [x] 3.4 Run `cmake --build --preset cpu-smoke --parallel 2`
+- [x] 3.5 Run `python3 -m build --wheel`
 
 ## 4. Documentation
 
-- [ ] 4.1 Align `README.md` with the new Pages positioning
-- [ ] 4.2 Align `README.zh-CN.md` with the new bilingual showcase surface
-- [ ] 4.3 Update changelog / release-facing copy if the public positioning changes materially
+- [x] 4.1 Align `README.md` with the new Pages positioning
+- [x] 4.2 Align `README.zh-CN.md` with the new bilingual showcase surface
+- [x] 4.3 Update changelog / release-facing copy if the public positioning changes materially
 
 ## 5. Finalization
 
-- [ ] 5.1 Review repository-wide public links and branding one final time
-- [ ] 5.2 Use `/review` before merge because this is a structural and workflow-facing change
+- [x] 5.1 Review repository-wide public links and branding one final time
+- [x] 5.2 Run a merge-blocking review before integration because this is a structural and workflow-facing change
 - [ ] 5.3 Archive the completed change after accepted specs are merged
 
 ---
+
+## Validation Notes
+
+- `cd docs && npm ci`
+- `cd docs && npm run build`
+- `cmake --preset cpu-smoke`
+- `cmake --build --preset cpu-smoke --parallel 2`
+- `python3 -m build --wheel`
 
 ## Progress
 
 | Section | Total | Completed | Status |
 |---------|-------|-----------|--------|
 | Preparation | 3 | 3 | ✅ |
-| Implementation | 6 | 1 | ⏳ |
-| Testing | 5 | 0 | ⏳ |
-| Documentation | 3 | 0 | ⏳ |
-| Finalization | 3 | 0 | ⏳ |
-| **Total** | **20** | **4** | ⏳ |
+| Implementation | 6 | 6 | ✅ |
+| Testing | 5 | 5 | ✅ |
+| Documentation | 3 | 3 | ✅ |
+| Finalization | 3 | 2 | ⏳ |
+| **Total** | **20** | **19** | ⏳ |

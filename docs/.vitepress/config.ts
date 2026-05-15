@@ -19,7 +19,7 @@ export default withMermaid(defineConfig({
 
   // Head tags for fonts and meta
   head: [
-    ['link', { rel: 'icon', href: '/images/favicon.svg' }],
+    ['link', { rel: 'icon', href: `${base}images/favicon.svg` }],
     ['meta', { name: 'theme-color', content: '#2E7D32' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:title', content: 'TensorCraft-HPC' }],

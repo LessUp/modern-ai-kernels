@@ -56,7 +56,7 @@ features:
     <h3>Read the whitepaper</h3>
     <p>Understand the project motivation, architecture, performance posture, and methodology before diving into the code.</p>
     <div class="showcase-links">
-      <a href="/en/whitepaper/">Open whitepaper</a>
+      <a href="./whitepaper/">Open whitepaper</a>
     </div>
   </div>
   <div class="showcase-card">
@@ -64,7 +64,7 @@ features:
     <h3>Inspect the architecture</h3>
     <p>See how the library layers kernel launchers, memory abstractions, compile-time feature detection, and hardware support.</p>
     <div class="showcase-links">
-      <a href="/en/architecture">View architecture overview</a>
+      <a href="./architecture">View architecture overview</a>
     </div>
   </div>
   <div class="showcase-card">
@@ -72,8 +72,8 @@ features:
     <h3>Check the evidence</h3>
     <p>Review benchmark summaries, methodology notes, and source materials instead of relying on ungrounded claims.</p>
     <div class="showcase-links">
-      <a href="/en/benchmarks/">Benchmarks</a>
-      <a href="/en/references/papers">Papers & citations</a>
+      <a href="./benchmarks/">Benchmarks</a>
+      <a href="./references/papers">Papers & citations</a>
     </div>
   </div>
   <div class="showcase-card">
@@ -81,7 +81,7 @@ features:
     <h3>Browse the kernel atlas</h3>
     <p>Use the operator reference to trace GEMM, attention, normalization, convolution, sparse, and quantization surfaces.</p>
     <div class="showcase-links">
-      <a href="/en/api/gemm">Open kernel atlas</a>
+      <a href="./api/gemm">Open kernel atlas</a>
     </div>
   </div>
 </div>

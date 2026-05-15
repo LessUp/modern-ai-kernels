@@ -57,4 +57,4 @@ the wider GitHub community.
 - [x] Specs reviewed and understood
 - [x] Implementation approach discussed
 - [x] Tests planned
-- [ ] Documentation updated
+- [x] Documentation updated

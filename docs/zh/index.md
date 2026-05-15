@@ -56,7 +56,7 @@ features:
     <h3>先读白皮书</h3>
     <p>先理解项目动机、架构思路、性能立场和方法论，再进入源码与 API 细节。</p>
     <div class="showcase-links">
-      <a href="/zh/whitepaper/">打开白皮书</a>
+      <a href="./whitepaper/">打开白皮书</a>
     </div>
   </div>
   <div class="showcase-card">
@@ -64,7 +64,7 @@ features:
     <h3>再看架构</h3>
     <p>了解内核层、内存抽象、编译时能力检测和硬件支持是如何被组织成一个可讲清楚的系统。</p>
     <div class="showcase-links">
-      <a href="/zh/architecture">查看架构概览</a>
+      <a href="./architecture">查看架构概览</a>
     </div>
   </div>
   <div class="showcase-card">
@@ -72,8 +72,8 @@ features:
     <h3>检查证据链</h3>
     <p>不要只看宣传语，直接查看 benchmark 汇总、方法说明和论文 / 项目引用。</p>
     <div class="showcase-links">
-      <a href="/zh/benchmarks/">性能基准</a>
-      <a href="/zh/references/papers">论文引用</a>
+      <a href="./benchmarks/">性能基准</a>
+      <a href="./references/papers">论文引用</a>
     </div>
   </div>
   <div class="showcase-card">
@@ -81,7 +81,7 @@ features:
     <h3>浏览 Kernel Atlas</h3>
     <p>从 operator 视角查看 GEMM、Attention、Normalization、Convolution、Sparse 和 Quantization 的接口与说明。</p>
     <div class="showcase-links">
-      <a href="/zh/api/gemm">打开 Kernel Atlas</a>
+      <a href="./api/gemm">打开 Kernel Atlas</a>
     </div>
   </div>
 </div>

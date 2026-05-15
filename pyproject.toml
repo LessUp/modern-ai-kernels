@@ -32,11 +32,11 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/LessUp/modern-ai-kernels"
-Documentation = "https://lessup.github.io/modern-ai-kernels/"
-Repository = "https://github.com/LessUp/modern-ai-kernels.git"
-Issues = "https://github.com/LessUp/modern-ai-kernels/issues"
-Changelog = "https://github.com/LessUp/modern-ai-kernels/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/AICL-Lab/modern-ai-kernels"
+Documentation = "https://aicl-lab.github.io/modern-ai-kernels/"
+Repository = "https://github.com/AICL-Lab/modern-ai-kernels.git"
+Issues = "https://github.com/AICL-Lab/modern-ai-kernels/issues"
+Changelog = "https://github.com/AICL-Lab/modern-ai-kernels/blob/master/CHANGELOG.md"
 
 [project.optional-dependencies]
 dev = [
