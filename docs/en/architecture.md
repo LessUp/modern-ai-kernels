@@ -88,7 +88,7 @@ modern-ai-kernels/
 │       ├── fusion.hpp         # Fused kernels
 │       ├── elementwise.hpp    # ReLU, GeLU, etc.
 │       ├── memory_ops.hpp     # Copy, transpose
-│       └── quantization.hpp   # INT8/FP8 quantization
+│       └── fusion.hpp         # Fused operators and quantization helpers
 ├── src/python_ops/            # Python bindings (pybind11)
 ├── tests/                     # Unit tests (GoogleTest)
 ├── benchmarks/                # Performance benchmarks
@@ -119,11 +119,11 @@ flowchart LR
     C -->|"Use Tensor Cores<br/>(WMMA)"| D
     D -->|"Fine-tune<br/>parameters"| E
 
-    style A fill:#333,stroke:#76B900
-    style B fill:#333,stroke:#76B900
-    style C fill:#333,stroke:#76B900
-    style D fill:#76B900,stroke:#5a9100,color:#000
-    style E fill:#76B900,stroke:#5a9100,color:#000
+    style A fill:#F4F7F1,stroke:#2E7D32,color:#1A1A1A
+    style B fill:#F4F7F1,stroke:#2E7D32,color:#1A1A1A
+    style C fill:#F4F7F1,stroke:#2E7D32,color:#1A1A1A
+    style D fill:#76B900,stroke:#5A9100,color:#000
+    style E fill:#76B900,stroke:#5A9100,color:#000
 ```
 
 ### Performance Characteristics
@@ -259,5 +259,7 @@ ctest --preset dev --output-on-failure
 ctest --preset dev -R gemm
 
 # Benchmarks
-./build/benchmarks/gemm_benchmark
+cmake --preset release
+cmake --build --preset release --parallel 2
+./build/release/benchmarks/gemm_benchmark
 ```

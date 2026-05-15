@@ -12,7 +12,7 @@ nvcc --version
 ## 2. 构建库 {#build}
 
 ```bash
-git clone https://github.com/LessUp/modern-ai-kernels.git
+git clone https://github.com/AICL-Lab/modern-ai-kernels.git
 cd modern-ai-kernels
 
 cmake --preset cpu-smoke

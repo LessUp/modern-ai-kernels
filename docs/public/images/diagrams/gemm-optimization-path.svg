@@ -18,18 +18,18 @@
   </defs>
 
   <!-- Background -->
-  <rect width="900" height="320" fill="#0d1117"/>
+  <rect width="900" height="320" fill="transparent"/>
 
   <!-- Title -->
-  <text x="450" y="35" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="20" font-weight="700" fill="#ffffff">
+  <text x="450" y="35" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="20" font-weight="700" fill="#1A1A1A">
     GEMM Optimization Path
   </text>
-  <text x="450" y="55" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#8b949e">
+  <text x="450" y="55" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#526167">
     Progressive optimization from naive to Tensor Core implementation
   </text>
 
   <!-- Progress bar background -->
-  <rect x="50" y="80" width="800" height="8" rx="4" fill="#1a1f26"/>
+  <rect x="50" y="80" width="800" height="8" rx="4" fill="#F4F7F1"/>
 
   <!-- Progress bar fill -->
   <rect x="50" y="80" width="760" height="8" rx="4" fill="url(#progressGrad)"/>
@@ -37,15 +37,15 @@
   <!-- Step markers -->
   <g transform="translate(50, 80)">
     <!-- Step 1: Naive -->
-    <circle cx="0" cy="4" r="12" fill="#0d1117" stroke="#76B900" stroke-width="2"/>
+    <circle cx="0" cy="4" r="12" fill="transparent" stroke="#76B900" stroke-width="2"/>
     <text x="0" y="8" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="600" fill="#76B900">1</text>
 
     <!-- Step 2: Tiled -->
-    <circle cx="200" cy="4" r="12" fill="#0d1117" stroke="#76B900" stroke-width="2"/>
+    <circle cx="200" cy="4" r="12" fill="transparent" stroke="#76B900" stroke-width="2"/>
     <text x="200" y="8" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="600" fill="#76B900">2</text>
 
     <!-- Step 3: Double Buffer -->
-    <circle cx="500" cy="4" r="12" fill="#0d1117" stroke="#76B900" stroke-width="2"/>
+    <circle cx="500" cy="4" r="12" fill="transparent" stroke="#76B900" stroke-width="2"/>
     <text x="500" y="8" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="600" fill="#76B900">3</text>
 
     <!-- Step 4: Tensor Core -->
@@ -57,61 +57,61 @@
   <g transform="translate(50, 120)">
     <!-- Step 1: Naive -->
     <g filter="url(#shadow)">
-      <rect x="0" y="0" width="180" height="160" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1"/>
-      <rect x="0" y="0" width="180" height="40" rx="8" fill="#1a1f26"/>
-      <rect x="0" y="32" width="180" height="8" fill="#161b22"/>
-      <text x="90" y="25" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="600" fill="#ffffff">Naive</text>
+      <rect x="0" y="0" width="180" height="160" rx="8" fill="#FFFFFF" stroke="#C9D4C7" stroke-width="1"/>
+      <rect x="0" y="0" width="180" height="40" rx="8" fill="#F4F7F1"/>
+      <rect x="0" y="32" width="180" height="8" fill="#FFFFFF"/>
+      <text x="90" y="25" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="600" fill="#1A1A1A">Naive</text>
 
-      <text x="15" y="60" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#8b949e">• Direct implementation</text>
-      <text x="15" y="78" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#8b949e">• O(M×N×K) complexity</text>
-      <text x="15" y="96" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#8b949e">• No memory optimization</text>
+      <text x="15" y="60" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#526167">• Direct implementation</text>
+      <text x="15" y="78" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#526167">• O(M×N×K) complexity</text>
+      <text x="15" y="96" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#526167">• No memory optimization</text>
 
-      <rect x="15" y="115" width="150" height="30" rx="4" fill="#0d1117"/>
-      <text x="90" y="134" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#6e7681">~5% cuBLAS</text>
+      <rect x="15" y="115" width="150" height="30" rx="4" fill="transparent"/>
+      <text x="90" y="134" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#526167">~5% cuBLAS</text>
     </g>
 
     <!-- Step 2: Tiled -->
     <g filter="url(#shadow)">
-      <rect x="200" y="0" width="180" height="160" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1"/>
-      <rect x="200" y="0" width="180" height="40" rx="8" fill="#1a1f26"/>
-      <rect x="200" y="32" width="180" height="8" fill="#161b22"/>
-      <text x="290" y="25" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="600" fill="#ffffff">Tiled</text>
+      <rect x="200" y="0" width="180" height="160" rx="8" fill="#FFFFFF" stroke="#C9D4C7" stroke-width="1"/>
+      <rect x="200" y="0" width="180" height="40" rx="8" fill="#F4F7F1"/>
+      <rect x="200" y="32" width="180" height="8" fill="#FFFFFF"/>
+      <text x="290" y="25" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="600" fill="#1A1A1A">Tiled</text>
 
-      <text x="215" y="60" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#8b949e">• Shared memory tiling</text>
-      <text x="215" y="78" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#8b949e">• Block-level parallelism</text>
-      <text x="215" y="96" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#8b949e">• Reduced global memory</text>
+      <text x="215" y="60" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#526167">• Shared memory tiling</text>
+      <text x="215" y="78" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#526167">• Block-level parallelism</text>
+      <text x="215" y="96" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#526167">• Reduced global memory</text>
 
-      <rect x="215" y="115" width="150" height="30" rx="4" fill="#0d1117"/>
+      <rect x="215" y="115" width="150" height="30" rx="4" fill="transparent"/>
       <rect x="215" y="115" width="75" height="30" rx="4" fill="#5A9100" opacity="0.6"/>
-      <text x="290" y="134" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#ffffff">~45% cuBLAS</text>
+      <text x="290" y="134" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#1A1A1A">~45% cuBLAS</text>
     </g>
 
     <!-- Step 3: Double Buffer -->
     <g filter="url(#shadow)">
-      <rect x="400" y="0" width="180" height="160" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1"/>
-      <rect x="400" y="0" width="180" height="40" rx="8" fill="#1a1f26"/>
-      <rect x="400" y="32" width="180" height="8" fill="#161b22"/>
-      <text x="490" y="25" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="600" fill="#ffffff">Double Buffer</text>
+      <rect x="400" y="0" width="180" height="160" rx="8" fill="#FFFFFF" stroke="#C9D4C7" stroke-width="1"/>
+      <rect x="400" y="0" width="180" height="40" rx="8" fill="#F4F7F1"/>
+      <rect x="400" y="32" width="180" height="8" fill="#FFFFFF"/>
+      <text x="490" y="25" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="600" fill="#1A1A1A">Double Buffer</text>
 
-      <text x="415" y="60" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#8b949e">• Pipeline memory access</text>
-      <text x="415" y="78" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#8b949e">• Hide memory latency</text>
-      <text x="415" y="96" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#8b949e">• Warp-level sync</text>
+      <text x="415" y="60" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#526167">• Pipeline memory access</text>
+      <text x="415" y="78" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#526167">• Hide memory latency</text>
+      <text x="415" y="96" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#526167">• Warp-level sync</text>
 
-      <rect x="415" y="115" width="150" height="30" rx="4" fill="#0d1117"/>
+      <rect x="415" y="115" width="150" height="30" rx="4" fill="transparent"/>
       <rect x="415" y="115" width="120" height="30" rx="4" fill="#76B900" opacity="0.7"/>
       <text x="490" y="134" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#000">~75% cuBLAS</text>
     </g>
 
     <!-- Step 4: Tensor Core -->
     <g filter="url(#shadow)">
-      <rect x="600" y="0" width="180" height="160" rx="8" fill="#161b22" stroke="#76B900" stroke-width="2"/>
-      <rect x="600" y="0" width="180" height="40" rx="8" fill="#1a1f26"/>
-      <rect x="600" y="32" width="180" height="8" fill="#161b22"/>
+      <rect x="600" y="0" width="180" height="160" rx="8" fill="#FFFFFF" stroke="#76B900" stroke-width="2"/>
+      <rect x="600" y="0" width="180" height="40" rx="8" fill="#F4F7F1"/>
+      <rect x="600" y="32" width="180" height="8" fill="#FFFFFF"/>
       <text x="690" y="25" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="600" fill="#76B900">Tensor Core</text>
 
-      <text x="615" y="60" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#8b949e">• WMMA instructions</text>
-      <text x="615" y="78" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#8b949e">• Mixed precision (FP16)</text>
-      <text x="615" y="96" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#8b949e">• Maximum throughput</text>
+      <text x="615" y="60" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#526167">• WMMA instructions</text>
+      <text x="615" y="78" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#526167">• Mixed precision (FP16)</text>
+      <text x="615" y="96" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#526167">• Maximum throughput</text>
 
       <rect x="615" y="115" width="150" height="30" rx="4" fill="#76B900"/>
       <text x="690" y="134" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" font-weight="600" fill="#000">~92% cuBLAS</text>
@@ -124,7 +124,7 @@
   <path d="M 635 200 L 645 200" stroke="#76B900" stroke-width="2" marker-end="url(#arrowhead)"/>
 
   <!-- Footer -->
-  <text x="450" y="305" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#6e7681">
+  <text x="450" y="305" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#526167">
     Each step builds upon the previous, demonstrating optimization techniques progressively
   </text>
 </svg>

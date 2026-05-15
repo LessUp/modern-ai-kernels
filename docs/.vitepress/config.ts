@@ -9,7 +9,7 @@ const base = process.env.VITEPRESS_BASE || '/modern-ai-kernels/'
 export default withMermaid(defineConfig({
   base,
   title: 'TensorCraft-HPC',
-  description: 'High-Performance AI Kernels Technical Whitepaper',
+  description: 'Technical whitepaper and architecture showcase for high-performance AI kernels',
 
   // Clean URLs without .html
   cleanUrls: true,
@@ -42,23 +42,24 @@ export default withMermaid(defineConfig({
     ]
   },
 
-  // Mermaid configuration - professional dark theme
+  // Mermaid configuration - neutral palette that stays readable in both themes
   mermaid: {
-    theme: 'dark',
+    theme: 'base',
     themeVariables: {
-      primaryColor: '#2E7D32',
-      primaryTextColor: '#ffffff',
-      primaryBorderColor: '#1B5E20',
+      primaryColor: '#EAF4E0',
+      primaryTextColor: '#1A1A1A',
+      primaryBorderColor: '#2E7D32',
       lineColor: '#2E7D32',
-      secondaryColor: '#1a1a1a',
-      tertiaryColor: '#2a2a2a',
-      background: '#0d1117',
-      mainBkg: '#161b22',
+      secondaryColor: '#F4F7F1',
+      tertiaryColor: '#FFFFFF',
+      background: '#FFFFFF',
+      mainBkg: '#F8FBF6',
       nodeBorder: '#2E7D32',
-      clusterBkg: '#161b22',
-      clusterBorder: '#30363d',
-      titleColor: '#ffffff',
-      edgeLabelBackground: '#21262d'
+      clusterBkg: '#F8FBF6',
+      clusterBorder: '#D0E0CF',
+      titleColor: '#1A1A1A',
+      edgeLabelBackground: '#F8FBF6',
+      textColor: '#1A1A1A'
     }
   },
 
@@ -75,18 +76,18 @@ export default withMermaid(defineConfig({
 
     // Social links
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/LessUp/modern-ai-kernels' }
+      { icon: 'github', link: 'https://github.com/AICL-Lab/modern-ai-kernels' }
     ],
 
     // Edit link
     editLink: {
-      pattern: 'https://github.com/LessUp/modern-ai-kernels/edit/main/docs/:path',
+      pattern: 'https://github.com/AICL-Lab/modern-ai-kernels/edit/master/docs/:path',
       text: 'Edit this page on GitHub'
     },
 
     // Footer
     footer: {
-      message: 'Released under the Apache 2.0 License.',
+      message: 'Released under the MIT License.',
       copyright: 'Copyright © 2024-present TensorCraft-HPC Contributors'
     },
 
@@ -156,7 +157,7 @@ export default withMermaid(defineConfig({
           }
         },
         editLink: {
-          pattern: 'https://github.com/LessUp/modern-ai-kernels/edit/main/docs/:path',
+          pattern: 'https://github.com/AICL-Lab/modern-ai-kernels/edit/master/docs/:path',
           text: '在 GitHub 上编辑此页'
         },
         outline: {
@@ -177,21 +178,32 @@ function nav() {
       activeMatch: '/en/whitepaper/'
     },
     {
-      text: 'API Reference',
+      text: 'Architecture',
+      link: '/en/architecture',
+      activeMatch: '/en/architecture'
+    },
+    {
+      text: 'Kernel Atlas',
       link: '/en/api/gemm',
       activeMatch: '/en/api/'
+    },
+    {
+      text: 'Evidence',
+      items: [
+        { text: 'Benchmarks', link: '/en/benchmarks/' },
+        { text: 'Papers & Citations', link: '/en/references/papers' },
+        { text: 'Related Resources', link: '/en/references/resources' }
+      ]
     },
     {
       text: 'Learn',
       items: [
         { text: 'Getting Started', link: '/en/getting-started' },
         { text: 'Examples', link: '/en/examples/' },
-        { text: 'Benchmarks', link: '/en/benchmarks/' },
-        { text: 'Papers & Citations', link: '/en/references/papers' }
+        { text: 'FAQ', link: '/en/faq' },
+        { text: 'Changelog', link: '/en/changelog' }
       ]
-    },
-    { text: 'FAQ', link: '/en/faq' },
-    { text: 'Changelog', link: '/en/changelog' }
+    }
   ]
 }
 
@@ -205,21 +217,32 @@ function navZh() {
       activeMatch: '/zh/whitepaper/'
     },
     {
-      text: 'API 参考',
+      text: '架构',
+      link: '/zh/architecture',
+      activeMatch: '/zh/architecture'
+    },
+    {
+      text: 'Kernel Atlas',
       link: '/zh/api/gemm',
       activeMatch: '/zh/api/'
+    },
+    {
+      text: '证据',
+      items: [
+        { text: '性能基准', link: '/zh/benchmarks/' },
+        { text: '论文引用', link: '/zh/references/papers' },
+        { text: '相关资源', link: '/zh/references/resources' }
+      ]
     },
     {
       text: '学习',
       items: [
         { text: '快速开始', link: '/zh/getting-started' },
         { text: '示例', link: '/zh/examples/' },
-        { text: '性能基准', link: '/zh/benchmarks/' },
-        { text: '论文引用', link: '/zh/references/papers' }
+        { text: '常见问题', link: '/zh/faq' },
+        { text: '更新日志', link: '/zh/changelog' }
       ]
-    },
-    { text: '常见问题', link: '/zh/faq' },
-    { text: '更新日志', link: '/zh/changelog' }
+    }
   ]
 }
 
@@ -260,7 +283,7 @@ function sidebarEn() {
     ],
     '/en/api/': [
       {
-        text: 'API Reference',
+        text: 'Kernel Atlas',
         items: [
           { text: 'GEMM Kernels', link: '/en/api/gemm' },
           { text: 'Attention Kernels', link: '/en/api/attention' },
@@ -271,10 +294,20 @@ function sidebarEn() {
         ]
       }
     ],
+    '/en/references/': [
+      {
+        text: 'Evidence & references',
+        items: [
+          { text: 'Papers & Citations', link: '/en/references/papers' },
+          { text: 'Related Resources', link: '/en/references/resources' }
+        ]
+      }
+    ],
     '/en/': [
       {
-        text: 'Introduction',
+        text: 'Start here',
         items: [
+          { text: 'Showcase Overview', link: '/en/' },
           { text: 'Getting Started', link: '/en/getting-started' },
           { text: 'Architecture Overview', link: '/en/architecture' }
         ]
@@ -289,7 +322,15 @@ function sidebarEn() {
         ]
       },
       {
-        text: 'API Reference',
+        text: 'Evidence',
+        items: [
+          { text: 'Benchmarks', link: '/en/benchmarks/' },
+          { text: 'Papers & Citations', link: '/en/references/papers' },
+          { text: 'Related Resources', link: '/en/references/resources' }
+        ]
+      },
+      {
+        text: 'Kernel Atlas',
         items: [
           { text: 'GEMM Kernels', link: '/en/api/gemm' },
           { text: 'Attention Kernels', link: '/en/api/attention' },
@@ -300,12 +341,9 @@ function sidebarEn() {
         ]
       },
       {
-        text: 'Resources',
+        text: 'Learn',
         items: [
           { text: 'Examples', link: '/en/examples/' },
-          { text: 'Benchmarks', link: '/en/benchmarks/' },
-          { text: 'Papers & Citations', link: '/en/references/papers' },
-          { text: 'Learning Resources', link: '/en/references/resources' },
           { text: 'FAQ', link: '/en/faq' },
           { text: 'Changelog', link: '/en/changelog' }
         ]
@@ -351,7 +389,7 @@ function sidebarZh() {
     ],
     '/zh/api/': [
       {
-        text: 'API 参考',
+        text: 'Kernel Atlas',
         items: [
           { text: 'GEMM 内核', link: '/zh/api/gemm' },
           { text: 'Attention 内核', link: '/zh/api/attention' },
@@ -362,10 +400,20 @@ function sidebarZh() {
         ]
       }
     ],
+    '/zh/references/': [
+      {
+        text: '证据与参考',
+        items: [
+          { text: '论文引用', link: '/zh/references/papers' },
+          { text: '相关资源', link: '/zh/references/resources' }
+        ]
+      }
+    ],
     '/zh/': [
       {
-        text: '简介',
+        text: '起步入口',
         items: [
+          { text: '展示总览', link: '/zh/' },
           { text: '快速开始', link: '/zh/getting-started' },
           { text: '架构概览', link: '/zh/architecture' }
         ]
@@ -380,7 +428,15 @@ function sidebarZh() {
         ]
       },
       {
-        text: 'API 参考',
+        text: '证据',
+        items: [
+          { text: '性能基准', link: '/zh/benchmarks/' },
+          { text: '论文引用', link: '/zh/references/papers' },
+          { text: '相关资源', link: '/zh/references/resources' }
+        ]
+      },
+      {
+        text: 'Kernel Atlas',
         items: [
           { text: 'GEMM 内核', link: '/zh/api/gemm' },
           { text: 'Attention 内核', link: '/zh/api/attention' },
@@ -391,12 +447,9 @@ function sidebarZh() {
         ]
       },
       {
-        text: '资源',
+        text: '学习',
         items: [
           { text: '示例', link: '/zh/examples/' },
-          { text: '性能基准', link: '/zh/benchmarks/' },
-          { text: '论文引用', link: '/zh/references/papers' },
-          { text: '学习资源', link: '/zh/references/resources' },
           { text: '常见问题', link: '/zh/faq' },
           { text: '更新日志', link: '/zh/changelog' }
         ]

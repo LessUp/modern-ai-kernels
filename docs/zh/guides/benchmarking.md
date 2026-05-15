@@ -6,10 +6,11 @@
 
 ```bash
 cmake --preset release
-cmake --build --preset release
+cmake --build --preset release --parallel 2
 
-./build/benchmarks/gemm_benchmark
-./build/benchmarks/attention_benchmark
+./build/release/benchmarks/gemm_benchmark
+./build/release/benchmarks/attention_benchmark
+./build/release/benchmarks/conv_benchmark
 ```
 
 ## 分析工具 {#profiling}
@@ -17,11 +18,11 @@ cmake --build --preset release
 ### Nsight Compute
 
 ```bash
-ncu --set full -o profile_report ./build/benchmarks/gemm_benchmark
+ncu --set full -o profile_report ./build/release/benchmarks/gemm_benchmark
 ```
 
 ### Nsight Systems
 
 ```bash
-nsys profile -o timeline ./build/benchmarks/gemm_benchmark
+nsys profile -o timeline ./build/release/benchmarks/gemm_benchmark
 ```

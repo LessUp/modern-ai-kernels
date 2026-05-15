@@ -2,6 +2,19 @@
 
 A curated list of resources for learning CUDA programming and GPU kernel optimization.
 
+## Suggested reading path
+
+If you are using TensorCraft-HPC as a learning project or interview artifact, this order works well:
+
+1. Read the project [whitepaper](/en/whitepaper/) to understand the repository's design intent.
+2. Use this page to branch outward into the core NVIDIA references and neighboring open-source
+   projects.
+3. Return to the repository's [architecture overview](/en/architecture) and [kernel atlas](/en/api/gemm)
+   with that external context in mind.
+
+This makes the project easier to compare honestly against production libraries and research-grade
+implementations.
+
 ## Official NVIDIA Resources {#nvidia}
 
 ### Documentation
@@ -36,6 +49,15 @@ A curated list of resources for learning CUDA programming and GPU kernel optimiz
 | [xFormers](https://github.com/facebookresearch/xformers) | Attention, Memory | Intermediate |
 | [Triton](https://github.com/openai/triton) | DSL for kernels | Intermediate |
 | [DeepSpeed](https://github.com/microsoft/DeepSpeed) | Training optimization | Advanced |
+
+### How these projects relate to TensorCraft-HPC
+
+| Project | Why compare it | What TensorCraft-HPC emphasizes instead |
+|---------|----------------|-----------------------------------------|
+| CUTLASS | Canonical CUDA GEMM / Tensor Core engineering | Simpler learning path and clearer optimization narration |
+| FlashAttention | Reference-quality attention implementation | Easier-to-follow explanation of tiling and memory trade-offs |
+| Triton | Alternative kernel authoring model | Direct C++/CUDA control and closer-to-metal educational examples |
+| xFormers / DeepSpeed | Real-world training-system context | Focused operator learning rather than full-stack training infrastructure |
 
 ### Educational
 
@@ -116,6 +138,15 @@ flowchart LR
 3. **Shared Memory Usage** — Reduce global memory traffic
 4. **Bank Conflict Avoidance** — Ensure shared memory efficiency
 5. **Occupancy Tuning** — Balance registers, shared memory, threads
+
+## What to borrow into this project
+
+When expanding TensorCraft-HPC, the most valuable ideas to absorb from the surrounding ecosystem are:
+
+- **from CUTLASS**: disciplined tiling vocabulary and Tensor Core decomposition patterns
+- **from FlashAttention**: memory-aware storytelling and IO-driven reasoning
+- **from Triton**: clear operator-level benchmarking habits and compact examples
+- **from Nsight tooling**: evidence-first performance explanations instead of intuition-led guesses
 
 ---
 

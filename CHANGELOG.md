@@ -32,6 +32,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   CI 现在会对真实的 pre-commit 问题直接失败，而不是隐藏失败
 - `CMakePresets.json` no longer injects unused CUDA variables into CPU-only smoke runs |
   `CMakePresets.json` 不再在 CPU smoke 场景中注入无效 CUDA 变量
+- GitHub Pages is being repositioned as a technical whitepaper / architecture showcase |
+  GitHub Pages 正在被重构为技术白皮书 / 架构展示站
+- Navigation, homepage narrative, and whitepaper/reference pages now emphasize evidence, architecture, and reader journey |
+  导航、首页叙事与白皮书 / 参考页现更强调证据链、架构表达与读者路径
 
 ### Fixed | 修复
 
@@ -43,6 +47,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   翻译 `docs/zh/getting-started/troubleshooting.md` 为中文
 - Translated `docs/zh/examples/README.md` to Chinese |
   翻译 `docs/zh/examples/README.md` 为中文
+- Normalized canonical repo/docs links from legacy `LessUp` URLs to `AICL-Lab` surfaces |
+  将遗留的 `LessUp` 仓库 / 文档链接统一为 `AICL-Lab` 对外入口
+- Fixed docs commands and file references that pointed to missing benchmark paths, workflows, or headers |
+  修复文档中指向错误 benchmark 路径、并不存在的 workflow 与头文件的内容
+- Improved light/dark readability for Mermaid diagrams and key static SVG assets |
+  改善 Mermaid 图示与关键静态 SVG 在亮色 / 暗色模式下的可读性
 
 ### Removed | 移除
 
@@ -218,9 +228,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## Links | 链接
 
-- [Unreleased]: https://github.com/LessUp/modern-ai-kernels/compare/v3.0.0...HEAD
-- [3.0.0]: https://github.com/LessUp/modern-ai-kernels/compare/v2.0.0...v3.0.0
-- [2.0.0]: https://github.com/LessUp/modern-ai-kernels/compare/v1.1.0...v2.0.0
-- [1.1.0]: https://github.com/LessUp/modern-ai-kernels/compare/v1.0.1...v1.1.0
-- [1.0.1]: https://github.com/LessUp/modern-ai-kernels/compare/v1.0.0...v1.0.1
-- [1.0.0]: https://github.com/LessUp/modern-ai-kernels/releases/tag/v1.0.0
+- [Unreleased]: https://github.com/AICL-Lab/modern-ai-kernels/compare/v3.0.0...HEAD
+- [3.0.0]: https://github.com/AICL-Lab/modern-ai-kernels/compare/v2.0.0...v3.0.0
+- [2.0.0]: https://github.com/AICL-Lab/modern-ai-kernels/compare/v1.1.0...v2.0.0
+- [1.1.0]: https://github.com/AICL-Lab/modern-ai-kernels/compare/v1.0.1...v1.1.0
+- [1.0.1]: https://github.com/AICL-Lab/modern-ai-kernels/compare/v1.0.0...v1.0.1
+- [1.0.0]: https://github.com/AICL-Lab/modern-ai-kernels/releases/tag/v1.0.0

@@ -35,6 +35,31 @@ This document presents the benchmarking methodology, performance results, and op
 
 ---
 
+## How to read the numbers
+
+These benchmark tables are meant to answer two different questions:
+
+1. **Is the implementation technically serious?** Relative performance against NVIDIA libraries is a
+   proxy for whether the kernel structure is sensible.
+2. **Is the project still educational?** TensorCraft-HPC does not aim to disappear behind template
+   metaprogramming or auto-tuned complexity. Some headroom is intentionally traded for readability
+   and explainability.
+
+That means the most important signal is not any single percentage in isolation. The stronger signal
+is whether the optimization path is coherent, whether the implementation can be reasoned about, and
+whether the evidence is framed honestly.
+
+## Benchmark caveats
+
+- These results should be treated as **representative measurements**, not universally guaranteed
+  numbers across every GPU and toolchain.
+- GitHub-hosted CI runners do not provide CUDA devices, so benchmark reproduction belongs on
+  local GPU-enabled machines.
+- Pages and README should present benchmark claims together with methodology and caveats, not as
+  isolated marketing numbers.
+
+---
+
 ## GEMM Performance
 
 ### FP16 Tensor Core (A100)
@@ -185,30 +210,38 @@ float sum = warp_reduce_sum(val);
 
 ```bash
 # Build benchmarks
-cmake --preset dev
-cmake --build --preset dev
+cmake --preset release
+cmake --build --preset release --parallel 2
 
 # Run GEMM benchmark
-./build/benchmarks/gemm_benchmark --benchmark_filter="FP16"
+./build/release/benchmarks/gemm_benchmark --benchmark_filter="FP16"
 
 # Run all benchmarks
-ctest --preset dev -R benchmark
+ctest --preset release -R benchmark
 ```
 
 ---
 
-## Performance Regression
+## Benchmark regression policy
 
-TensorCraft-HPC includes automated performance regression testing:
+TensorCraft-HPC currently treats performance regression review as a **local GPU-machine discipline**,
+not a hosted-CI guarantee.
 
-```yaml
-# .github/workflows/benchmark.yml
-- name: Run benchmarks
-  run: |
-    ./build/benchmarks/gemm_benchmark --benchmark_format=json > results.json
-    python scripts/check_regression.py results.json baseline.json
-```
+This is intentional:
 
-Thresholds:
-- **Warning**: >5% regression
-- **Failure**: >10% regression
+- the repository validates CPU smoke builds, packaging, and Pages automatically
+- benchmark binaries require CUDA-enabled machines
+- performance claims should be reviewed alongside profiler traces and methodology, not reduced to a
+  green/red hosted workflow badge
+
+For serious regression checks, use one controlled machine, one fixed driver/toolkit stack, and keep
+the comparison against the same reference library version.
+
+## What strong results look like
+
+| Signal | Why it matters |
+|--------|----------------|
+| Stable relative ratios across nearby input sizes | Suggests the kernel structure is coherent, not overfit to one benchmark |
+| Clear profiler explanation for gaps | Shows engineering judgment rather than cargo-cult optimization |
+| Honest caveats around unsupported cases | Increases trust more than inflated headline numbers |
+| Consistency between code, docs, and benchmark commands | Makes the project easier to evaluate in interviews and code review |

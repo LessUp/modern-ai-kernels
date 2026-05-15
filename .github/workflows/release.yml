@@ -53,9 +53,9 @@ jobs:
 
             ## Installation | 安装
 
-            See [Installation Guide](https://lessup.github.io/modern-ai-kernels/en/getting-started/installation.html) for detailed installation instructions.
+            See [Installation Guide](https://aicl-lab.github.io/modern-ai-kernels/en/getting-started/installation.html) for detailed installation instructions.
 
-            详见 [安装指南](https://lessup.github.io/modern-ai-kernels/zh/getting-started/installation.html)。
+            详见 [安装指南](https://aicl-lab.github.io/modern-ai-kernels/zh/getting-started/installation.html)。
 
             ---
 
@@ -63,7 +63,7 @@ jobs:
 
             ```bash
             # Clone repository | 克隆仓库
-            git clone https://github.com/LessUp/modern-ai-kernels.git
+            git clone https://github.com/AICL-Lab/modern-ai-kernels.git
             cd modern-ai-kernels
 
             # Configure and build | 配置并构建

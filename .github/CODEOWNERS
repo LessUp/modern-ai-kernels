@@ -2,39 +2,41 @@
 # These owners will be requested for review when someone opens a pull request.
 # Learn more: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
 
-# Default owners for everything in the repo
-* @LessUp
+# Default owners for everything in the repo.
+# Use real collaborators here until an org team exists; a bare org handle is not
+# a good CODEOWNERS target for review routing.
+* @LessUp @Lumkai @TideTree
 
 # Core kernel implementations
-/include/tensorcraft/kernels/ @LessUp
-/src/ @LessUp
+/include/tensorcraft/kernels/ @LessUp @Lumkai @TideTree
+/src/ @LessUp @Lumkai @TideTree
 
 # Memory management
-/include/tensorcraft/memory/ @LessUp
+/include/tensorcraft/memory/ @LessUp @Lumkai @TideTree
 
 # Core utilities
-/include/tensorcraft/core/ @LessUp
+/include/tensorcraft/core/ @LessUp @Lumkai @TideTree
 
 # Python bindings
-/src/python_ops/ @LessUp
+/src/python_ops/ @LessUp @Lumkai @TideTree
 
 # Tests
-/tests/ @LessUp
+/tests/ @LessUp @Lumkai @TideTree
 
 # Benchmarks
-/benchmarks/ @LessUp
+/benchmarks/ @LessUp @Lumkai @TideTree
 
 # Documentation
-/docs/ @LessUp
-*.md @LessUp
+/docs/ @LessUp @Lumkai @TideTree
+*.md @LessUp @Lumkai @TideTree
 
 # Build system
-CMakeLists.txt @LessUp
-CMakePresets.json @LessUp
-/cmake/ @LessUp
+CMakeLists.txt @LessUp @Lumkai @TideTree
+CMakePresets.json @LessUp @Lumkai @TideTree
+/cmake/ @LessUp @Lumkai @TideTree
 
 # CI/CD
-/.github/ @LessUp
+/.github/ @LessUp @Lumkai @TideTree
 
 # Examples
-/examples/ @LessUp
+/examples/ @LessUp @Lumkai @TideTree
