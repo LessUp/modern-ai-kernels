@@ -23,4 +23,4 @@ This tutorial will guide you through building a GEMM (General Matrix Multiply) k
 
 ## Stay Updated
 
-Watch the [GitHub repository](https://github.com/LessUp/modern-ai-kernels) for updates on this tutorial.
+Watch the [GitHub repository](https://github.com/AICL-Lab/modern-ai-kernels) for updates on this tutorial.

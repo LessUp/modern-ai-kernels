@@ -121,14 +121,14 @@ ctest --preset dev -R gemm
 
 ```bash
 # 构建基准测试
-cmake --preset dev
-cmake --build --preset dev
+cmake --preset release
+cmake --build --preset release --parallel 2
 
 # 运行 GEMM 基准测试
-./build/benchmarks/gemm_benchmark
+./build/release/benchmarks/gemm_benchmark
 
 # 使用特定过滤器
-./build/benchmarks/gemm_benchmark --benchmark_filter="FP16"
+./build/release/benchmarks/gemm_benchmark --benchmark_filter="FP16"
 ```
 
 ---
@@ -195,7 +195,7 @@ EXPECT_LT(rel_error, 1e-3);  // 0.1% 容差
 
 ### 如何报告 Bug？
 
-请在 [GitHub Issues](https://github.com/LessUp/modern-ai-kernels/issues) 提交问题，包含：
+请在 [GitHub Issues](https://github.com/AICL-Lab/modern-ai-kernels/issues) 提交问题，包含：
 
 - GPU 型号和驱动版本
 - CUDA 版本

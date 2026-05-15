@@ -16,7 +16,7 @@ python --version
 ## 2. Build the Library {#build}
 
 ```bash
-git clone https://github.com/LessUp/modern-ai-kernels.git
+git clone https://github.com/AICL-Lab/modern-ai-kernels.git
 cd modern-ai-kernels
 
 # Quick CPU test
@@ -102,13 +102,13 @@ print(f"Sample value: {C[0, 0]}")
 ```bash
 # Build benchmarks
 cmake --preset release
-cmake --build --preset release
+cmake --build --preset release --parallel 2
 
 # Run GEMM benchmark
-./build/benchmarks/gemm_benchmark
+./build/release/benchmarks/gemm_benchmark
 
 # Run attention benchmark
-./build/benchmarks/attention_benchmark
+./build/release/benchmarks/attention_benchmark
 ```
 
 ## Next Steps {#next}

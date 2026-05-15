@@ -24,7 +24,7 @@
 ### 方法 1: 仅头文件（推荐）
 
 ```bash
-git clone https://github.com/LessUp/modern-ai-kernels.git
+git clone https://github.com/AICL-Lab/modern-ai-kernels.git
 cp -r modern-ai-kernels/include/tensorcraft your_project/include/
 ```
 

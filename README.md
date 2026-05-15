@@ -4,23 +4,23 @@
 
 **Demystifying High-Performance AI Kernels with Modern C++ & CUDA**
 
-[![CI](https://github.com/LessUp/modern-ai-kernels/actions/workflows/ci.yml/badge.svg)](https://github.com/LessUp/modern-ai-kernels/actions/workflows/ci.yml)
-[![Docs](https://github.com/LessUp/modern-ai-kernels/actions/workflows/pages.yml/badge.svg)](https://lessup.github.io/modern-ai-kernels/)
+[![CI](https://github.com/AICL-Lab/modern-ai-kernels/actions/workflows/ci.yml/badge.svg)](https://github.com/AICL-Lab/modern-ai-kernels/actions/workflows/ci.yml)
+[![Docs](https://github.com/AICL-Lab/modern-ai-kernels/actions/workflows/pages.yml/badge.svg)](https://aicl-lab.github.io/modern-ai-kernels/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![CUDA](https://img.shields.io/badge/CUDA-11.0%2B-76B900?logo=nvidia&logoColor=white)
 ![C++](https://img.shields.io/badge/C%2B%2B-17%2B-00599C?logo=c%2B%2B&logoColor=white)
 [![OpenSpec](https://img.shields.io/badge/Workflow-OpenSpec-8ED000)](openspec/)
 
-[Documentation](https://lessup.github.io/modern-ai-kernels/) •
-[Getting Started](https://lessup.github.io/modern-ai-kernels/en/getting-started) •
-[API Reference](https://lessup.github.io/modern-ai-kernels/en/api/gemm) •
-[Examples](https://lessup.github.io/modern-ai-kernels/en/examples/)
+[Whitepaper](https://aicl-lab.github.io/modern-ai-kernels/en/whitepaper/) •
+[Architecture](https://aicl-lab.github.io/modern-ai-kernels/en/architecture) •
+[Benchmark Evidence](https://aicl-lab.github.io/modern-ai-kernels/en/benchmarks/) •
+[Kernel Atlas](https://aicl-lab.github.io/modern-ai-kernels/en/api/gemm)
 
 </div>
 
 ---
 
-TensorCraft-HPC is a **header-only C++/CUDA kernel library** for learning, validating, and packaging modern AI operators. The repository keeps implementations readable, exposes progressive optimization paths, and ships a lightweight Python binding surface.
+TensorCraft-HPC is a **header-only C++/CUDA kernel library** and **technical whitepaper / architecture showcase** for learning, validating, and packaging modern AI operators. The repository keeps implementations readable, exposes progressive optimization paths, and presents benchmarks, references, and design rationale as first-class project assets.
 
 ## ✨ Highlights
 
@@ -106,12 +106,12 @@ output = tc.flash_attention(Q, K, V)
 
 ## 📚 Documentation
 
-- **Documentation hub**: <https://lessup.github.io/modern-ai-kernels/>
-- **Getting started**: [docs/en/getting-started/](docs/en/getting-started/)
-- **Architecture**: [docs/en/architecture/](docs/en/architecture/)
-- **API Reference**: [docs/en/api/](docs/en/api/)
-- **Examples**: [docs/en/examples/](docs/en/examples/)
-- **中文文档**: [docs/zh/](docs/zh/)
+- **Showcase home**: <https://aicl-lab.github.io/modern-ai-kernels/>
+- **Whitepaper**: <https://aicl-lab.github.io/modern-ai-kernels/en/whitepaper/>
+- **Architecture overview**: <https://aicl-lab.github.io/modern-ai-kernels/en/architecture>
+- **Benchmark evidence**: <https://aicl-lab.github.io/modern-ai-kernels/en/benchmarks/>
+- **Kernel Atlas / API**: <https://aicl-lab.github.io/modern-ai-kernels/en/api/gemm>
+- **中文文档**: <https://aicl-lab.github.io/modern-ai-kernels/zh/>
 
 ## 🔧 OpenSpec Workflow
 

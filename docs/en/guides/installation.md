@@ -29,7 +29,7 @@ The simplest approach—just include the headers:
 
 ```bash
 # Clone
-git clone https://github.com/LessUp/modern-ai-kernels.git
+git clone https://github.com/AICL-Lab/modern-ai-kernels.git
 
 # Use in your project
 cp -r modern-ai-kernels/include/tensorcraft your_project/include/
@@ -59,7 +59,7 @@ target_link_libraries(your_target PRIVATE tensorcraft::tensorcraft)
 
 ```bash
 # From source
-git clone https://github.com/LessUp/modern-ai-kernels.git
+git clone https://github.com/AICL-Lab/modern-ai-kernels.git
 cd modern-ai-kernels
 pip install -e .
 

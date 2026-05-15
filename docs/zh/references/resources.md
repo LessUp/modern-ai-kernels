@@ -2,6 +2,16 @@
 
 精选的 CUDA 编程和 GPU 内核优化学习资源列表。
 
+## 建议阅读顺序
+
+如果你把 TensorCraft-HPC 当作学习项目或面试展示项目，比较推荐这样的阅读路径：
+
+1. 先读项目的 [技术白皮书](/zh/whitepaper/)，理解仓库为什么这样设计。
+2. 再用本页向外扩展，阅读 NVIDIA 官方资料和周边开源项目。
+3. 最后带着这些外部语境回到仓库的 [架构概览](/zh/architecture) 和 [Kernel Atlas](/zh/api/gemm)。
+
+这样更容易把本项目放到真实生态里去比较，而不是把它孤立地看成一个“只会跑起来”的 demo。
+
 ## NVIDIA 官方资源 {#nvidia}
 
 ### 文档
@@ -36,6 +46,15 @@
 | [xFormers](https://github.com/facebookresearch/xformers) | 注意力, 内存 | 中级 |
 | [Triton](https://github.com/openai/triton) | 内核 DSL | 中级 |
 | [DeepSpeed](https://github.com/microsoft/DeepSpeed) | 训练优化 | 高级 |
+
+### 这些项目和 TensorCraft-HPC 的关系
+
+| 项目 | 为什么值得对比 | TensorCraft-HPC 更强调什么 |
+|------|----------------|-----------------------------|
+| CUTLASS | CUDA GEMM / Tensor Core 工程的经典参考 | 更清晰的学习路径和优化叙事 |
+| FlashAttention | 高质量的 attention 参考实现 | 更容易讲清楚分块和内存取舍 |
+| Triton | 另一种 GPU kernel 编写范式 | 直接暴露 C++/CUDA 控制面，适合底层学习 |
+| xFormers / DeepSpeed | 更接近真实训练系统的上下文 | 聚焦算子理解，而不是完整训练基础设施 |
 
 ### 教育性
 
@@ -116,6 +135,15 @@ flowchart LR
 3. **共享内存使用** — 减少全局内存流量
 4. **避免 Bank 冲突** — 确保共享内存效率
 5. **占用率调优** — 平衡寄存器、共享内存、线程
+
+## 这些资源最值得借鉴什么
+
+后续扩展 TensorCraft-HPC 时，最值得吸收的不是“照搬功能”，而是这些项目背后的方法：
+
+- **来自 CUTLASS**：严谨的 tiling 术语和 Tensor Core 分解方式
+- **来自 FlashAttention**：围绕 IO 成本展开的叙事与分析方式
+- **来自 Triton**：清晰的 operator 级 benchmark 习惯和紧凑示例
+- **来自 Nsight 工具链**：用证据解释性能，而不是靠直觉猜测
 
 ---
 

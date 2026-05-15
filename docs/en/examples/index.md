@@ -25,7 +25,7 @@ Before running the examples, make sure you have:
 
 ```bash
 # Clone and build
-git clone https://github.com/LessUp/modern-ai-kernels.git
+git clone https://github.com/AICL-Lab/modern-ai-kernels.git
 cd modern-ai-kernels
 
 # Build with CUDA support
@@ -58,4 +58,4 @@ We recommend following this order for the best learning experience:
 
 - Check the [API Reference](/en/api/gemm) for detailed documentation
 - Browse [Learning Resources](/en/references/resources) for more tutorials
-- Open an issue on [GitHub](https://github.com/LessUp/modern-ai-kernels/issues) if you encounter problems
+- Open an issue on [GitHub](https://github.com/AICL-Lab/modern-ai-kernels/issues) if you encounter problems

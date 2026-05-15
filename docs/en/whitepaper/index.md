@@ -85,6 +85,29 @@ Specifications in `openspec/specs/` define:
 
 ---
 
+## What this project is not
+
+TensorCraft-HPC is **not** trying to replace cuBLAS, cuDNN, CUTLASS, or Triton as a full production
+kernel stack. It is also not trying to maximize feature count at the expense of coherence.
+
+Instead, the project optimizes for a rarer combination:
+
+- code that is still readable after optimization begins
+- benchmark claims that stay attached to methodology and caveats
+- architecture that can be explained in an interview or design review
+- documentation that helps readers learn why the implementation looks the way it does
+
+## How to evaluate this repository
+
+| Lens | What to look for |
+|------|------------------|
+| **Architecture** | Clear boundaries between kernel layer, memory abstractions, feature detection, and public surfaces |
+| **Implementation quality** | Progressive optimization steps instead of opaque "final form" kernels |
+| **Evidence discipline** | Benchmark numbers paired with methodology, references, and honest limits |
+| **Project coherence** | README, GitHub Pages, OpenSpec, and workflows telling the same story |
+
+---
+
 ## Target Audience
 
 This whitepaper is intended for:
@@ -103,6 +126,7 @@ This whitepaper is intended for:
 | [Architecture](/en/whitepaper/architecture) | System design, layering, and extension points |
 | [Performance](/en/whitepaper/performance) | Benchmarking methodology and analysis |
 | [Methodology](/en/whitepaper/methodology) | OpenSpec workflow and contribution guidelines |
+| [Papers & Citations](/en/references/papers) | Academic and ecosystem references behind the design |
 
 ---
 
@@ -110,7 +134,7 @@ This whitepaper is intended for:
 
 ::: code-group
 ```bash [Clone]
-git clone https://github.com/LessUp/modern-ai-kernels.git
+git clone https://github.com/AICL-Lab/modern-ai-kernels.git
 cd modern-ai-kernels
 ```
 
@@ -144,8 +168,8 @@ If you reference TensorCraft-HPC in academic work:
 @software{tensorcraft-hpc,
   title = {TensorCraft-HPC: Demystifying High-Performance AI Kernels
            with Modern C++ and CUDA},
-  author = {LessUp},
+  author = {TensorCraft-HPC Contributors},
   year = {2024},
-  url = {https://github.com/LessUp/modern-ai-kernels}
+  url = {https://github.com/AICL-Lab/modern-ai-kernels}
 }
 ```

@@ -30,7 +30,7 @@ TensorCraft-HPC is a header-only library. Simply include the headers in your pro
 
 ```bash
 # Clone the repository
-git clone https://github.com/LessUp/modern-ai-kernels.git
+git clone https://github.com/AICL-Lab/modern-ai-kernels.git
 
 # Copy headers to your project
 cp -r modern-ai-kernels/include/tensorcraft your_project/include/

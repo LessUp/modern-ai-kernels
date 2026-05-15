@@ -23,4 +23,4 @@
 
 ## 保持更新
 
-关注 [GitHub 仓库](https://github.com/LessUp/modern-ai-kernels) 获取本教程的更新。
+关注 [GitHub 仓库](https://github.com/AICL-Lab/modern-ai-kernels) 获取本教程的更新。

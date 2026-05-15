@@ -142,9 +142,9 @@ Ampere 架构支持 2:4 结构化稀疏，可提供 2 倍吞吐量提升。
 @software{tensorcraft-hpc,
   title = {TensorCraft-HPC: Demystifying High-Performance AI Kernels
            with Modern C++ and CUDA},
-  author = {LessUp},
+  author = {TensorCraft-HPC Contributors},
   year = {2024},
-  url = {https://github.com/LessUp/modern-ai-kernels},
+  url = {https://github.com/AICL-Lab/modern-ai-kernels},
   note = {Header-only C++/CUDA kernel library for learning}
 }
 ```

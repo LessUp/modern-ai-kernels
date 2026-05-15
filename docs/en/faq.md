@@ -121,14 +121,14 @@ ctest --preset dev -R gemm
 
 ```bash
 # Build benchmarks
-cmake --preset dev
-cmake --build --preset dev
+cmake --preset release
+cmake --build --preset release --parallel 2
 
 # Run GEMM benchmark
-./build/benchmarks/gemm_benchmark
+./build/release/benchmarks/gemm_benchmark
 
 # Run with specific filter
-./build/benchmarks/gemm_benchmark --benchmark_filter="FP16"
+./build/release/benchmarks/gemm_benchmark --benchmark_filter="FP16"
 ```
 
 ---
@@ -195,7 +195,7 @@ See the [Methodology](/en/whitepaper/methodology) section for detailed guideline
 
 ### How do I report a bug?
 
-Please file an issue at [GitHub Issues](https://github.com/LessUp/modern-ai-kernels/issues) with:
+Please file an issue at [GitHub Issues](https://github.com/AICL-Lab/modern-ai-kernels/issues) with:
 
 - GPU model and driver version
 - CUDA version
