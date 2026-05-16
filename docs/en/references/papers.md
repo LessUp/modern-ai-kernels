@@ -2,6 +2,16 @@
 
 This page lists the academic papers and open-source projects that inform the design and implementation of TensorCraft-HPC. We encourage users to read the original papers for deeper understanding.
 
+## How to read these citations
+
+Use this page as an annotation layer, not just a bibliography. Each citation matters for one of three reasons:
+
+1. it explains a kernel strategy adopted in the repository
+2. it defines the production baseline used for performance comparison
+3. it shows where TensorCraft-HPC intentionally stays simpler for clarity
+
+When evaluating the project, read the cited paper or library page, then compare that source to the corresponding TensorCraft-HPC page. The point is not to claim parity with every production system. The point is to show how the repository turns those ideas into a legible learning and evaluation surface.
+
 ## GEMM Optimization {#gemm}
 
 ### Foundational Papers
@@ -131,6 +141,19 @@ Ampere architecture supports 2:4 structured sparsity for 2x throughput improveme
 | [xFormers](https://github.com/facebookresearch/xformers) | Facebook's attention kernels | BSD-3 |
 | [Triton](https://github.com/openai/triton) | OpenAI's GPU programming language | MIT |
 | [cuDNN](https://docs.nvidia.com/deeplearning/cudnn/) | NVIDIA Deep Learning library | Proprietary |
+
+---
+
+## Comparison framing
+
+These references should not be read as a flat list of endorsements. They form a comparison frame:
+
+- **CUTLASS and cuBLAS** represent the production-performance ceiling that makes GEMM claims meaningful
+- **FlashAttention** represents algorithm-plus-systems co-design for attention kernels
+- **Triton and xFormers** show neighboring ways to package or generate GPU kernels
+- **NVIDIA documentation** anchors hardware facts, API expectations, and capability boundaries
+
+That framing is why the whitepaper, evidence pages, and atlas should be read together.
 
 ---
 

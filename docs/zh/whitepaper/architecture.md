@@ -112,11 +112,6 @@ flowchart LR
     C -->|"Use Tensor Cores<br/>(WMMA)"| D
     D -->|"Fine-tune<br/>parameters"| E
 
-    style A fill:#F4F7F1,stroke:#2E7D32,color:#1A1A1A
-    style B fill:#F4F7F1,stroke:#2E7D32,color:#1A1A1A
-    style C fill:#F4F7F1,stroke:#2E7D32,color:#1A1A1A
-    style D fill:#2E7D32,stroke:#1B5E20,color:#000
-    style E fill:#2E7D32,stroke:#1B5E20,color:#000
 ```
 
 ### 性能特征

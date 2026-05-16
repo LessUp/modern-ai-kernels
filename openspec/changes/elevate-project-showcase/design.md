@@ -27,7 +27,7 @@ surface still feel transitional:
 |------|---------------|--------------|---------------|
 | Repository identity | Public links, badges, edit links, and examples still mix `LessUp` and `AICL-Lab` | One canonical repository owner, docs domain, and edit-link target across every public surface | `README*.md`, `docs/.vitepress/config.ts`, `.github/workflows/pages.yml`, docs content pages |
 | Homepage narrative | Current homepage reads like a default docs landing page | Homepage frames the project as a technical whitepaper / architecture showcase with clear first-read paths | `docs/en/index.md`, `docs/zh/index.md`, `docs/.vitepress/theme/**` |
-| Information architecture | Whitepaper, architecture, benchmarks, references, and guides exist but do not form a strong reader journey | Navigation and landing pages create a deliberate flow from overview to evidence to deep reference | `docs/.vitepress/config.ts`, `docs/en/**`, `docs/zh/**` |
+| Information architecture | Whitepaper, architecture, benchmarks, references, and guides exist but do not form a strong reader journey | Navigation and landing pages create a deliberate flow from whitepaper to academy to evidence to deep reference | `docs/.vitepress/config.ts`, `docs/en/**`, `docs/zh/**` |
 | Visual system | Existing theme has custom styling, but hierarchy, spacing, and showcase components are still thin | A reusable token system, stronger section composition, and clearer content emphasis | `docs/.vitepress/theme/style.css`, `docs/.vitepress/theme/components/**` |
 | Theme compatibility | Several SVG assets are hard-coded for dark backgrounds and degrade in light mode | Visual assets remain legible in both themes through paired assets or theme-aware rendering | `docs/public/images/logo*.svg`, `docs/public/images/diagrams/*.svg` |
 | Spec alignment | Accepted specs still describe Jekyll and outdated directory assumptions | Accepted specs describe the current VitePress architecture and showcase-first docs model | `openspec/specs/{core,polish,architecture}/spec.md` |
@@ -39,7 +39,7 @@ surface still feel transitional:
 
 - Make GitHub Pages the primary showcase for project positioning, technical depth, and learning
   value.
-- Define a stable information architecture for whitepaper, architecture, benchmark evidence, and
+- Define a stable information architecture for whitepaper, academy, benchmark evidence, and
   reference content.
 - Align repository identity, links, and metadata across all public entry points.
 - Update OpenSpec so accepted requirements match the actual VitePress-based documentation system.
@@ -136,7 +136,7 @@ interview and community evaluation.
 ## Implementation Notes
 
 - Start with the OpenSpec change and accepted-spec deltas before large docs edits.
-- Treat `docs/.vitepress/config.ts`, `docs/.vitepress/theme/`, `docs/en/index.md`, and
-  `docs/zh/index.md` as the first implementation front.
+- Treat `docs/.vitepress/config.ts`, `docs/.vitepress/theme/`, `docs/en/index.md`,
+  `docs/zh/index.md`, and the new academy / evidence landing pages as the first implementation front.
 - Keep the resulting design biased toward trust, clarity, and evidence instead of marketing copy.
 - Validate documentation changes with the existing docs build and repository smoke validations.
