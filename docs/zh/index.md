@@ -83,3 +83,5 @@ features:
     <li><strong>研究素养。</strong> 站点会把实现判断和论文、库生态、竞品项目串联起来。</li>
   </ul>
 </ShowcaseBand>
+
+<GPUTimeline />

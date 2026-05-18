@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { useData } from 'vitepress'
+
+const { isDark } = useData()
 
 interface GPUArchitecture {
   name: string
@@ -69,7 +72,7 @@ onMounted(() => {
         isVisible.value = true
       }
     })
-  }, { threshold: 0.2 })
+  }, { threshold: 0.15 })
 
   if (timelineRef.value) {
     observer.observe(timelineRef.value)
@@ -78,14 +81,18 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="gpu-timeline" ref="timelineRef">
+  <div class="gpu-timeline" ref="timelineRef" :class="{ dark: isDark }">
     <h2 class="timeline-title">
-      <span class="nvidia-text">GPU Architecture</span> Support
+      <span class="accent-text">GPU Architecture</span> Support
     </h2>
     <p class="timeline-description">
       TensorCraft-HPC supports NVIDIA GPUs from Volta (2017) to Blackwell (2024),
       covering CUDA Compute Capability 7.0-10.0.
     </p>
+
+    <div class="timeline-track">
+      <div class="track-line" :class="{ visible: isVisible }"></div>
+    </div>
 
     <div class="timeline-container">
       <div
@@ -93,7 +100,7 @@ onMounted(() => {
         :key="gpu.name"
         class="gpu-card"
         :class="{ visible: isVisible, supported: gpu.supported }"
-        :style="{ animationDelay: `${index * 0.1}s` }"
+        :style="{ animationDelay: `${index * 0.12}s` }"
       >
         <div class="gpu-header">
           <span class="gpu-year">{{ gpu.year }}</span>
@@ -114,7 +121,7 @@ onMounted(() => {
 
         <div class="gpu-features">
           <span
-            v-for="feature in gpu.features.slice(0, 3)"
+            v-for="feature in gpu.features"
             :key="feature"
             class="feature-tag"
           >
@@ -123,13 +130,13 @@ onMounted(() => {
         </div>
 
         <div class="gpu-status" :class="{ active: gpu.supported }">
-          {{ gpu.supported ? '✓ Supported' : '○ Planned' }}
+          {{ gpu.supported ? 'Supported' : 'Planned' }}
         </div>
       </div>
     </div>
 
     <div class="cuda-badge">
-      <span class="badge-icon">⚡</span>
+      <span class="badge-icon">&#9889;</span>
       <span>CUDA 11.0 - 13.1</span>
     </div>
   </div>
@@ -137,46 +144,86 @@ onMounted(() => {
 
 <style scoped>
 .gpu-timeline {
-  padding: 4rem 0;
+  padding: 3rem 0 2rem;
   max-width: 1200px;
   margin: 0 auto;
 }
 
 .timeline-title {
+  font-family: 'Fraunces', serif;
   font-size: 2rem;
   text-align: center;
-  margin-bottom: 1rem;
+  margin-bottom: 0.6rem;
   color: var(--vp-c-text-1);
+  font-weight: 700;
 }
 
-.nvidia-text {
-  color: var(--nvidia-green);
+.accent-text {
+  color: var(--tc-accent-primary);
 }
 
 .timeline-description {
   text-align: center;
   color: var(--vp-c-text-2);
-  margin-bottom: 3rem;
+  margin-bottom: 2.5rem;
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
+  font-size: 0.95rem;
 }
 
+/* Track */
+.timeline-track {
+  position: relative;
+  height: 4px;
+  margin-bottom: -2px;
+  z-index: 1;
+  padding: 0 1rem;
+}
+
+.track-line {
+  height: 100%;
+  background: var(--vp-c-divider);
+  border-radius: 2px;
+  position: relative;
+}
+
+.track-line.visible::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, var(--tc-accent-primary), var(--tc-accent-success));
+  border-radius: 2px;
+  animation: trackGrow 1.2s ease-out forwards;
+}
+
+@keyframes trackGrow {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+/* Cards */
 .timeline-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 1.2rem;
   margin-bottom: 2rem;
+  position: relative;
+  z-index: 2;
 }
 
 .gpu-card {
-  background: var(--vp-c-gray);
-  border: 1px solid var(--vp-c-border);
-  border-radius: 12px;
-  padding: 1.5rem;
+  background: var(--vp-c-bg-alt);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: var(--tc-radius-md);
+  padding: 1.3rem 1.1rem;
   opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.4s ease;
+  transform: translateY(18px);
+  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative;
 }
 
 .gpu-card.visible {
@@ -185,37 +232,43 @@ onMounted(() => {
 }
 
 .gpu-card:hover {
-  border-color: var(--nvidia-green);
-  box-shadow: 0 0 30px var(--nvidia-green-glow);
+  border-color: var(--tc-accent-primary);
+  box-shadow: var(--tc-shadow-glow), var(--tc-shadow-md);
   transform: translateY(-4px);
 }
 
-.gpu-card.supported {
-  border-left: 3px solid var(--nvidia-green);
+.gpu-card.supported::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--tc-accent-primary), var(--tc-accent-success));
+  border-radius: var(--tc-radius-md) var(--tc-radius-md) 0 0;
 }
 
 .gpu-header {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
-  margin-bottom: 1rem;
+  gap: 0.2rem;
+  margin-bottom: 0.9rem;
 }
 
 .gpu-year {
-  font-size: 0.75rem;
-  color: var(--nvidia-green);
-  font-weight: 600;
+  font-size: 0.72rem;
+  color: var(--tc-accent-primary);
+  font-weight: 700;
   letter-spacing: 0.05em;
+  font-family: var(--vp-font-family-mono);
 }
 
 .gpu-name {
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 1.35rem;
+  font-weight: 800;
   margin: 0;
-  background: linear-gradient(135deg, #fff, var(--nvidia-green));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-family: 'Fraunces', serif;
+  color: var(--vp-c-text-1);
 }
 
 .gpu-code {
@@ -227,83 +280,103 @@ onMounted(() => {
 .gpu-specs {
   display: flex;
   gap: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.9rem;
 }
 
 .spec-item {
   display: flex;
   flex-direction: column;
-  gap: 0.125rem;
+  gap: 0.1rem;
 }
 
 .spec-label {
-  font-size: 0.625rem;
-  color: var(--vp-c-text-4);
+  font-size: 0.6rem;
+  color: var(--vp-c-text-3);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
+  font-weight: 700;
 }
 
 .spec-value {
-  font-size: 0.875rem;
+  font-size: 0.82rem;
   font-family: var(--vp-font-family-mono);
-  color: var(--nvidia-green);
+  color: var(--tc-accent-primary);
+  font-weight: 600;
 }
 
 .gpu-features {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
+  gap: 0.4rem;
+  margin-bottom: 0.9rem;
 }
 
 .feature-tag {
-  font-size: 0.625rem;
-  padding: 0.25rem 0.5rem;
-  background: rgba(118, 185, 0, 0.1);
-  border: 1px solid rgba(118, 185, 0, 0.2);
+  font-size: 0.68rem;
+  padding: 0.22rem 0.5rem;
+  background: var(--tc-blue-soft);
+  border: 1px solid color-mix(in srgb, var(--tc-accent-primary) 15%, var(--vp-c-divider));
   border-radius: 4px;
-  color: var(--nvidia-green);
+  color: var(--vp-c-text-2);
   font-family: var(--vp-font-family-mono);
+  font-weight: 500;
 }
 
 .gpu-status {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   color: var(--vp-c-text-3);
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--vp-c-border);
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--vp-c-divider);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .gpu-status.active {
-  color: var(--nvidia-green);
+  color: var(--tc-accent-success);
 }
 
+/* Badge */
 .cuda-badge {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  background: var(--vp-c-gray);
-  border: 1px solid var(--nvidia-green);
+  padding: 0.7rem 1.5rem;
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-divider);
   border-radius: 100px;
   width: fit-content;
   margin: 0 auto;
   font-family: var(--vp-font-family-mono);
-  font-size: 0.875rem;
-  color: var(--nvidia-green);
+  font-size: 0.82rem;
+  color: var(--vp-c-text-2);
+  font-weight: 600;
 }
 
 .badge-icon {
   font-size: 1rem;
+  color: var(--tc-accent-primary);
 }
 
 @media (max-width: 768px) {
   .timeline-container {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .timeline-title {
     font-size: 1.5rem;
+  }
+
+  .track-line.visible::after {
+    animation: none;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .timeline-container {
+    grid-template-columns: 1fr;
   }
 }
 </style>

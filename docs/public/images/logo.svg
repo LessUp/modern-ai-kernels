@@ -1,6 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
-  <rect x="4" y="4" width="120" height="120" rx="24" fill="#F3EFE8" stroke="#C96E32" stroke-width="4"/>
-  <g stroke="#1D2733" stroke-width="2.8" stroke-linecap="round">
+  <defs>
+    <linearGradient id="logoGradLight" x1="0" y1="0" x2="128" y2="128">
+      <stop offset="0%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <filter id="logoShadow" x="-4" y="-4" width="136" height="136">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0f172a" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+  <rect x="4" y="4" width="120" height="120" rx="26" fill="#ffffff" stroke="url(#logoGradLight)" stroke-width="3.5" filter="url(#logoShadow)"/>
+  <g stroke="#0f172a" stroke-width="2.6" stroke-linecap="round" opacity="0.9">
     <line x1="32" y1="40" x2="96" y2="40"/>
     <line x1="32" y1="58" x2="96" y2="58"/>
     <line x1="32" y1="76" x2="96" y2="76"/>
@@ -8,8 +17,8 @@
     <line x1="64" y1="28" x2="64" y2="92"/>
     <line x1="84" y1="28" x2="84" y2="92"/>
   </g>
-  <rect x="34" y="30" width="10" height="10" rx="2" fill="#C96E32"/>
-  <rect x="54" y="48" width="10" height="10" rx="2" fill="#5DB7A4"/>
-  <rect x="74" y="66" width="10" height="10" rx="2" fill="#C96E32"/>
-  <path d="M92 92H104V104" stroke="#C96E32" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="34" y="30" width="10" height="10" rx="2.5" fill="#2563eb"/>
+  <rect x="54" y="48" width="10" height="10" rx="2.5" fill="#059669"/>
+  <rect x="74" y="66" width="10" height="10" rx="2.5" fill="#c2410c"/>
+  <path d="M92 92H104V104" stroke="url(#logoGradLight)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

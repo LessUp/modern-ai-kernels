@@ -83,3 +83,5 @@ features:
     <li><strong>Research literacy.</strong> The site connects implementation choices to papers, libraries, and competitor surfaces worth studying.</li>
   </ul>
 </ShowcaseBand>
+
+<GPUTimeline />

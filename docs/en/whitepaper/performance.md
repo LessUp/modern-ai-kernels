@@ -150,12 +150,26 @@ Convolution kernels use Im2Col optimization. Further gains require Winograd algo
 
 ### Roofline Analysis
 
+<TheoremBox type="theorem" label="Roofline Bound">
+For a compute kernel with arithmetic intensity I (FLOP/byte), achieved performance P is bounded by the minimum of memory bandwidth and peak compute:
+</TheoremBox>
+
+$$
+P \le \min\left(I \cdot \text{BW}_{\text{mem}},\; \text{TP}_{\text{peak}}\right)
+$$
+
+The transition between memory-bound and compute-bound regimes occurs at the roofline ridge point:
+
+$$
+I_{\text{ridge}} = \frac{\text{TP}_{\text{peak}}}{\text{BW}_{\text{mem}}}
+$$
+
 The performance of GEMM is bounded by:
 
-1. **Memory Bandwidth**: For small matrices
-2. **Compute Throughput**: For large matrices
+1. **Memory Bandwidth**: For small matrices (I < I_ridge)
+2. **Compute Throughput**: For large matrices (I ≥ I_ridge)
 
-The transition point occurs at:
+The critical matrix size where regime transitions occurs at:
 
 ```
 M_critical = (Memory_BW) / (Compute_TP / sizeof(T))

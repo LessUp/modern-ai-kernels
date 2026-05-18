@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
+import { useData } from 'vitepress'
+
+const { isDark } = useData()
 
 interface Benchmark {
   name: string
@@ -35,10 +38,11 @@ onMounted(() => {
 })
 
 function getBarColor(percentage: number): string {
-  if (percentage >= 90) return '#8ED000'
-  if (percentage >= 80) return '#76B900'
-  if (percentage >= 70) return '#5A9100'
-  return '#FFB800'
+  // Use CSS variable-driven colors instead of hardcoded NVIDIA greens
+  if (percentage >= 90) return 'var(--tc-accent-success)'
+  if (percentage >= 80) return 'var(--tc-accent-primary)'
+  if (percentage >= 70) return 'var(--tc-accent-warning)'
+  return '#94a3b8'
 }
 
 function selectBenchmark(bench: Benchmark) {
@@ -49,7 +53,7 @@ function selectBenchmark(bench: Benchmark) {
 <template>
   <div class="benchmark-chart" ref="chartRef">
     <h2 class="chart-title">
-      <span class="brand-text">Performance</span> Benchmarks
+      <span class="accent-text">Performance</span> Benchmarks
     </h2>
     <p class="chart-description">
       Relative performance compared to NVIDIA libraries on A100 80GB (FP16 Tensor Core)
@@ -61,7 +65,7 @@ function selectBenchmark(bench: Benchmark) {
         :key="bench.name"
         class="benchmark-row"
         :class="{ selected: selectedBenchmark === bench }"
-        :style="{ animationDelay: `${index * 0.1}s` }"
+        :style="{ animationDelay: `${index * 0.08}s` }"
         @click="selectBenchmark(bench)"
       >
         <div class="benchmark-info">
@@ -79,15 +83,14 @@ function selectBenchmark(bench: Benchmark) {
               :class="{ visible: isVisible }"
               :style="{
                 width: isVisible ? `${bench.percentage}%` : '0%',
-                backgroundColor: getBarColor(bench.percentage),
-                animationDelay: `${index * 0.15}s`
+                background: `linear-gradient(90deg, ${getBarColor(bench.percentage)} 0%, color-mix(in srgb, ${getBarColor(bench.percentage)} 70%, white) 100%)`,
+                animationDelay: `${index * 0.12}s`
               }"
             >
               <span class="benchmark-value">{{ bench.percentage }}%</span>
             </div>
           </div>
 
-          <!-- Reference line at 100% -->
           <div class="reference-line">
             <span class="ref-label">100%</span>
           </div>
@@ -95,7 +98,6 @@ function selectBenchmark(bench: Benchmark) {
       </div>
     </div>
 
-    <!-- Summary stats -->
     <div class="chart-summary">
       <div class="summary-item">
         <span class="summary-value">{{ Math.round(benchmarks.reduce((a, b) => a + b.percentage, 0) / benchmarks.length) }}%</span>
@@ -112,7 +114,7 @@ function selectBenchmark(bench: Benchmark) {
     </div>
 
     <div class="chart-note">
-      <span class="note-icon">📊</span>
+      <span class="note-icon">&#128202;</span>
       <span>Benchmarks run on A100 80GB, CUDA 12.4, Tensor Core enabled</span>
     </div>
   </div>
@@ -120,54 +122,68 @@ function selectBenchmark(bench: Benchmark) {
 
 <style scoped>
 .benchmark-chart {
-  padding: 4rem 0;
+  padding: 3rem 0;
   max-width: 800px;
   margin: 0 auto;
 }
 
 .chart-title {
-  font-size: 2rem;
+  font-family: 'Fraunces', serif;
+  font-size: 1.8rem;
   text-align: center;
-  margin-bottom: 1rem;
+  margin-bottom: 0.6rem;
   color: var(--vp-c-text-1);
+  font-weight: 700;
 }
 
-.brand-text {
-  color: var(--vp-c-brand-1);
+.accent-text {
+  color: var(--tc-accent-primary);
 }
 
 .chart-description {
   text-align: center;
   color: var(--vp-c-text-2);
-  margin-bottom: 3rem;
+  margin-bottom: 2.5rem;
+  font-size: 0.92rem;
 }
 
 .chart-container {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.2rem;
 }
 
 .benchmark-row {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  padding: 1rem;
+  padding: 1rem 1.2rem;
   background: var(--vp-c-bg-soft);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--vp-c-border);
+  border-radius: var(--tc-radius-md);
+  border: 1px solid var(--vp-c-divider);
   cursor: pointer;
   transition: all 0.2s ease;
+  opacity: 0;
+  transform: translateX(-10px);
+  animation: slideIn 0.5s ease forwards;
+}
+
+@keyframes slideIn {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .benchmark-row:hover {
-  border-color: var(--vp-c-brand-1);
+  border-color: color-mix(in srgb, var(--tc-accent-primary) 40%, var(--vp-c-divider));
+  box-shadow: var(--tc-shadow-md);
   transform: translateX(4px);
 }
 
 .benchmark-row.selected {
-  border-color: var(--vp-c-brand-1);
-  background: var(--vp-c-bg-mute);
+  border-color: var(--tc-accent-primary);
+  background: color-mix(in srgb, var(--tc-blue-soft) 30%, var(--vp-c-bg-soft));
 }
 
 .benchmark-info {
@@ -183,15 +199,16 @@ function selectBenchmark(bench: Benchmark) {
 }
 
 .benchmark-name {
-  font-weight: 600;
+  font-weight: 700;
   color: var(--vp-c-text-1);
   font-family: var(--vp-font-family-mono);
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .benchmark-target {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--vp-c-text-3);
+  font-family: var(--vp-font-family-mono);
 }
 
 .benchmark-details {
@@ -202,45 +219,35 @@ function selectBenchmark(bench: Benchmark) {
 
 .benchmark-bar-container {
   position: relative;
-  height: 36px;
+  height: 34px;
 }
 
 .bar-background {
   height: 100%;
   background: var(--vp-c-bg-mute);
-  border-radius: var(--radius-sm);
+  border-radius: var(--tc-radius-sm);
   overflow: hidden;
   position: relative;
 }
 
 .benchmark-bar {
   height: 100%;
-  border-radius: var(--radius-sm);
+  border-radius: var(--tc-radius-sm);
   display: flex;
   align-items: center;
   justify-content: flex-end;
   padding-right: 1rem;
-  transition: width 1s ease-out;
+  transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
   position: relative;
-}
-
-.benchmark-bar::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15));
-  border-radius: var(--radius-sm);
 }
 
 .benchmark-value {
   font-weight: 700;
-  color: #000;
-  font-size: 13px;
+  color: var(--tc-paper-elevated);
+  font-size: 12px;
   font-family: var(--vp-font-family-mono);
   z-index: 1;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
 .reference-line {
@@ -259,39 +266,41 @@ function selectBenchmark(bench: Benchmark) {
   font-size: 10px;
   color: var(--vp-c-text-3);
   transform: translateX(50%);
+  font-family: var(--vp-font-family-mono);
 }
 
-/* Summary stats */
+/* Summary */
 .chart-summary {
   display: flex;
   justify-content: center;
-  gap: 3rem;
+  gap: 2.5rem;
   margin: 2rem 0;
-  padding: 1.5rem;
+  padding: 1.3rem;
   background: var(--vp-c-bg-soft);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--vp-c-border);
+  border-radius: var(--tc-radius-lg);
+  border: 1px solid var(--vp-c-divider);
 }
 
 .summary-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.2rem;
 }
 
 .summary-value {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--vp-c-brand-1);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--tc-accent-primary);
   font-family: var(--vp-font-family-mono);
 }
 
 .summary-label {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--vp-c-text-3);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
+  font-weight: 600;
 }
 
 .chart-note {
@@ -300,12 +309,13 @@ function selectBenchmark(bench: Benchmark) {
   justify-content: center;
   gap: 0.5rem;
   margin-top: 1rem;
-  padding: 0.75rem 1.5rem;
+  padding: 0.7rem 1.3rem;
   background: var(--vp-c-bg-soft);
-  border: 1px solid var(--vp-c-border);
-  border-radius: var(--radius-md);
-  font-size: 12px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: var(--tc-radius-md);
+  font-size: 11px;
   color: var(--vp-c-text-3);
+  font-family: var(--vp-font-family-mono);
 }
 
 .note-icon {
@@ -314,7 +324,7 @@ function selectBenchmark(bench: Benchmark) {
 
 @media (max-width: 768px) {
   .chart-title {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
   }
 
   .benchmark-bar-container {
@@ -322,15 +332,15 @@ function selectBenchmark(bench: Benchmark) {
   }
 
   .benchmark-value {
-    font-size: 11px;
+    font-size: 10px;
   }
 
   .chart-summary {
-    gap: 2rem;
+    gap: 1.8rem;
   }
 
   .summary-value {
-    font-size: 1.25rem;
+    font-size: 1.2rem;
   }
 }
 </style>

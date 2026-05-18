@@ -1,32 +1,32 @@
-# 架构设计
+# Architecture
 
-本文档详细描述 TensorCraft-HPC 的系统架构、模块设计和扩展点。
-
----
-
-## 设计哲学
-
-TensorCraft-HPC 遵循三个核心原则：
-
-1. **可读性优先** — 代码是为阅读而写的，每个内核展示优化演进过程
-2. **仅头文件** — C++ 用户零构建复杂度，直接包含即可使用
-3. **OpenSpec 驱动** — `openspec/specs/` 中的规范是实现的权威依据
+This document describes the system architecture, module design, and extension points of TensorCraft-HPC.
 
 ---
 
-## 系统架构
+## Design Philosophy
+
+TensorCraft-HPC follows three core principles:
+
+1. **Readability first** — Code is written to be read; each kernel demonstrates the optimization progression.
+2. **Header-only** — Zero build complexity for C++ users; include and go.
+3. **OpenSpec-driven** — The specifications in `openspec/specs/` are the authoritative source for implementation.
+
+---
+
+## System Architecture
 
 ```mermaid
 flowchart TB
-    subgraph UserAPI["用户 API 层"]
+    subgraph UserAPI["User API Layer"]
         direction TB
         CPP["C++ Headers<br/>(Header-Only)"]
         PY["Python Bindings<br/>(tensorcraft_ops)"]
     end
 
-    subgraph KernelLayer["内核层"]
+    subgraph KernelLayer["Kernel Layer"]
         direction TB
-        GEMM["GEMM Kernels<br/>(Naive → Tensor Core)"]
+        GEMM["GEMM Kernels<br/>(Naive to Tensor Core)"]
         ATTN["Attention Kernels<br/>(FlashAttention)"]
         NORM["Normalization<br/>(LayerNorm, RMSNorm)"]
         CONV["Convolution<br/>(Im2Col, Winograd)"]
@@ -34,19 +34,19 @@ flowchart TB
         QUANT["Quantization<br/>(INT8, FP8)"]
     end
 
-    subgraph MemoryLayer["内存层"]
+    subgraph MemoryLayer["Memory Layer"]
         direction TB
         TENSOR["FloatTensor<br/>(RAII GPU Memory)"]
         POOL["MemoryPool<br/>(Optional Pooling)"]
     end
 
-    subgraph CoreLayer["核心工具"]
+    subgraph CoreLayer["Core Utilities"]
         direction TB
         CUDA_CHECK["cuda_check.hpp<br/>(Error Handling)"]
         FEATURES["features.hpp<br/>(Compile-Time Detection)"]
     end
 
-    subgraph Hardware["硬件抽象"]
+    subgraph Hardware["Hardware Abstraction"]
         SM70["SM70<br/>(Volta)"]
         SM80["SM80<br/>(Ampere)"]
         SM90["SM90<br/>(Hopper)"]
@@ -62,7 +62,7 @@ flowchart TB
 
 ---
 
-## 目录结构
+## Directory Structure
 
 ```
 modern-ai-kernels/
@@ -81,7 +81,6 @@ modern-ai-kernels/
 │       ├── softmax.hpp        # Softmax variants
 │       ├── conv2d.hpp         # 2D convolution
 │       ├── sparse.hpp         # Sparse operations
-│       ├── fusion.hpp         # Fused kernels
 │       └── fusion.hpp         # Fused operators and quantization helpers
 ├── src/python_ops/            # Python bindings (pybind11)
 ├── tests/                     # Unit tests (GoogleTest)
@@ -95,13 +94,13 @@ modern-ai-kernels/
 
 ---
 
-## GEMM 优化路径
+## GEMM Optimization Path
 
-GEMM 内核展示了渐进式优化方法：
+The GEMM kernel demonstrates the progressive optimization approach:
 
 ```mermaid
 flowchart LR
-    A["Naive<br/>(O(N³) Global Memory)"]
+    A["Naive<br/>(O(N^3) Global Memory)"]
     B["Tiled<br/>(Shared Memory)"]
     C["Double Buffer<br/>(Overlap Copy/Compute)"]
     D["Tensor Core<br/>(WMMA)"]
@@ -111,13 +110,12 @@ flowchart LR
     B -->|"Double buffer<br/>for overlap"| C
     C -->|"Use Tensor Cores<br/>(WMMA)"| D
     D -->|"Fine-tune<br/>parameters"| E
-
 ```
 
-### 性能特征
+### Performance Characteristics
 
-| 阶段 | 内存流量 | 计算效率 | 相对速度 |
-|------|----------|----------|----------|
+| Stage | Memory Traffic | Compute Efficiency | Relative Speed |
+|-------|----------------|--------------------|----------------|
 | Naive | O(N³) global | ~1% | 1x |
 | Tiled | O(N²) global | ~10% | 10x |
 | Double Buffer | O(N²) global | ~30% | 30x |
@@ -125,7 +123,7 @@ flowchart LR
 
 ---
 
-## FlashAttention 实现
+## FlashAttention Implementation
 
 ```mermaid
 sequenceDiagram
@@ -147,30 +145,30 @@ sequenceDiagram
     end
     SRAM->>DRAM: Write final O
 
-    Note over Host,DRAM: Memory: O(N²) instead of O(N²d)
+    Note over Host,DRAM: Memory: O(N) instead of O(N^2)
 ```
 
-### 关键创新
+### Key Innovations
 
-1. **分块计算** — 处理适合 SRAM 的注意力块
-2. **在线 Softmax** — 增量更新 softmax 统计量
-3. **重计算** — 重新计算注意力权重而非存储
+1. **Tiled computation** — Process attention blocks that fit in SRAM.
+2. **Online softmax** — Incrementally update softmax statistics.
+3. **Recomputation** — Recompute attention weights rather than storing them.
 
 ---
 
-## 内存管理
+## Memory Management
 
-### RAII 模式
+### RAII Pattern
 
 ```cpp
-// 自动内存管理
+// Automatic memory management
 {
     tensorcraft::FloatTensor A({4096, 4096});
-    // 使用 A...
-} // 作用域退出时自动释放
+    // use A...
+} // Released automatically when scope exits
 ```
 
-### 内存池（可选）
+### Memory Pool (Optional)
 
 ```mermaid
 flowchart LR
@@ -185,33 +183,33 @@ flowchart LR
 
 ---
 
-## 编译时特性检测
+## Compile-Time Feature Detection
 
-`features.hpp` 提供编译时 GPU 能力检测：
+`features.hpp` provides compile-time GPU capability detection:
 
 ```cpp
-// 编译时自动检测
+// Automatically detected at compile time
 #if TENSORCRAFT_HAS_WMMA
-    // 使用 Tensor Cores (SM70+)
+    // Use Tensor Cores (SM70+)
 #endif
 
 #if TENSORCRAFT_HAS_FP8
-    // 使用 FP8 类型 (SM90+)
+    // Use FP8 types (SM90+)
 #endif
 
 #if TENSORCRAFT_HAS_TMA
-    // 使用 Tensor Memory Accelerator (SM90+)
+    // Use Tensor Memory Accelerator (SM90+)
 #endif
 ```
 
 ---
 
-## OpenSpec 工作流
+## OpenSpec Workflow
 
 ```mermaid
 flowchart TB
     IDEA["New Idea"] --> PROPOSAL["Create Proposal<br/>openspec/changes/"]
-    PROPOSAL --> REVIEW["Review & Discuss"]
+    PROPOSAL --> REVIEW["Review and Discuss"]
     REVIEW -->|"Accept"| SPEC["Move to<br/>openspec/specs/"]
     REVIEW -->|"Reject"| ARCHIVE["Archive with<br/>rationale"]
     SPEC --> IMPL["Implement"]
@@ -219,28 +217,28 @@ flowchart TB
     VERIFY --> DONE["Complete"]
 ```
 
-### 规范结构
+### Spec Structure
 
-`openspec/specs/` 中的每个规范包含：
+Each specification in `openspec/specs/` contains:
 
-- **需求 (Requirements)** — 组件必须做什么
-- **契约 (Contracts)** — API 保证和不变量
-- **验收标准 (Acceptance Criteria)** — 如何验证合规性
+- **Requirements** — What the component must do.
+- **Contracts** — API guarantees and invariants.
+- **Acceptance Criteria** — How to verify compliance.
 
 ---
 
-## 扩展点
+## Extension Points
 
-### 添加新内核
+### Adding a New Kernel
 
-1. 在 `openspec/changes/` 创建规范提案
-2. 审核通过后移至 `openspec/specs/`
-3. 在 `include/tensorcraft/kernels/` 实现头文件
-4. 添加 GoogleTest 单元测试
-5. 添加性能基准测试
-6. 更新文档
+1. Create a spec proposal in `openspec/changes/`.
+2. After review, move to `openspec/specs/`.
+3. Implement the header in `include/tensorcraft/kernels/`.
+4. Add GoogleTest unit tests.
+5. Add performance benchmarks.
+6. Update documentation.
 
-### 添加 Python 绑定
+### Adding Python Bindings
 
 ```cpp
 // src/python_ops/bindings.cpp
