@@ -109,36 +109,37 @@ TEST_F(SparseTest, SpMV_Simple3x3) {
     float *d_values, *d_x, *d_y;
     int *d_col_indices, *d_row_ptrs;
 
-    CUDA_CHECK(cudaMalloc(&d_values, nnz * sizeof(float)));
-    CUDA_CHECK(cudaMalloc(&d_col_indices, nnz * sizeof(int)));
-    CUDA_CHECK(cudaMalloc(&d_row_ptrs, (rows + 1) * sizeof(int)));
-    CUDA_CHECK(cudaMalloc(&d_x, rows * sizeof(float)));
-    CUDA_CHECK(cudaMalloc(&d_y, rows * sizeof(float)));
+    TC_CUDA_CHECK(cudaMalloc(&d_values, nnz * sizeof(float)));
+    TC_CUDA_CHECK(cudaMalloc(&d_col_indices, nnz * sizeof(int)));
+    TC_CUDA_CHECK(cudaMalloc(&d_row_ptrs, (rows + 1) * sizeof(int)));
+    TC_CUDA_CHECK(cudaMalloc(&d_x, rows * sizeof(float)));
+    TC_CUDA_CHECK(cudaMalloc(&d_y, rows * sizeof(float)));
 
     // Copy data
-    CUDA_CHECK(cudaMemcpy(d_values, values.data(), nnz * sizeof(float), cudaMemcpyHostToDevice));
-    CUDA_CHECK(
+    TC_CUDA_CHECK(cudaMemcpy(d_values, values.data(), nnz * sizeof(float), cudaMemcpyHostToDevice));
+    TC_CUDA_CHECK(
         cudaMemcpy(d_col_indices, col_indices.data(), nnz * sizeof(int), cudaMemcpyHostToDevice));
-    CUDA_CHECK(
+    TC_CUDA_CHECK(
         cudaMemcpy(d_row_ptrs, row_ptrs.data(), (rows + 1) * sizeof(int), cudaMemcpyHostToDevice));
-    CUDA_CHECK(cudaMemcpy(d_x, h_x.data(), rows * sizeof(float), cudaMemcpyHostToDevice));
+    TC_CUDA_CHECK(cudaMemcpy(d_x, h_x.data(), rows * sizeof(float), cudaMemcpyHostToDevice));
 
     // Launch SpMV
-    launch_spmv_csr(d_values, d_col_indices, d_row_ptrs, d_x, d_y, rows);
-    CUDA_CHECK(cudaDeviceSynchronize());
+    CSRMatrixView<float> A{d_values, d_col_indices, d_row_ptrs, rows, 3, nnz};
+    launch_spmv_csr(A, d_x, d_y);
+    TC_CUDA_CHECK(cudaDeviceSynchronize());
 
     // Copy result back
-    CUDA_CHECK(cudaMemcpy(h_y.data(), d_y, rows * sizeof(float), cudaMemcpyDeviceToHost));
+    TC_CUDA_CHECK(cudaMemcpy(h_y.data(), d_y, rows * sizeof(float), cudaMemcpyDeviceToHost));
 
     // Verify
     EXPECT_TRUE(compare_results(h_y, h_y_ref)) << "SpMV result mismatch";
 
     // Cleanup
-    CUDA_CHECK(cudaFree(d_values));
-    CUDA_CHECK(cudaFree(d_col_indices));
-    CUDA_CHECK(cudaFree(d_row_ptrs));
-    CUDA_CHECK(cudaFree(d_x));
-    CUDA_CHECK(cudaFree(d_y));
+    TC_CUDA_CHECK(cudaFree(d_values));
+    TC_CUDA_CHECK(cudaFree(d_col_indices));
+    TC_CUDA_CHECK(cudaFree(d_row_ptrs));
+    TC_CUDA_CHECK(cudaFree(d_x));
+    TC_CUDA_CHECK(cudaFree(d_y));
 }
 
 // Test SpMV with a larger random sparse matrix
@@ -181,45 +182,46 @@ TEST_F(SparseTest, SpMV_RandomSparse) {
     float *d_values, *d_x, *d_y;
     int *d_col_indices, *d_row_ptrs;
 
-    CUDA_CHECK(cudaMalloc(&d_values, nnz * sizeof(float)));
-    CUDA_CHECK(cudaMalloc(&d_col_indices, nnz * sizeof(int)));
-    CUDA_CHECK(cudaMalloc(&d_row_ptrs, (rows + 1) * sizeof(int)));
-    CUDA_CHECK(cudaMalloc(&d_x, cols * sizeof(float)));
-    CUDA_CHECK(cudaMalloc(&d_y, rows * sizeof(float)));
+    TC_CUDA_CHECK(cudaMalloc(&d_values, nnz * sizeof(float)));
+    TC_CUDA_CHECK(cudaMalloc(&d_col_indices, nnz * sizeof(int)));
+    TC_CUDA_CHECK(cudaMalloc(&d_row_ptrs, (rows + 1) * sizeof(int)));
+    TC_CUDA_CHECK(cudaMalloc(&d_x, cols * sizeof(float)));
+    TC_CUDA_CHECK(cudaMalloc(&d_y, rows * sizeof(float)));
 
     // Copy data
-    CUDA_CHECK(cudaMemcpy(d_values, values.data(), nnz * sizeof(float), cudaMemcpyHostToDevice));
-    CUDA_CHECK(
+    TC_CUDA_CHECK(cudaMemcpy(d_values, values.data(), nnz * sizeof(float), cudaMemcpyHostToDevice));
+    TC_CUDA_CHECK(
         cudaMemcpy(d_col_indices, col_indices.data(), nnz * sizeof(int), cudaMemcpyHostToDevice));
-    CUDA_CHECK(
+    TC_CUDA_CHECK(
         cudaMemcpy(d_row_ptrs, row_ptrs.data(), (rows + 1) * sizeof(int), cudaMemcpyHostToDevice));
-    CUDA_CHECK(cudaMemcpy(d_x, h_x.data(), cols * sizeof(float), cudaMemcpyHostToDevice));
+    TC_CUDA_CHECK(cudaMemcpy(d_x, h_x.data(), cols * sizeof(float), cudaMemcpyHostToDevice));
 
     // Launch SpMV (both scalar and vector versions)
-    launch_spmv_csr(d_values, d_col_indices, d_row_ptrs, d_x, d_y, rows, false);
-    CUDA_CHECK(cudaDeviceSynchronize());
+    CSRMatrixView<float> A{d_values, d_col_indices, d_row_ptrs, rows, cols, nnz};
+    launch_spmv_csr(A, d_x, d_y, false);
+    TC_CUDA_CHECK(cudaDeviceSynchronize());
 
     // Copy result back
     std::vector<float> h_y_scalar(rows);
-    CUDA_CHECK(cudaMemcpy(h_y_scalar.data(), d_y, rows * sizeof(float), cudaMemcpyDeviceToHost));
+    TC_CUDA_CHECK(cudaMemcpy(h_y_scalar.data(), d_y, rows * sizeof(float), cudaMemcpyDeviceToHost));
 
     // Vector version
-    launch_spmv_csr(d_values, d_col_indices, d_row_ptrs, d_x, d_y, rows, true);
-    CUDA_CHECK(cudaDeviceSynchronize());
+    launch_spmv_csr(A, d_x, d_y, true);
+    TC_CUDA_CHECK(cudaDeviceSynchronize());
 
     std::vector<float> h_y_vector(rows);
-    CUDA_CHECK(cudaMemcpy(h_y_vector.data(), d_y, rows * sizeof(float), cudaMemcpyDeviceToHost));
+    TC_CUDA_CHECK(cudaMemcpy(h_y_vector.data(), d_y, rows * sizeof(float), cudaMemcpyDeviceToHost));
 
     // Verify both versions
     EXPECT_TRUE(compare_results(h_y_scalar, h_y_ref)) << "Scalar SpMV result mismatch";
     EXPECT_TRUE(compare_results(h_y_vector, h_y_ref)) << "Vector SpMV result mismatch";
 
     // Cleanup
-    CUDA_CHECK(cudaFree(d_values));
-    CUDA_CHECK(cudaFree(d_col_indices));
-    CUDA_CHECK(cudaFree(d_row_ptrs));
-    CUDA_CHECK(cudaFree(d_x));
-    CUDA_CHECK(cudaFree(d_y));
+    TC_CUDA_CHECK(cudaFree(d_values));
+    TC_CUDA_CHECK(cudaFree(d_col_indices));
+    TC_CUDA_CHECK(cudaFree(d_row_ptrs));
+    TC_CUDA_CHECK(cudaFree(d_x));
+    TC_CUDA_CHECK(cudaFree(d_y));
 }
 
 // Test SpMM with a small matrix
@@ -254,37 +256,38 @@ TEST_F(SparseTest, SpMM_Small) {
     float *d_A_values, *d_B, *d_C;
     int *d_A_col_indices, *d_A_row_ptrs;
 
-    CUDA_CHECK(cudaMalloc(&d_A_values, nnz * sizeof(float)));
-    CUDA_CHECK(cudaMalloc(&d_A_col_indices, nnz * sizeof(int)));
-    CUDA_CHECK(cudaMalloc(&d_A_row_ptrs, (M + 1) * sizeof(int)));
-    CUDA_CHECK(cudaMalloc(&d_B, K * N * sizeof(float)));
-    CUDA_CHECK(cudaMalloc(&d_C, M * N * sizeof(float)));
+    TC_CUDA_CHECK(cudaMalloc(&d_A_values, nnz * sizeof(float)));
+    TC_CUDA_CHECK(cudaMalloc(&d_A_col_indices, nnz * sizeof(int)));
+    TC_CUDA_CHECK(cudaMalloc(&d_A_row_ptrs, (M + 1) * sizeof(int)));
+    TC_CUDA_CHECK(cudaMalloc(&d_B, K * N * sizeof(float)));
+    TC_CUDA_CHECK(cudaMalloc(&d_C, M * N * sizeof(float)));
 
     // Copy data
-    CUDA_CHECK(
+    TC_CUDA_CHECK(
         cudaMemcpy(d_A_values, A_values.data(), nnz * sizeof(float), cudaMemcpyHostToDevice));
-    CUDA_CHECK(cudaMemcpy(d_A_col_indices, A_col_indices.data(), nnz * sizeof(int),
+    TC_CUDA_CHECK(cudaMemcpy(d_A_col_indices, A_col_indices.data(), nnz * sizeof(int),
                           cudaMemcpyHostToDevice));
-    CUDA_CHECK(
+    TC_CUDA_CHECK(
         cudaMemcpy(d_A_row_ptrs, A_row_ptrs.data(), (M + 1) * sizeof(int), cudaMemcpyHostToDevice));
-    CUDA_CHECK(cudaMemcpy(d_B, h_B.data(), K * N * sizeof(float), cudaMemcpyHostToDevice));
+    TC_CUDA_CHECK(cudaMemcpy(d_B, h_B.data(), K * N * sizeof(float), cudaMemcpyHostToDevice));
 
     // Launch SpMM
-    launch_spmm_csr(d_A_values, d_A_col_indices, d_A_row_ptrs, d_B, d_C, M, K, N);
-    CUDA_CHECK(cudaDeviceSynchronize());
+    CSRMatrixView<float> A{d_A_values, d_A_col_indices, d_A_row_ptrs, M, K, nnz};
+    launch_spmm_csr(A, d_B, d_C, N);
+    TC_CUDA_CHECK(cudaDeviceSynchronize());
 
     // Copy result back
-    CUDA_CHECK(cudaMemcpy(h_C.data(), d_C, M * N * sizeof(float), cudaMemcpyDeviceToHost));
+    TC_CUDA_CHECK(cudaMemcpy(h_C.data(), d_C, M * N * sizeof(float), cudaMemcpyDeviceToHost));
 
     // Verify
     EXPECT_TRUE(compare_results(h_C, h_C_ref)) << "SpMM result mismatch";
 
     // Cleanup
-    CUDA_CHECK(cudaFree(d_A_values));
-    CUDA_CHECK(cudaFree(d_A_col_indices));
-    CUDA_CHECK(cudaFree(d_A_row_ptrs));
-    CUDA_CHECK(cudaFree(d_B));
-    CUDA_CHECK(cudaFree(d_C));
+    TC_CUDA_CHECK(cudaFree(d_A_values));
+    TC_CUDA_CHECK(cudaFree(d_A_col_indices));
+    TC_CUDA_CHECK(cudaFree(d_A_row_ptrs));
+    TC_CUDA_CHECK(cudaFree(d_B));
+    TC_CUDA_CHECK(cudaFree(d_C));
 }
 
 // Test CSR to dense conversion
@@ -304,25 +307,25 @@ TEST_F(SparseTest, CSRToDense) {
     float *d_values, *d_dense;
     int *d_col_indices, *d_row_ptrs;
 
-    CUDA_CHECK(cudaMalloc(&d_values, nnz * sizeof(float)));
-    CUDA_CHECK(cudaMalloc(&d_col_indices, nnz * sizeof(int)));
-    CUDA_CHECK(cudaMalloc(&d_row_ptrs, (rows + 1) * sizeof(int)));
-    CUDA_CHECK(cudaMalloc(&d_dense, rows * cols * sizeof(float)));
+    TC_CUDA_CHECK(cudaMalloc(&d_values, nnz * sizeof(float)));
+    TC_CUDA_CHECK(cudaMalloc(&d_col_indices, nnz * sizeof(int)));
+    TC_CUDA_CHECK(cudaMalloc(&d_row_ptrs, (rows + 1) * sizeof(int)));
+    TC_CUDA_CHECK(cudaMalloc(&d_dense, rows * cols * sizeof(float)));
 
     // Copy CSR data
-    CUDA_CHECK(cudaMemcpy(d_values, values.data(), nnz * sizeof(float), cudaMemcpyHostToDevice));
-    CUDA_CHECK(
+    TC_CUDA_CHECK(cudaMemcpy(d_values, values.data(), nnz * sizeof(float), cudaMemcpyHostToDevice));
+    TC_CUDA_CHECK(
         cudaMemcpy(d_col_indices, col_indices.data(), nnz * sizeof(int), cudaMemcpyHostToDevice));
-    CUDA_CHECK(
+    TC_CUDA_CHECK(
         cudaMemcpy(d_row_ptrs, row_ptrs.data(), (rows + 1) * sizeof(int), cudaMemcpyHostToDevice));
 
     // Convert CSR to dense
     launch_csr_to_dense(d_values, d_col_indices, d_row_ptrs, d_dense, rows, cols);
-    CUDA_CHECK(cudaDeviceSynchronize());
+    TC_CUDA_CHECK(cudaDeviceSynchronize());
 
     // Copy result back
     std::vector<float> dense_result(rows * cols);
-    CUDA_CHECK(cudaMemcpy(dense_result.data(), d_dense, rows * cols * sizeof(float),
+    TC_CUDA_CHECK(cudaMemcpy(dense_result.data(), d_dense, rows * cols * sizeof(float),
                           cudaMemcpyDeviceToHost));
 
     // Verify
@@ -330,10 +333,10 @@ TEST_F(SparseTest, CSRToDense) {
         << "CSR to dense conversion mismatch";
 
     // Cleanup
-    CUDA_CHECK(cudaFree(d_values));
-    CUDA_CHECK(cudaFree(d_col_indices));
-    CUDA_CHECK(cudaFree(d_row_ptrs));
-    CUDA_CHECK(cudaFree(d_dense));
+    TC_CUDA_CHECK(cudaFree(d_values));
+    TC_CUDA_CHECK(cudaFree(d_col_indices));
+    TC_CUDA_CHECK(cudaFree(d_row_ptrs));
+    TC_CUDA_CHECK(cudaFree(d_dense));
 }
 
 // Test empty matrix edge case
@@ -343,6 +346,7 @@ TEST_F(SparseTest, EmptyMatrix) {
     std::vector<int> row_ptrs = {0, 0, 0};  // 2 rows, 0 non-zeros
 
     int rows = 2;
+    int cols = 2;
 
     std::vector<float> h_x = {1.0f, 2.0f};
     std::vector<float> h_y(rows, -1.0f);     // Initialize to -1
@@ -352,30 +356,31 @@ TEST_F(SparseTest, EmptyMatrix) {
     float *d_values, *d_x, *d_y;
     int *d_col_indices, *d_row_ptrs;
 
-    CUDA_CHECK(cudaMalloc(&d_values, 1 * sizeof(float)));  // Allocate minimum
-    CUDA_CHECK(cudaMalloc(&d_col_indices, 1 * sizeof(int)));
-    CUDA_CHECK(cudaMalloc(&d_row_ptrs, (rows + 1) * sizeof(int)));
-    CUDA_CHECK(cudaMalloc(&d_x, rows * sizeof(float)));
-    CUDA_CHECK(cudaMalloc(&d_y, rows * sizeof(float)));
+    TC_CUDA_CHECK(cudaMalloc(&d_values, 1 * sizeof(float)));  // Allocate minimum
+    TC_CUDA_CHECK(cudaMalloc(&d_col_indices, 1 * sizeof(int)));
+    TC_CUDA_CHECK(cudaMalloc(&d_row_ptrs, (rows + 1) * sizeof(int)));
+    TC_CUDA_CHECK(cudaMalloc(&d_x, rows * sizeof(float)));
+    TC_CUDA_CHECK(cudaMalloc(&d_y, rows * sizeof(float)));
 
-    CUDA_CHECK(
+    TC_CUDA_CHECK(
         cudaMemcpy(d_row_ptrs, row_ptrs.data(), (rows + 1) * sizeof(int), cudaMemcpyHostToDevice));
-    CUDA_CHECK(cudaMemcpy(d_x, h_x.data(), rows * sizeof(float), cudaMemcpyHostToDevice));
-    CUDA_CHECK(cudaMemset(d_y, 0xFF, rows * sizeof(float)));  // Set to NaN pattern
+    TC_CUDA_CHECK(cudaMemcpy(d_x, h_x.data(), rows * sizeof(float), cudaMemcpyHostToDevice));
+    TC_CUDA_CHECK(cudaMemset(d_y, 0xFF, rows * sizeof(float)));  // Set to NaN pattern
 
     // This should not crash
-    launch_spmv_csr(d_values, d_col_indices, d_row_ptrs, d_x, d_y, rows);
-    CUDA_CHECK(cudaDeviceSynchronize());
+    CSRMatrixView<float> A{d_values, d_col_indices, d_row_ptrs, rows, cols, 0};
+    launch_spmv_csr(A, d_x, d_y);
+    TC_CUDA_CHECK(cudaDeviceSynchronize());
 
-    CUDA_CHECK(cudaMemcpy(h_y.data(), d_y, rows * sizeof(float), cudaMemcpyDeviceToHost));
+    TC_CUDA_CHECK(cudaMemcpy(h_y.data(), d_y, rows * sizeof(float), cudaMemcpyDeviceToHost));
 
     // Result should be zeros
     EXPECT_TRUE(compare_results(h_y, h_y_ref)) << "Empty matrix SpMV should produce zeros";
 
     // Cleanup
-    CUDA_CHECK(cudaFree(d_values));
-    CUDA_CHECK(cudaFree(d_col_indices));
-    CUDA_CHECK(cudaFree(d_row_ptrs));
-    CUDA_CHECK(cudaFree(d_x));
-    CUDA_CHECK(cudaFree(d_y));
+    TC_CUDA_CHECK(cudaFree(d_values));
+    TC_CUDA_CHECK(cudaFree(d_col_indices));
+    TC_CUDA_CHECK(cudaFree(d_row_ptrs));
+    TC_CUDA_CHECK(cudaFree(d_x));
+    TC_CUDA_CHECK(cudaFree(d_y));
 }

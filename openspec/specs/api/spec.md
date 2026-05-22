@@ -192,6 +192,10 @@ void launch_gemm(const T* A, const T* B, T* C, int M, int N, int K,
                  cudaStream_t stream = nullptr);
 ```
 
+- **AND** `GemmVersion` SHALL include only the generic launcher variants: `Naive`, `Tiled`,
+  `DoubleBuffer`
+- **AND** Tensor Core GEMM SHALL use the dedicated `launch_gemm_wmma()` entry
+
 #### Scenario: Attention Operations
 - **WHEN** computing attention
 - **THEN** the API SHALL provide: `flash_attention()`, `launch_rope()`, `precompute_rope_cache()`

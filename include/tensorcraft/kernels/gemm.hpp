@@ -31,9 +31,7 @@ namespace kernels {
 enum class GemmVersion {
     Naive,         // Basic implementation
     Tiled,         // Shared memory tiling
-    DoubleBuffer,  // Double buffering for latency hiding
-    TensorCore,    // WMMA tensor core (CUDA 11.0+)
-    Auto           // Automatic selection based on hardware
+    DoubleBuffer   // Double buffering for latency hiding
 };
 
 // ============================================================================
@@ -342,20 +340,8 @@ void launch_gemm(const T* A, const T* B, T* C, int M, int N, int K, T alpha = T(
                 <<<grid, block, 0, stream>>>(A, B, C, M, N, K, alpha, beta);
             break;
 
-        case GemmVersion::TensorCore:
-            // TensorCore version requires half precision input
-            // Use launch_gemm_wmma() directly for half-precision Tensor Core GEMM
-            throw std::invalid_argument(
-                "GemmVersion::TensorCore requires half-precision types. "
-                "For Tensor Core GEMM with half precision, call launch_gemm_wmma() directly. "
-                "This launcher template does not support the TensorCore version.");
-
-        case GemmVersion::Auto:
         default:
-            // Default to tiled version
-            gemm_tiled_kernel<T, TILE_SIZE>
-                <<<grid, block, 0, stream>>>(A, B, C, M, N, K, alpha, beta);
-            break;
+            throw std::invalid_argument("Unsupported GEMM version");
     }
 
     TC_CUDA_CHECK_LAST();
