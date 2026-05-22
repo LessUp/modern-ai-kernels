@@ -103,6 +103,9 @@ modern-ai-kernels/
 | `tensor.hpp` | RAII-style GPU Tensor wrapper |
 | `memory_pool.hpp` | Thread-safe GPU memory pool |
 
+- **AND** `Tensor::fill()` SHALL delegate to the shared memory-operations module so fill behavior
+  lives behind one seam
+
 #### Scenario: Kernels
 - **WHEN** implementing compute kernels
 - **THEN** the following components SHALL be in `include/tensorcraft/kernels/`:
@@ -117,6 +120,9 @@ modern-ai-kernels/
 | `conv2d.hpp` | 2D convolution operations |
 | `sparse.hpp` | Sparse matrix operations (CSR/CSC) |
 | `fusion.hpp` | Fused operators and quantization |
+
+- **AND** `CSRMatrixView<T>` SHALL be the primary seam for sparse launchers, with `CSRMatrix<T>`
+  acting as the owning adapter for that seam
 
 ---
 
@@ -240,6 +246,8 @@ class Tensor { ... };
 - ⚠️ Cannot use `DirectAllocator` for testing isolation (minor limitation)
 - ✅ Simpler interface for users
 - ✅ Consistent performance characteristics
+- ✅ `CSRMatrixView<T>` is the non-owning launch seam for sparse kernels
+- ✅ Raw pointer bundles do not remain as a parallel public interface
 
 **Future Consideration:** If testing isolation becomes necessary, can add `CSRMatrix<T, Allocator>` in a future version.
 

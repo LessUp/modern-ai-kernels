@@ -72,6 +72,12 @@ void fill(T* data, T value, size_t n, cudaStream_t stream = nullptr) {
         return;
     }
 
+    // Zero-fill stays on the fast memset path for all supported scalar types.
+    if (value == T(0)) {
+        TC_CUDA_CHECK(cudaMemsetAsync(data, 0, n * sizeof(T), stream));
+        return;
+    }
+
     // Special case: int8_t uses cudaMemset (most efficient for single byte)
     if constexpr (sizeof(T) == 1) {
         TC_CUDA_CHECK(cudaMemsetAsync(data, static_cast<int>(value), n, stream));
