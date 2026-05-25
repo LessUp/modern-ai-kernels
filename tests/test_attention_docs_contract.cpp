@@ -2,15 +2,43 @@
 #include <stdexcept>
 
 #include "tensorcraft/kernels/attention.hpp"
-#include "tensorcraft/kernels/gemm.hpp"
-
+#include "tensorcraft/kernels/sparse.hpp"
 using namespace tensorcraft::kernels;
 
-TEST(GemmContractTest, TensorCoreVersionThrowsInLaunchGemm) {
+TEST(SparseContractTest, SpmvRejectsNegativeMetadata) {
     float* null_ptr = nullptr;
-    EXPECT_THROW(
-        launch_gemm(null_ptr, null_ptr, null_ptr, 1, 1, 1, 1.0f, 0.0f, GemmVersion::TensorCore),
-        std::invalid_argument);
+    CSRMatrixView<float> negative_rows{nullptr, nullptr, nullptr, -1, 4, 0};
+    CSRMatrixView<float> negative_cols{nullptr, nullptr, nullptr, 1, -1, 0};
+    CSRMatrixView<float> negative_nnz{nullptr, nullptr, nullptr, 1, 4, -1};
+
+    EXPECT_THROW(launch_spmv_csr(negative_rows, null_ptr, null_ptr), std::invalid_argument);
+    EXPECT_THROW(launch_spmv_csr(negative_cols, null_ptr, null_ptr), std::invalid_argument);
+    EXPECT_THROW(launch_spmv_csr(negative_nnz, null_ptr, null_ptr), std::invalid_argument);
+}
+
+TEST(SparseContractTest, SpmvRejectsMissingRequiredPointers) {
+    float output = 0.0f;
+    int row_ptrs[2] = {0, 0};
+    CSRMatrixView<float> missing_row_ptrs{nullptr, nullptr, nullptr, 1, 1, 0};
+    CSRMatrixView<float> missing_values{nullptr, nullptr, row_ptrs, 1, 1, 1};
+
+    EXPECT_THROW(launch_spmv_csr(missing_row_ptrs, nullptr, &output), std::invalid_argument);
+    EXPECT_THROW(launch_spmv_csr(missing_values, nullptr, &output), std::invalid_argument);
+}
+
+TEST(SparseContractTest, SpmmRejectsInvalidLaunchContract) {
+    float* null_ptr = nullptr;
+    int row_ptrs[2] = {0, 0};
+    CSRMatrixView<float> negative_cols{nullptr, nullptr, row_ptrs, 1, -1, 0};
+    CSRMatrixView<float> missing_row_ptrs{nullptr, nullptr, nullptr, 1, 1, 0};
+    CSRMatrixView<float> missing_values{nullptr, nullptr, row_ptrs, 1, 1, 1};
+
+    EXPECT_THROW(launch_spmm_csr(negative_cols, null_ptr, null_ptr, 1), std::invalid_argument);
+    EXPECT_THROW(launch_spmm_csr(missing_row_ptrs, null_ptr, null_ptr, 1), std::invalid_argument);
+    EXPECT_THROW(launch_spmm_csr(missing_values, null_ptr, null_ptr, 1), std::invalid_argument);
+    EXPECT_THROW(launch_spmm_csr(CSRMatrixView<float>{nullptr, nullptr, row_ptrs, 1, 1, 0}, null_ptr,
+                                 null_ptr, -1),
+                 std::invalid_argument);
 }
 
 TEST(AttentionContractTest, FlashAttentionRejectsUnsupportedHeadDim) {
