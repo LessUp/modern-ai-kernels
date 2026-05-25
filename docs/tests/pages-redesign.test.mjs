@@ -2,8 +2,10 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import fs from 'node:fs'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const root = process.cwd()
+const testDir = path.dirname(fileURLToPath(import.meta.url))
+const root = path.resolve(testDir, '..', '..')
 
 function read(relPath) {
   return fs.readFileSync(path.join(root, relPath), 'utf8')

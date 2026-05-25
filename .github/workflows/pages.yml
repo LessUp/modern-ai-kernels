@@ -55,6 +55,10 @@ jobs:
         working-directory: docs
         run: npm ci
 
+      - name: Run docs regression tests
+        working-directory: docs
+        run: npm test
+
       - name: Build VitePress
         working-directory: docs
         env:
