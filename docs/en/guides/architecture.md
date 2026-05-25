@@ -209,7 +209,7 @@ __global__ void elementwise_kernel(const T* in, T* out, size_t n, Func func) {
 Selecting optimization level via enumeration:
 
 ```cpp
-enum class GemmVersion { Naive, Tiled, DoubleBuffer };
+enum class GemmVersion { Naive, Tiled, DoubleBuffer, TensorCore, Auto };
 
 template<typename T>
 void launch_gemm(const T* A, const T* B, T* C, int M, int N, int K,
@@ -221,14 +221,15 @@ void launch_gemm(const T* A, const T* B, T* C, int M, int N, int K,
         case GemmVersion::Tiled:
             gemm_tiled<<<grid, block, smem>>>(A, B, C, M, N, K);
             break;
-        case GemmVersion::DoubleBuffer:
-            gemm_double_buffer<<<grid, block, smem>>>(A, B, C, M, N, K);
+        case GemmVersion::TensorCore:
+            // Currently uses Tensor Core via dedicated WMMA entry launch_gemm_wmma
+            break;
+        case GemmVersion::Auto:
+            // Default fallback to stable implementation
             break;
     }
 }
 ```
-
-Tensor Core GEMM remains available through the dedicated `launch_gemm_wmma()` entry.
 
 ### 3. Epilogue Pattern
 
