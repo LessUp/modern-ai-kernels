@@ -15,3 +15,7 @@
 3. [现代 C++ 与 CUDA](/zh/guides/modern-cpp-cuda)
 4. [基准测试](/zh/guides/benchmarking)
 5. [示例](/zh/examples/)
+
+## 优化路径
+
+<OptimizationPath />

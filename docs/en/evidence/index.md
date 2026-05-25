@@ -15,6 +15,10 @@ This section is the proof surface for TensorCraft-HPC.
   class-name="tc-diagram-image"
 />
 
+## Performance summary
+
+<BenchmarkChart />
+
 ## What belongs here
 
 - [Benchmarks](/en/benchmarks/) for kernel-level results

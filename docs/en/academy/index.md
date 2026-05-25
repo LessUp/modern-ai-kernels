@@ -15,3 +15,7 @@ The academy section teaches readers how to read the repository as a system, not 
 3. [Modern C++ and CUDA](/en/guides/modern-cpp-cuda)
 4. [Benchmarking](/en/guides/benchmarking)
 5. [Examples](/en/examples/)
+
+## Optimization path
+
+<OptimizationPath />

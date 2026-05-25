@@ -16,29 +16,32 @@ When evaluating the project, read the cited paper or library page, then compare 
 
 ### Foundational Papers
 
-<div class="citation">
-<span class="citation-author">CUTLASS Team (NVIDIA)</span> —
-<span class="citation-title">CUTLASS: CUDA Templates for Linear Algebra Subroutines</span><br/>
-<a class="citation-link" href="https://github.com/NVIDIA/cutlass">https://github.com/NVIDIA/cutlass</a>
-</div>
+<CitationCard
+  title="CUTLASS: CUDA Templates for Linear Algebra Subroutines"
+  authors="CUTLASS Team (NVIDIA)"
+  url="https://github.com/NVIDIA/cutlass"
+  tags="GEMM, Tensor Core, Templates"
+/>
 
 The primary reference for Tensor Core programming patterns. TensorCraft-HPC's GEMM implementation follows CUTLASS's tiled and pipeline strategies.
 
-<div class="citation">
-<span class="citation-author">NVIDIA</span> —
-<span class="citation-title">cuBLAS Documentation</span><br/>
-<a class="citation-link" href="https://docs.nvidia.com/cuda/cublas/">https://docs.nvidia.com/cuda/cublas/</a>
-</div>
+<CitationCard
+  title="cuBLAS Documentation"
+  authors="NVIDIA"
+  url="https://docs.nvidia.com/cuda/cublas/"
+  tags="GEMM, Baseline, Production"
+/>
 
 The baseline for performance comparison. All GEMM benchmarks report relative performance to cuBLAS.
 
 ### Tensor Core Programming
 
-<div class="citation">
-<span class="citation-author">NVIDIA</span> —
-<span class="citation-title">Tensor Core Programming Guide</span><br/>
-<a class="citation-link" href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#tensor-cores">CUDA C++ Programming Guide</a>
-</div>
+<CitationCard
+  title="Tensor Core Programming Guide"
+  authors="NVIDIA"
+  url="https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#tensor-cores"
+  tags="WMMA, Tensor Core, CUDA"
+/>
 
 Essential reading for understanding WMMA (Warp Matrix Multiply-Accumulate) operations.
 
