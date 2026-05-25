@@ -240,3 +240,25 @@ test('config loads KaTeX and academic fonts', () => {
   assert.match(config, /Fraunces/)
   assert.match(config, /JetBrains/)
 })
+
+test('theme CSS defines all custom tokens used by academic components', () => {
+  const css = read('docs/.vitepress/theme/style.css')
+  const requiredTokens = [
+    '--tc-accent-primary',
+    '--tc-accent-success',
+    '--tc-accent-warning',
+    '--tc-blue-soft',
+    '--tc-emerald-soft',
+    '--tc-shadow-sm',
+    '--tc-shadow-md',
+    '--tc-shadow-glow',
+    '--tc-paper',
+    '--tc-paper-elevated',
+    '--tc-ink-tertiary',
+    '--tc-ink-quaternary'
+  ]
+
+  for (const token of requiredTokens) {
+    assert.match(css, new RegExp(`${token}:`), `missing token definition for ${token}`)
+  }
+})
