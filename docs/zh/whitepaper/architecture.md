@@ -81,7 +81,6 @@ modern-ai-kernels/
 │       ├── softmax.hpp        # Softmax variants
 │       ├── conv2d.hpp         # 2D convolution
 │       ├── sparse.hpp         # Sparse operations
-│       ├── fusion.hpp         # Fused kernels
 │       └── fusion.hpp         # Fused operators and quantization helpers
 ├── src/python_ops/            # Python bindings (pybind11)
 ├── tests/                     # Unit tests (GoogleTest)
