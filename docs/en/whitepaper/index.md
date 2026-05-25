@@ -108,6 +108,23 @@ Instead, the project optimizes for a rarer combination:
 
 ---
 
+## Evolution notes
+
+TensorCraft-HPC is intentionally biased toward explainability over maximal breadth. The project evolves by making the optimization path more legible, the benchmark claims more defensible, and the architectural boundaries easier to discuss in design review. That means the site should preserve evidence, caveats, and implementation trade-offs even when the project grows.
+
+## Related open-source projects
+
+The project sits in conversation with several important surfaces:
+
+- **CUTLASS** for highly optimized, template-heavy CUDA kernel construction
+- **Triton** for compiler-led kernel authoring and research ergonomics
+- **FlashAttention** for attention-specific algorithmic and systems co-design
+- **cuBLAS / cuDNN** for production baselines and performance reference points
+
+These projects matter here not as competitors in a marketing sense, but as reference frames for understanding why TensorCraft-HPC emphasizes pedagogy, architecture visibility, and benchmark honesty.
+
+---
+
 ## Target Audience
 
 This whitepaper is intended for:

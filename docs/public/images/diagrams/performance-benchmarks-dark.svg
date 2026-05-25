@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 420" width="760" height="420" fill="none">
+  <rect width="760" height="420" rx="28" fill="#0F141A"/>
+  <rect x="24" y="24" width="712" height="372" rx="22" fill="#171E26" stroke="#344152"/>
+  <text x="56" y="72" fill="#F3EFE8" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="700">Evidence snapshot</text>
+  <text x="56" y="96" fill="#A5B2C0" font-family="Inter, Arial, sans-serif" font-size="14">Relative performance against production baselines, with method and source kept adjacent.</text>
+
+  <g transform="translate(96 138)">
+    <line x1="0" y1="0" x2="0" y2="210" stroke="#344152" stroke-width="1.5"/>
+    <line x1="0" y1="210" x2="560" y2="210" stroke="#344152" stroke-width="1.5"/>
+    <line x1="0" y1="52" x2="560" y2="52" stroke="#2C3643" stroke-dasharray="6 6"/>
+    <line x1="0" y1="104" x2="560" y2="104" stroke="#2C3643" stroke-dasharray="6 6"/>
+    <line x1="0" y1="156" x2="560" y2="156" stroke="#2C3643" stroke-dasharray="6 6"/>
+    <text x="-16" y="4" text-anchor="end" fill="#A5B2C0" font-family="JetBrains Mono, monospace" font-size="10">100</text>
+    <text x="-16" y="56" text-anchor="end" fill="#A5B2C0" font-family="JetBrains Mono, monospace" font-size="10">75</text>
+    <text x="-16" y="108" text-anchor="end" fill="#A5B2C0" font-family="JetBrains Mono, monospace" font-size="10">50</text>
+    <text x="-16" y="160" text-anchor="end" fill="#A5B2C0" font-family="JetBrains Mono, monospace" font-size="10">25</text>
+
+    <g transform="translate(30 0)">
+      <rect y="17" width="72" height="193" rx="14" fill="#C96E32"/>
+      <text x="36" y="11" text-anchor="middle" fill="#F3EFE8" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600">92%</text>
+      <text x="36" y="234" text-anchor="middle" fill="#F3EFE8" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="600">GEMM</text>
+      <text x="36" y="252" text-anchor="middle" fill="#A5B2C0" font-family="Inter, Arial, sans-serif" font-size="10">vs cuBLAS</text>
+    </g>
+
+    <g transform="translate(146 15)">
+      <rect y="17" width="72" height="178" rx="14" fill="#CF8C59"/>
+      <text x="36" y="11" text-anchor="middle" fill="#F3EFE8" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600">85%</text>
+      <text x="36" y="219" text-anchor="middle" fill="#F3EFE8" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="600">Attention</text>
+      <text x="36" y="237" text-anchor="middle" fill="#A5B2C0" font-family="Inter, Arial, sans-serif" font-size="10">vs cuDNN</text>
+    </g>
+
+    <g transform="translate(262 2)">
+      <rect y="17" width="72" height="191" rx="14" fill="#5DB7A4"/>
+      <text x="36" y="11" text-anchor="middle" fill="#F3EFE8" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600">95%</text>
+      <text x="36" y="232" text-anchor="middle" fill="#F3EFE8" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="600">LayerNorm</text>
+      <text x="36" y="250" text-anchor="middle" fill="#A5B2C0" font-family="Inter, Arial, sans-serif" font-size="10">vs cuDNN</text>
+    </g>
+
+    <g transform="translate(378 46)">
+      <rect y="17" width="72" height="147" rx="14" fill="#D4A27A"/>
+      <text x="36" y="11" text-anchor="middle" fill="#F3EFE8" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600">78%</text>
+      <text x="36" y="188" text-anchor="middle" fill="#F3EFE8" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="600">Conv2D</text>
+      <text x="36" y="206" text-anchor="middle" fill="#A5B2C0" font-family="Inter, Arial, sans-serif" font-size="10">vs cuDNN</text>
+    </g>
+
+    <g transform="translate(494 25)">
+      <rect y="17" width="72" height="168" rx="14" fill="#83CABB"/>
+      <text x="36" y="11" text-anchor="middle" fill="#F3EFE8" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600">88%</text>
+      <text x="36" y="209" text-anchor="middle" fill="#F3EFE8" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="600">SpMV</text>
+      <text x="36" y="227" text-anchor="middle" fill="#A5B2C0" font-family="Inter, Arial, sans-serif" font-size="10">vs cuSPARSE</text>
+    </g>
+  </g>
+
+  <g transform="translate(56 354)">
+    <rect width="240" height="24" rx="12" fill="#1D2630" stroke="#344152"/>
+    <text x="120" y="16" text-anchor="middle" fill="#F3EFE8" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="600">methodology and benchmark notes are first-class pages</text>
+    <rect x="256" width="212" height="24" rx="12" fill="#1D2630" stroke="#344152"/>
+    <text x="362" y="16" text-anchor="middle" fill="#F3EFE8" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="600">baselines always named beside results</text>
+  </g>
+</svg>
