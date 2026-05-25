@@ -23,28 +23,10 @@
 
 #include "../core/cuda_check.hpp"
 #include "../core/type_traits.hpp"
+#include "../kernels/memory_ops.hpp"
 #include "allocator.hpp"
 
 namespace tensorcraft {
-
-// ============================================================================
-// Internal Fill Kernel (for Tensor::fill)
-// ============================================================================
-
-namespace detail {
-
-/// Simple fill kernel for Tensor::fill
-/// Uses cudaMemset for single-byte types, otherwise launches a scalar kernel.
-/// For high-performance vectorized fill, include kernels/memory_ops.hpp and use kernels::fill.
-template <typename T>
-__global__ void tensor_fill_kernel(T* data, T value, size_t n) {
-    const size_t idx = blockIdx.x * blockDim.x + threadIdx.x;
-    if (idx < n) {
-        data[idx] = value;
-    }
-}
-
-}  // namespace detail
 
 // ============================================================================
 // Tensor Class
@@ -275,30 +257,14 @@ public:
     /**
      * @brief Fill tensor with a uniform value
      *
-     * Uses cudaMemset for single-byte types and zero-fills for efficiency.
-     * For other types and values, uses a simple fill kernel.
-     *
-     * For high-performance vectorized fill on large arrays, include
-     * kernels/memory_ops.hpp and use kernels::fill() directly.
+     * Delegates to the shared memory-operations module so fill behavior lives
+     * behind one implementation path.
      *
      * @param value Value to fill all elements with
      * @param stream CUDA stream (optional)
      */
     void fill(T value, cudaStream_t stream = nullptr) {
-        if (size_ == 0 || !data_)
-            return;
-
-        // Special case: zero is efficiently handled by cudaMemset
-        if constexpr (std::is_same_v<T, int8_t> || std::is_same_v<T, uint8_t>) {
-            TC_CUDA_CHECK(cudaMemsetAsync(data_, static_cast<int>(value), bytes(), stream));
-        } else if (value == T(0)) {
-            TC_CUDA_CHECK(cudaMemsetAsync(data_, 0, bytes(), stream));
-        } else {
-            // Use simple fill kernel (avoids kernel layer dependency)
-            const int grid = static_cast<int>((size_ + 255) / 256);
-            detail::tensor_fill_kernel<T><<<grid, 256, 0, stream>>>(data_, value, size_);
-            TC_CUDA_CHECK_LAST();
-        }
+        kernels::fill(data_, value, size_, stream);
     }
 
     /**

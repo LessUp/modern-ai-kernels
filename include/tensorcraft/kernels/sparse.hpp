@@ -7,6 +7,9 @@
  * consistent with the Tensor class design philosophy.
  */
 
+#include <stdexcept>
+#include <string>
+
 #include "../core/cuda_check.hpp"
 #include "../core/features.hpp"
 #include "../core/type_traits.hpp"
@@ -183,10 +186,6 @@ private:
     int cols_ = 0;
     int nnz_ = 0;
 };
-
-// Legacy type alias for backward compatibility
-template <typename T>
-using CSRMatrixLegacy = CSRMatrixView<T>;
 
 // ============================================================================
 // Dense to CSR Conversion
@@ -414,39 +413,96 @@ __global__ void spmm_csr_tiled_kernel(const T* TC_RESTRICT A_values,
 // Launcher Functions
 // ============================================================================
 
+namespace detail {
+
 template <typename T>
-void launch_spmv_csr(const T* values, const int* col_indices, const int* row_ptrs, const T* x, T* y,
-                     int rows, int cols, bool use_vector = true, cudaStream_t stream = nullptr) {
-    if (rows == 0)
+void validate_csr_view(CSRMatrixView<T> A, const char* op_name) {
+    if (A.rows < 0) {
+        throw std::invalid_argument(std::string(op_name) + " requires rows >= 0");
+    }
+    if (A.cols < 0) {
+        throw std::invalid_argument(std::string(op_name) + " requires cols >= 0");
+    }
+    if (A.nnz < 0) {
+        throw std::invalid_argument(std::string(op_name) + " requires nnz >= 0");
+    }
+    if (A.rows > 0 && A.row_ptrs == nullptr) {
+        throw std::invalid_argument(std::string(op_name) + " requires row_ptrs when rows > 0");
+    }
+    if (A.nnz > 0 && (A.values == nullptr || A.col_indices == nullptr)) {
+        throw std::invalid_argument(
+            std::string(op_name) + " requires values and col_indices when nnz > 0");
+    }
+}
+
+template <typename T>
+void validate_spmv_launch(CSRMatrixView<T> A, const T* x, T* y) {
+    validate_csr_view(A, "launch_spmv_csr");
+    if (A.rows == 0) {
+        return;
+    }
+    if (y == nullptr) {
+        throw std::invalid_argument("launch_spmv_csr requires y when rows > 0");
+    }
+    if (A.nnz > 0 && x == nullptr) {
+        throw std::invalid_argument("launch_spmv_csr requires x when nnz > 0");
+    }
+}
+
+template <typename T>
+void validate_spmm_launch(CSRMatrixView<T> A, const T* B, T* C, int N) {
+    if (N < 0) {
+        throw std::invalid_argument("launch_spmm_csr requires N >= 0");
+    }
+    validate_csr_view(A, "launch_spmm_csr");
+    if (A.rows == 0 || N == 0) {
+        return;
+    }
+    if (C == nullptr) {
+        throw std::invalid_argument("launch_spmm_csr requires C when rows > 0 and N > 0");
+    }
+    if (A.nnz > 0 && B == nullptr) {
+        throw std::invalid_argument("launch_spmm_csr requires B when nnz > 0 and N > 0");
+    }
+}
+
+}  // namespace detail
+
+template <typename T>
+void launch_spmv_csr(CSRMatrixView<T> A, const T* x, T* y, bool use_vector = true,
+                     cudaStream_t stream = nullptr) {
+    detail::validate_spmv_launch(A, x, y);
+    if (A.rows == 0)
         return;
 
     if (use_vector) {
         int warps_per_block = 4;
         int threads = warps_per_block * 32;
-        int blocks = (rows + warps_per_block - 1) / warps_per_block;
+        int blocks = (A.rows + warps_per_block - 1) / warps_per_block;
         spmv_csr_vector_kernel<T>
-            <<<blocks, threads, 0, stream>>>(values, col_indices, row_ptrs, x, y, rows);
+            <<<blocks, threads, 0, stream>>>(A.values, A.col_indices, A.row_ptrs, x, y, A.rows);
     } else {
         int block_size = 256;
-        int grid_size = (rows + block_size - 1) / block_size;
+        int grid_size = (A.rows + block_size - 1) / block_size;
         spmv_csr_kernel<T>
-            <<<grid_size, block_size, 0, stream>>>(values, col_indices, row_ptrs, x, y, rows, cols);
+            <<<grid_size, block_size, 0, stream>>>(A.values, A.col_indices, A.row_ptrs, x, y, A.rows,
+                                                   A.cols);
     }
     TC_CUDA_CHECK_LAST();
 }
 
 template <typename T>
-void launch_spmm_csr(const T* A_values, const int* A_col_indices, const int* A_row_ptrs, const T* B,
-                     T* C, int M, int K, int N, cudaStream_t stream = nullptr) {
-    if (M == 0 || N == 0)
+void launch_spmm_csr(CSRMatrixView<T> A, const T* B, T* C, int N, cudaStream_t stream = nullptr) {
+    detail::validate_spmm_launch(A, B, C, N);
+    if (A.rows == 0 || N == 0)
         return;
 
     constexpr int BLOCK_SIZE = 256;
     dim3 block(BLOCK_SIZE);
-    dim3 grid((N + BLOCK_SIZE - 1) / BLOCK_SIZE, M);
+    dim3 grid((N + BLOCK_SIZE - 1) / BLOCK_SIZE, A.rows);
 
     spmm_csr_kernel<T>
-        <<<grid, block, 0, stream>>>(A_values, A_col_indices, A_row_ptrs, B, C, M, K, N);
+        <<<grid, block, 0, stream>>>(A.values, A.col_indices, A.row_ptrs, B, C, A.rows, A.cols, N);
     TC_CUDA_CHECK_LAST();
 }
 
@@ -466,30 +522,23 @@ void launch_csr_to_dense(const T* values, const int* col_indices, const int* row
 // Convenience functions for RAII CSRMatrix class
 template <typename T>
 void spmv(const CSRMatrix<T>& A, const T* x, T* y, cudaStream_t stream = nullptr) {
-    launch_spmv_csr(A.values(), A.col_indices(), A.row_ptrs(), x, y, A.rows(), true, stream);
+    launch_spmv_csr(A.view(), x, y, true, stream);
 }
 
 template <typename T>
 void spmm(const CSRMatrix<T>& A, const T* B, T* C, int N, cudaStream_t stream = nullptr) {
-    launch_spmm_csr(A.values(), A.col_indices(), A.row_ptrs(), B, C, A.rows(), A.cols(), N, stream);
+    launch_spmm_csr(A.view(), B, C, N, stream);
 }
 
 // Convenience functions for CSRMatrixView (non-owning)
 template <typename T>
 void spmv(CSRMatrixView<T> A, const T* x, T* y, cudaStream_t stream = nullptr) {
-    launch_spmv_csr(A.values, A.col_indices, A.row_ptrs, x, y, A.rows, true, stream);
+    launch_spmv_csr(A, x, y, true, stream);
 }
 
 template <typename T>
 void spmm(CSRMatrixView<T> A, const T* B, T* C, int N, cudaStream_t stream = nullptr) {
-    launch_spmm_csr(A.values, A.col_indices, A.row_ptrs, B, C, A.rows, A.cols, N, stream);
-}
-
-// Legacy support: accept raw pointer struct (deprecated)
-template <typename T>
-[[deprecated("Use CSRMatrix<T> or CSRMatrixView<T> instead")]]
-void spmv(const CSRMatrixLegacy<T>& A, const T* x, T* y, cudaStream_t stream = nullptr) {
-    launch_spmv_csr(A.values, A.col_indices, A.row_ptrs, x, y, A.rows, true, stream);
+    launch_spmm_csr(A, B, C, N, stream);
 }
 
 }  // namespace kernels
