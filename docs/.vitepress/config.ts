@@ -1,6 +1,7 @@
 import { defineConfig } from 'vitepress'
 import { withMermaid } from 'vitepress-plugin-mermaid'
 import llmstxt from 'vitepress-plugin-llms'
+import markdownItKatex from 'markdown-it-katex'
 
 const rawBase = process.env.VITEPRESS_BASE
 const base = rawBase
@@ -30,6 +31,12 @@ export default withMermaid(defineConfig({
     }],
     ['link', { rel: 'stylesheet', href: 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css' }]
   ],
+
+  markdown: {
+    config: (md) => {
+      md.use(markdownItKatex)
+    }
+  },
 
   vite: {
     plugins: [

@@ -8,7 +8,7 @@ TensorCraft-HPC 遵循三个核心原则：
 
 1. **可读性优先** — 代码是为了阅读的。每个内核展示优化进程。
 2. **仅头文件** — C++ 用户零构建复杂度。只需包含即可使用。
-3. **OpenSpec 驱动** — `openspec/specs/` 中的规范是权威来源。
+3. **OpenSpec 驱动** — 活动工作从 `openspec/changes/` 开始，而已接受的基线保存在 `openspec/specs/`。
 
 ---
 
@@ -85,7 +85,6 @@ modern-ai-kernels/
 │       ├── softmax.hpp        # Softmax 变体
 │       ├── conv2d.hpp         # 2D 卷积
 │       ├── sparse.hpp         # 稀疏操作
-│       ├── fusion.hpp         # 融合内核
 │       ├── elementwise.hpp    # ReLU, GeLU 等
 │       ├── memory_ops.hpp     # 复制, 转置
 │       └── fusion.hpp         # 融合算子与量化辅助能力
@@ -219,16 +218,16 @@ flowchart LR
 flowchart TB
     IDEA["新想法"] --> PROPOSAL["创建提案<br/>openspec/changes/"]
     PROPOSAL --> REVIEW["审查和讨论"]
-    REVIEW -->|"接受"| SPEC["移至<br/>openspec/specs/"]
+    REVIEW -->|"开始实现"| IMPL["基于活动变更<br/>实现"]
     REVIEW -->|"拒绝"| ARCHIVE["归档并<br/>附理由"]
-    SPEC --> IMPL["实现"]
-    IMPL --> VERIFY["验证规范"]
-    VERIFY --> DONE["完成"]
+    IMPL --> VERIFY["按变更验证"]
+    VERIFY -->|"接受"| SPEC["提升为基线并写入<br/>openspec/specs/"]
+    SPEC --> DONE["完成"]
 ```
 
 ### 规范结构
 
-`openspec/specs/` 中的每个规范包含：
+`openspec/specs/` 中的每个已接受基线包含：
 - **需求** — 组件必须做什么
 - **契约** — API 保证和不变量
 - **验收标准** — 如何验证合规性

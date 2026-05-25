@@ -10,7 +10,7 @@ TensorCraft-HPC follows three core principles:
 
 1. **Readability first** — Code is written to be read; each kernel demonstrates the optimization progression.
 2. **Header-only** — Zero build complexity for C++ users; include and go.
-3. **OpenSpec-driven** — The specifications in `openspec/specs/` are the authoritative source for implementation.
+3. **OpenSpec-driven** — Active work starts in `openspec/changes/`, while accepted baselines live in `openspec/specs/`.
 
 ---
 
@@ -210,16 +210,16 @@ flowchart LR
 flowchart TB
     IDEA["New Idea"] --> PROPOSAL["Create Proposal<br/>openspec/changes/"]
     PROPOSAL --> REVIEW["Review and Discuss"]
-    REVIEW -->|"Accept"| SPEC["Move to<br/>openspec/specs/"]
+    REVIEW -->|"Start work"| IMPL["Implement from<br/>openspec/changes/"]
     REVIEW -->|"Reject"| ARCHIVE["Archive with<br/>rationale"]
-    SPEC --> IMPL["Implement"]
-    IMPL --> VERIFY["Verify against Spec"]
-    VERIFY --> DONE["Complete"]
+    IMPL --> VERIFY["Verify against change"]
+    VERIFY -->|"Accept"| SPEC["Promote baseline to<br/>openspec/specs/"]
+    SPEC --> DONE["Complete"]
 ```
 
 ### Spec Structure
 
-Each specification in `openspec/specs/` contains:
+Each accepted baseline in `openspec/specs/` contains:
 
 - **Requirements** — What the component must do.
 - **Contracts** — API guarantees and invariants.
@@ -232,11 +232,12 @@ Each specification in `openspec/specs/` contains:
 ### Adding a New Kernel
 
 1. Create a spec proposal in `openspec/changes/`.
-2. After review, move to `openspec/specs/`.
-3. Implement the header in `include/tensorcraft/kernels/`.
-4. Add GoogleTest unit tests.
-5. Add performance benchmarks.
-6. Update documentation.
+2. Implement the header in `include/tensorcraft/kernels/`.
+3. Add GoogleTest unit tests.
+4. Add performance benchmarks.
+5. Update documentation.
+6. Review the work against that active change.
+7. Promote the accepted baseline to `openspec/specs/`.
 
 ### Adding Python Bindings
 

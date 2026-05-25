@@ -17,6 +17,10 @@
   class-name="tc-diagram-image"
 />
 
+## 性能概览
+
+<BenchmarkChart />
+
 ## 这里包含什么
 
 - [性能基准](/zh/benchmarks/) 用于查看 kernel 级结果

@@ -137,14 +137,12 @@ test('evidence pages use theme-aware SVG assets for diagrams', () => {
 // === Brand & Assets ===
 
 test('public-facing copy and brand assets reflect the rebuilt site language', () => {
-  const readme = read('README.md')
-  const openspecDesign = read('openspec/changes/elevate-project-showcase/design.md')
+  const enHome = read('docs/en/index.md')
   const lightLogo = read('docs/public/images/logo.svg')
   const darkLogo = read('docs/public/images/logo-dark.svg')
 
-  assert.match(readme, /Academy|academy/)
-  assert.match(readme, /Evidence|evidence/)
-  assert.match(openspecDesign, /academy/i)
+  assert.match(enHome, /Academy|academy/)
+  assert.match(enHome, /Evidence|evidence/)
   assert.doesNotMatch(lightLogo, /76B900|8ED000/)
   assert.doesNotMatch(darkLogo, /76B900|8ED000/)
 })
