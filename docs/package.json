@@ -5,15 +5,18 @@
   "type": "module",
   "scripts": {
     "sync": "node scripts/sync-changelog.mjs",
+    "test": "node --test tests/pages-redesign.test.mjs",
     "dev": "npm run sync && vitepress dev",
     "build": "npm run sync && vitepress build",
     "preview": "vitepress preview"
   },
   "dependencies": {
+    "katex": "^0.16.9",
+    "markdown-it-katex": "^2.0.3",
+    "mermaid": "^11.4.0",
     "vitepress": "^1.5.0",
-    "vitepress-plugin-mermaid": "^2.0.17",
     "vitepress-plugin-llms": "^1.10.0",
-    "mermaid": "^11.4.0"
+    "vitepress-plugin-mermaid": "^2.0.17"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

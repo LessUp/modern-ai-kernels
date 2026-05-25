@@ -2,6 +2,16 @@
 
 本页面列出了影响 TensorCraft-HPC 设计和实现的学术论文和开源项目。我们鼓励用户阅读原始论文以获得更深入的理解。
 
+## 如何使用这些引用
+
+请把这个页面当作“带注释的参考层”，而不是单纯的书目列表。每条引用通常承担三种角色之一：
+
+1. 解释仓库采用的某种 kernel 策略
+2. 定义性能比较时所依赖的生产级 baseline
+3. 说明 TensorCraft-HPC 为了可解释性而刻意保持更简单的地方
+
+如果你在评估这个项目，推荐的方式是先读原始论文或库文档，再回看 TensorCraft-HPC 对应的白皮书、证据页或 atlas 页面。重点不是宣称全面对标生产系统，而是展示这些思想如何被转译成一个可学习、可评估的工程表面。
+
 ## GEMM 优化 {#gemm}
 
 ### 基础论文
@@ -131,6 +141,19 @@ Ampere 架构支持 2:4 结构化稀疏，可提供 2 倍吞吐量提升。
 | [xFormers](https://github.com/facebookresearch/xformers) | Facebook 注意力内核 | BSD-3 |
 | [Triton](https://github.com/openai/triton) | OpenAI GPU 编程语言 | MIT |
 | [cuDNN](https://docs.nvidia.com/deeplearning/cudnn/) | NVIDIA 深度学习库 | 私有 |
+
+---
+
+## 对比框架
+
+这些引用不应该被看作平铺的“推荐清单”，而应该被看作一套对比框架：
+
+- **CUTLASS 与 cuBLAS** 给出 GEMM 相关结论的生产级性能参考面
+- **FlashAttention** 给出 attention kernel 的算法与系统协同设计参考
+- **Triton 与 xFormers** 展示了相邻生态对 GPU kernel 的组织方式
+- **NVIDIA 官方文档** 锚定硬件事实、API 约束与能力边界
+
+这也是为什么白皮书、证据页与 atlas 页面应该联动阅读。
 
 ---
 

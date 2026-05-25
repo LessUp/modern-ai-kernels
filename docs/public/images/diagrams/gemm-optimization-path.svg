@@ -1,130 +1,81 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 320" width="900" height="320">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 340" width="940" height="340" fill="none">
   <defs>
-    <linearGradient id="nvidiaGreen" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:#5A9100;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#76B900;stop-opacity:1" />
+    <linearGradient id="gemmBg" x1="0" y1="0" x2="940" y2="340">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#f1f5f9"/>
     </linearGradient>
-    <linearGradient id="progressGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:#3d4f00;stop-opacity:1" />
-      <stop offset="50%" style="stop-color:#76B900;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#8ED000;stop-opacity:1" />
+    <linearGradient id="gemmStepGrad1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#ffffff"/>
     </linearGradient>
-    <filter id="shadow">
-      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.3"/>
+    <linearGradient id="gemmStepGrad2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#eff6ff"/>
+      <stop offset="100%" stop-color="#dbeafe"/>
+    </linearGradient>
+    <linearGradient id="gemmStepGrad3" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ecfdf5"/>
+      <stop offset="100%" stop-color="#d1fae5"/>
+    </linearGradient>
+    <linearGradient id="gemmStepGrad4" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <filter id="gemmShadow" x="-4" y="-4" width="20" height="20">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#0f172a" flood-opacity="0.06"/>
     </filter>
-    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-      <polygon points="0 0, 10 3.5, 0 7" fill="#76B900"/>
-    </marker>
   </defs>
 
-  <!-- Background -->
-  <rect width="900" height="320" fill="transparent"/>
+  <rect width="940" height="340" rx="24" fill="url(#gemmBg)"/>
+  <rect x="24" y="24" width="892" height="292" rx="18" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
 
-  <!-- Title -->
-  <text x="450" y="35" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="20" font-weight="700" fill="#1A1A1A">
-    GEMM Optimization Path
-  </text>
-  <text x="450" y="55" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#526167">
-    Progressive optimization from naive to Tensor Core implementation
-  </text>
+  <text x="56" y="66" fill="#0f172a" font-family="Fraunces, Inter, serif" font-size="26" font-weight="800">GEMM Optimization Path</text>
+  <text x="56" y="90" fill="#64748b" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="500">From readable baseline to Tensor Core aware implementation, with each step preserving the reasoning chain.</text>
 
-  <!-- Progress bar background -->
-  <rect x="50" y="80" width="800" height="8" rx="4" fill="#F4F7F1"/>
+  <!-- Track -->
+  <line x1="116" y1="146" x2="820" y2="146" stroke="#e2e8f0" stroke-width="5" stroke-linecap="round"/>
+  <line x1="116" y1="146" x2="820" y2="146" stroke="#2563eb" stroke-width="5" stroke-linecap="round" stroke-dasharray="176 22 176 22 176 22 176"/>
 
-  <!-- Progress bar fill -->
-  <rect x="50" y="80" width="760" height="8" rx="4" fill="url(#progressGrad)"/>
-
-  <!-- Step markers -->
-  <g transform="translate(50, 80)">
-    <!-- Step 1: Naive -->
-    <circle cx="0" cy="4" r="12" fill="transparent" stroke="#76B900" stroke-width="2"/>
-    <text x="0" y="8" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="600" fill="#76B900">1</text>
-
-    <!-- Step 2: Tiled -->
-    <circle cx="200" cy="4" r="12" fill="transparent" stroke="#76B900" stroke-width="2"/>
-    <text x="200" y="8" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="600" fill="#76B900">2</text>
-
-    <!-- Step 3: Double Buffer -->
-    <circle cx="500" cy="4" r="12" fill="transparent" stroke="#76B900" stroke-width="2"/>
-    <text x="500" y="8" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="600" fill="#76B900">3</text>
-
-    <!-- Step 4: Tensor Core -->
-    <circle cx="800" cy="4" r="12" fill="#76B900" stroke="#8ED000" stroke-width="2"/>
-    <text x="800" y="8" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="600" fill="#000">4</text>
+  <!-- Step 1 -->
+  <g transform="translate(116 124)">
+    <circle r="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="3"/>
+    <text y="4" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700">1</text>
+    <rect x="-70" y="38" width="140" height="100" rx="14" fill="url(#gemmStepGrad1)" stroke="#e2e8f0" filter="url(#gemmShadow)"/>
+    <text y="68" text-anchor="middle" fill="#0f172a" font-family="Fraunces, serif" font-size="15" font-weight="800">Naive</text>
+    <text y="88" text-anchor="middle" fill="#64748b" font-family="Inter, sans-serif" font-size="11" font-weight="500">Direct loops</text>
+    <text y="104" text-anchor="middle" fill="#64748b" font-family="Inter, sans-serif" font-size="11" font-weight="500">Global memory bound</text>
+    <text y="122" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700">~5% cuBLAS</text>
   </g>
 
-  <!-- Step cards -->
-  <g transform="translate(50, 120)">
-    <!-- Step 1: Naive -->
-    <g filter="url(#shadow)">
-      <rect x="0" y="0" width="180" height="160" rx="8" fill="#FFFFFF" stroke="#C9D4C7" stroke-width="1"/>
-      <rect x="0" y="0" width="180" height="40" rx="8" fill="#F4F7F1"/>
-      <rect x="0" y="32" width="180" height="8" fill="#FFFFFF"/>
-      <text x="90" y="25" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="600" fill="#1A1A1A">Naive</text>
-
-      <text x="15" y="60" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#526167">• Direct implementation</text>
-      <text x="15" y="78" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#526167">• O(M×N×K) complexity</text>
-      <text x="15" y="96" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#526167">• No memory optimization</text>
-
-      <rect x="15" y="115" width="150" height="30" rx="4" fill="transparent"/>
-      <text x="90" y="134" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#526167">~5% cuBLAS</text>
-    </g>
-
-    <!-- Step 2: Tiled -->
-    <g filter="url(#shadow)">
-      <rect x="200" y="0" width="180" height="160" rx="8" fill="#FFFFFF" stroke="#C9D4C7" stroke-width="1"/>
-      <rect x="200" y="0" width="180" height="40" rx="8" fill="#F4F7F1"/>
-      <rect x="200" y="32" width="180" height="8" fill="#FFFFFF"/>
-      <text x="290" y="25" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="600" fill="#1A1A1A">Tiled</text>
-
-      <text x="215" y="60" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#526167">• Shared memory tiling</text>
-      <text x="215" y="78" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#526167">• Block-level parallelism</text>
-      <text x="215" y="96" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#526167">• Reduced global memory</text>
-
-      <rect x="215" y="115" width="150" height="30" rx="4" fill="transparent"/>
-      <rect x="215" y="115" width="75" height="30" rx="4" fill="#5A9100" opacity="0.6"/>
-      <text x="290" y="134" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#1A1A1A">~45% cuBLAS</text>
-    </g>
-
-    <!-- Step 3: Double Buffer -->
-    <g filter="url(#shadow)">
-      <rect x="400" y="0" width="180" height="160" rx="8" fill="#FFFFFF" stroke="#C9D4C7" stroke-width="1"/>
-      <rect x="400" y="0" width="180" height="40" rx="8" fill="#F4F7F1"/>
-      <rect x="400" y="32" width="180" height="8" fill="#FFFFFF"/>
-      <text x="490" y="25" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="600" fill="#1A1A1A">Double Buffer</text>
-
-      <text x="415" y="60" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#526167">• Pipeline memory access</text>
-      <text x="415" y="78" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#526167">• Hide memory latency</text>
-      <text x="415" y="96" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#526167">• Warp-level sync</text>
-
-      <rect x="415" y="115" width="150" height="30" rx="4" fill="transparent"/>
-      <rect x="415" y="115" width="120" height="30" rx="4" fill="#76B900" opacity="0.7"/>
-      <text x="490" y="134" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#000">~75% cuBLAS</text>
-    </g>
-
-    <!-- Step 4: Tensor Core -->
-    <g filter="url(#shadow)">
-      <rect x="600" y="0" width="180" height="160" rx="8" fill="#FFFFFF" stroke="#76B900" stroke-width="2"/>
-      <rect x="600" y="0" width="180" height="40" rx="8" fill="#F4F7F1"/>
-      <rect x="600" y="32" width="180" height="8" fill="#FFFFFF"/>
-      <text x="690" y="25" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="600" fill="#76B900">Tensor Core</text>
-
-      <text x="615" y="60" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#526167">• WMMA instructions</text>
-      <text x="615" y="78" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#526167">• Mixed precision (FP16)</text>
-      <text x="615" y="96" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#526167">• Maximum throughput</text>
-
-      <rect x="615" y="115" width="150" height="30" rx="4" fill="#76B900"/>
-      <text x="690" y="134" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" font-weight="600" fill="#000">~92% cuBLAS</text>
-    </g>
+  <!-- Step 2 -->
+  <g transform="translate(344 124)">
+    <circle r="14" fill="#ffffff" stroke="#3b82f6" stroke-width="3"/>
+    <text y="4" text-anchor="middle" fill="#2563eb" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700">2</text>
+    <rect x="-70" y="38" width="140" height="100" rx="14" fill="url(#gemmStepGrad1)" stroke="#bfdbfe" filter="url(#gemmShadow)"/>
+    <text y="68" text-anchor="middle" fill="#0f172a" font-family="Fraunces, serif" font-size="15" font-weight="800">Tiled</text>
+    <text y="88" text-anchor="middle" fill="#64748b" font-family="Inter, sans-serif" font-size="11" font-weight="500">Shared memory reuse</text>
+    <text y="104" text-anchor="middle" fill="#64748b" font-family="Inter, sans-serif" font-size="11" font-weight="500">Better data locality</text>
+    <text y="122" text-anchor="middle" fill="#2563eb" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700">~45% cuBLAS</text>
   </g>
 
-  <!-- Arrow indicators -->
-  <path d="M 235 200 L 245 200" stroke="#76B900" stroke-width="2" marker-end="url(#arrowhead)"/>
-  <path d="M 435 200 L 445 200" stroke="#76B900" stroke-width="2" marker-end="url(#arrowhead)"/>
-  <path d="M 635 200 L 645 200" stroke="#76B900" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <!-- Step 3 -->
+  <g transform="translate(572 124)">
+    <circle r="14" fill="#ffffff" stroke="#059669" stroke-width="3"/>
+    <text y="4" text-anchor="middle" fill="#059669" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700">3</text>
+    <rect x="-70" y="38" width="140" height="100" rx="14" fill="url(#gemmStepGrad2)" stroke="#bbf7d0" filter="url(#gemmShadow)"/>
+    <text y="68" text-anchor="middle" fill="#0f172a" font-family="Fraunces, serif" font-size="15" font-weight="800">Double Buffer</text>
+    <text y="88" text-anchor="middle" fill="#64748b" font-family="Inter, sans-serif" font-size="11" font-weight="500">Pipeline loads &amp; compute</text>
+    <text y="104" text-anchor="middle" fill="#64748b" font-family="Inter, sans-serif" font-size="11" font-weight="500">Hide memory latency</text>
+    <text y="122" text-anchor="middle" fill="#059669" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700">~75% cuBLAS</text>
+  </g>
 
-  <!-- Footer -->
-  <text x="450" y="305" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#526167">
-    Each step builds upon the previous, demonstrating optimization techniques progressively
-  </text>
+  <!-- Step 4 -->
+  <g transform="translate(800 124)">
+    <circle r="14" fill="#2563eb" stroke="#1d4ed8" stroke-width="3"/>
+    <text y="4" text-anchor="middle" fill="#ffffff" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700">4</text>
+    <rect x="-70" y="38" width="140" height="100" rx="14" fill="url(#gemmStepGrad4)" stroke="#475569" filter="url(#gemmShadow)"/>
+    <text y="68" text-anchor="middle" fill="#e2e8f0" font-family="Fraunces, serif" font-size="15" font-weight="800">Tensor Core</text>
+    <text y="88" text-anchor="middle" fill="#94a3b8" font-family="Inter, sans-serif" font-size="11" font-weight="500">WMMA &amp; mixed precision</text>
+    <text y="104" text-anchor="middle" fill="#94a3b8" font-family="Inter, sans-serif" font-size="11" font-weight="500">Throughput-first tuning</text>
+    <text y="122" text-anchor="middle" fill="#34d399" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700">~92% cuBLAS</text>
+  </g>
 </svg>

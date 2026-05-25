@@ -114,8 +114,6 @@ flowchart TB
     L1 --> L2
     L2 --> HBM
 
-    style REG fill:#76B900,stroke:#5a9100
-    style SHMEM fill:#76B900,stroke:#5a9100
 ```
 
 ### Execution Model
@@ -147,6 +145,26 @@ When expanding TensorCraft-HPC, the most valuable ideas to absorb from the surro
 - **from FlashAttention**: memory-aware storytelling and IO-driven reasoning
 - **from Triton**: clear operator-level benchmarking habits and compact examples
 - **from Nsight tooling**: evidence-first performance explanations instead of intuition-led guesses
+
+---
+
+## What to borrow, what to resist
+
+The repository becomes stronger when it borrows methods, not when it imitates style blindly.
+
+### Borrow
+
+- disciplined vocabulary for tiling, memory traffic, and hardware capability
+- benchmark methodology that exposes caveats and baselines
+- compact operator examples that map cleanly to the public API
+
+### Resist
+
+- production-only abstractions that hide the optimization path
+- feature sprawl that makes the educational story harder to follow
+- benchmark claims separated from tooling, workload shape, or reference library
+
+This tension is intentional. TensorCraft-HPC should learn from stronger systems without becoming another opaque production stack.
 
 ---
 

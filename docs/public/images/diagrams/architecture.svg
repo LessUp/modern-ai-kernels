@@ -1,163 +1,81 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 470" width="860" height="470" fill="none">
   <defs>
-    <linearGradient id="nvidiaGreen" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:#5A9100;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#76B900;stop-opacity:1" />
+    <linearGradient id="archBgLight" x1="0" y1="0" x2="860" y2="470">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#f1f5f9"/>
     </linearGradient>
-    <linearGradient id="layerGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" style="stop-color:#F4F7F1;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:1" />
+    <linearGradient id="archPanelGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#f8fafc" stop-opacity="0.4"/>
     </linearGradient>
-    <filter id="glow">
-      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-      <feMerge>
-        <feMergeNode in="coloredBlur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
-    <filter id="shadow">
-      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.3"/>
+    <linearGradient id="archKernelGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <filter id="archShadow" x="-4" y="-4" width="20" height="20">
+      <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#0f172a" flood-opacity="0.08"/>
     </filter>
   </defs>
 
-  <!-- Background -->
-  <rect width="800" height="500" fill="transparent"/>
+  <rect width="860" height="470" rx="24" fill="url(#archBgLight)"/>
+  <rect x="24" y="24" width="812" height="422" rx="18" fill="url(#archPanelGrad)" stroke="#e2e8f0" stroke-width="1.5"/>
 
-  <!-- Grid pattern -->
-  <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#DDE6DB" stroke-width="0.5"/>
-  </pattern>
-  <rect width="800" height="500" fill="url(#grid)" opacity="0.5"/>
+  <text x="56" y="68" fill="#0f172a" font-family="Fraunces, Inter, serif" font-size="28" font-weight="800">TensorCraft-HPC Architecture</text>
+  <text x="56" y="94" fill="#64748b" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="500">Whitepaper surface, kernel system, and hardware-aware primitives shown as one evaluable stack.</text>
 
-  <!-- Title -->
-  <text x="400" y="35" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="24" font-weight="700" fill="#1A1A1A">
-    TensorCraft-HPC Architecture
-  </text>
-  <text x="400" y="55" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#526167">
-    Header-Only C++/CUDA Kernel Library
-  </text>
-
-  <!-- Layer 1: User API -->
-  <g transform="translate(50, 80)" filter="url(#shadow)">
-    <rect x="0" y="0" width="700" height="80" rx="8" fill="url(#layerGrad)" stroke="#76B900" stroke-width="1.5"/>
-    <text x="20" y="25" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="600" fill="#76B900">USER API LAYER</text>
-
-    <!-- C++ Headers -->
-    <rect x="30" y="35" width="200" height="35" rx="6" fill="#FFFFFF" stroke="#C9D4C7" stroke-width="1"/>
-    <text x="130" y="50" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#1A1A1A">C++ Headers</text>
-    <text x="130" y="63" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#526167">#include &lt;tensorcraft/&gt;</text>
-
-    <!-- Python Bindings -->
-    <rect x="250" y="35" width="200" height="35" rx="6" fill="#FFFFFF" stroke="#C9D4C7" stroke-width="1"/>
-    <text x="350" y="50" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#1A1A1A">Python Bindings</text>
-    <text x="350" y="63" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#526167">import tensorcraft_ops</text>
-
-    <!-- Examples -->
-    <rect x="470" y="35" width="200" height="35" rx="6" fill="#FFFFFF" stroke="#C9D4C7" stroke-width="1"/>
-    <text x="570" y="50" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#1A1A1A">Examples</text>
-    <text x="570" y="63" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#526167">tutorials & samples</text>
-  </g>
-
-  <!-- Arrow 1 -->
-  <path d="M 400 165 L 400 180" stroke="#76B900" stroke-width="2" marker-end="url(#arrowhead)"/>
-  <defs>
-    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-      <polygon points="0 0, 10 3.5, 0 7" fill="#76B900"/>
-    </marker>
-  </defs>
-
-  <!-- Layer 2: Kernels -->
-  <g transform="translate(50, 185)" filter="url(#shadow)">
-    <rect x="0" y="0" width="700" height="120" rx="8" fill="url(#layerGrad)" stroke="#76B900" stroke-width="1.5"/>
-    <text x="20" y="25" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="600" fill="#76B900">KERNEL LAYER</text>
-
-    <!-- Kernel boxes -->
-    <g transform="translate(20, 35)">
-      <!-- GEMM -->
-      <rect x="0" y="0" width="155" height="70" rx="6" fill="#FFFFFF" stroke="#C9D4C7" stroke-width="1"/>
-      <text x="77" y="20" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="600" fill="#1A1A1A">GEMM</text>
-      <text x="77" y="35" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#526167">Naive → Tensor Core</text>
-      <rect x="10" y="45" width="135" height="18" rx="3" fill="transparent"/>
-      <rect x="10" y="45" width="130" height="18" rx="3" fill="url(#nvidiaGreen)" opacity="0.8"/>
-      <text x="77" y="57" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#000">92% cuBLAS</text>
-
-      <!-- Attention -->
-      <rect x="165" y="0" width="155" height="70" rx="6" fill="#FFFFFF" stroke="#C9D4C7" stroke-width="1"/>
-      <text x="242" y="20" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="600" fill="#1A1A1A">FlashAttention</text>
-      <text x="242" y="35" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#526167">Memory-Efficient</text>
-      <rect x="175" y="45" width="135" height="18" rx="3" fill="transparent"/>
-      <rect x="175" y="45" width="120" height="18" rx="3" fill="url(#nvidiaGreen)" opacity="0.8"/>
-      <text x="242" y="57" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#000">85% cuDNN</text>
-
-      <!-- Normalization -->
-      <rect x="330" y="0" width="155" height="70" rx="6" fill="#FFFFFF" stroke="#C9D4C7" stroke-width="1"/>
-      <text x="407" y="20" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="600" fill="#1A1A1A">Normalization</text>
-      <text x="407" y="35" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#526167">LayerNorm, RMSNorm</text>
-      <rect x="340" y="45" width="135" height="18" rx="3" fill="transparent"/>
-      <rect x="340" y="45" width="132" height="18" rx="3" fill="url(#nvidiaGreen)" opacity="0.8"/>
-      <text x="407" y="57" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#000">95% cuDNN</text>
-
-      <!-- Conv + Sparse -->
-      <rect x="495" y="0" width="175" height="70" rx="6" fill="#FFFFFF" stroke="#C9D4C7" stroke-width="1"/>
-      <text x="582" y="20" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="600" fill="#1A1A1A">Conv & Sparse</text>
-      <text x="582" y="35" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#526167">Im2Col, SpMM, CSR</text>
-      <rect x="505" y="45" width="155" height="18" rx="3" fill="transparent"/>
-      <rect x="505" y="45" width="130" height="18" rx="3" fill="url(#nvidiaGreen)" opacity="0.8"/>
-      <text x="582" y="57" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#000">78-88%</text>
+  <!-- Public Surface -->
+  <g transform="translate(56 126)">
+    <rect width="748" height="80" rx="16" fill="#ffffff" stroke="#2563eb" stroke-width="1.5" filter="url(#archShadow)"/>
+    <text x="20" y="26" fill="#2563eb" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" letter-spacing="0.06em">PUBLIC SURFACE</text>
+    <g transform="translate(20 38)">
+      <rect width="190" height="26" rx="13" fill="#eff6ff" stroke="#bfdbfe"/>
+      <text x="95" y="17" text-anchor="middle" fill="#1e40af" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="600">Whitepaper &amp; Evidence</text>
+      <rect x="206" width="136" height="26" rx="13" fill="#eff6ff" stroke="#bfdbfe"/>
+      <text x="274" y="17" text-anchor="middle" fill="#1e40af" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="600">Kernel Atlas</text>
+      <rect x="354" width="140" height="26" rx="13" fill="#eff6ff" stroke="#bfdbfe"/>
+      <text x="424" y="17" text-anchor="middle" fill="#1e40af" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="600">Academy Routes</text>
+      <rect x="508" width="132" height="26" rx="13" fill="#eff6ff" stroke="#bfdbfe"/>
+      <text x="574" y="17" text-anchor="middle" fill="#1e40af" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="600">Bilingual Mirror</text>
+      <rect x="654" width="74" height="26" rx="13" fill="#f0fdf4" stroke="#bbf7d0"/>
+      <text x="691" y="17" text-anchor="middle" fill="#166534" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700">EN / ZH</text>
     </g>
   </g>
 
-  <!-- Arrow 2 -->
-  <path d="M 400 310 L 400 325" stroke="#76B900" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <path d="M430 206v30" stroke="#2563eb" stroke-width="3" stroke-linecap="round" stroke-dasharray="6 4"/>
+  <path d="M430 232l-6 6h12l-6-6Z" fill="#2563eb"/>
 
-  <!-- Layer 3: Memory -->
-  <g transform="translate(50, 330)" filter="url(#shadow)">
-    <rect x="0" y="0" width="340" height="70" rx="8" fill="url(#layerGrad)" stroke="#76B900" stroke-width="1.5"/>
-    <text x="20" y="25" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="600" fill="#76B900">MEMORY LAYER</text>
-
-    <rect x="30" y="35" width="130" height="25" rx="4" fill="#FFFFFF" stroke="#C9D4C7" stroke-width="1"/>
-    <text x="95" y="52" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#1A1A1A">FloatTensor</text>
-
-    <rect x="180" y="35" width="130" height="25" rx="4" fill="#FFFFFF" stroke="#C9D4C7" stroke-width="1"/>
-    <text x="245" y="52" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#1A1A1A">MemoryPool</text>
-  </g>
-
-  <!-- Layer 4: Hardware -->
-  <g transform="translate(410, 330)" filter="url(#shadow)">
-    <rect x="0" y="0" width="340" height="70" rx="8" fill="url(#layerGrad)" stroke="#76B900" stroke-width="1.5"/>
-    <text x="20" y="25" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="600" fill="#76B900">HARDWARE SUPPORT</text>
-
-    <!-- GPU badges -->
-    <g transform="translate(20, 35)">
-      <rect x="0" y="0" width="55" height="25" rx="4" fill="#FFFFFF" stroke="#76B900" stroke-width="1"/>
-      <text x="27" y="16" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#76B900">SM70</text>
-
-      <rect x="60" y="0" width="55" height="25" rx="4" fill="#FFFFFF" stroke="#76B900" stroke-width="1"/>
-      <text x="87" y="16" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#76B900">SM80</text>
-
-      <rect x="120" y="0" width="55" height="25" rx="4" fill="#FFFFFF" stroke="#76B900" stroke-width="1"/>
-      <text x="147" y="16" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#76B900">SM90</text>
-
-      <rect x="180" y="0" width="55" height="25" rx="4" fill="#FFFFFF" stroke="#76B900" stroke-width="1"/>
-      <text x="207" y="16" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#76B900">SM100</text>
-
-      <rect x="240" y="0" width="60" height="25" rx="4" fill="#FFFFFF" stroke="#C9D4C7" stroke-width="1"/>
-      <text x="270" y="16" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#526167">CUDA 11-13</text>
+  <!-- Kernel System -->
+  <g transform="translate(56 240)">
+    <rect width="748" height="110" rx="18" fill="url(#archKernelGrad)" stroke="#334155" stroke-width="1.5" filter="url(#archShadow)"/>
+    <text x="20" y="28" fill="#94a3b8" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" letter-spacing="0.06em">KERNEL SYSTEM</text>
+    <g transform="translate(20 44)">
+      <rect width="148" height="36" rx="12" fill="#1e293b" stroke="#475569"/>
+      <text x="74" y="22" text-anchor="middle" fill="#e2e8f0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="600">GEMM Path</text>
+      <rect x="164" width="148" height="36" rx="12" fill="#1e293b" stroke="#475569"/>
+      <text x="238" y="22" text-anchor="middle" fill="#e2e8f0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="600">Attention</text>
+      <rect x="328" width="148" height="36" rx="12" fill="#1e293b" stroke="#475569"/>
+      <text x="402" y="22" text-anchor="middle" fill="#e2e8f0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="600">Normalization</text>
+      <rect x="492" width="118" height="36" rx="12" fill="#1e293b" stroke="#475569"/>
+      <text x="551" y="22" text-anchor="middle" fill="#e2e8f0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="600">Conv2D</text>
+      <rect x="624" width="104" height="36" rx="12" fill="#1e293b" stroke="#475569"/>
+      <text x="676" y="22" text-anchor="middle" fill="#e2e8f0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="600">Sparse</text>
+    </g>
+    <g transform="translate(20 18)">
+      <rect x="500" width="110" height="20" rx="10" fill="#059669" fill-opacity="0.15" stroke="#059669" stroke-width="1"/>
+      <text x="555" y="13" text-anchor="middle" fill="#34d399" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="600">progressive opt</text>
+      <rect x="624" width="104" height="20" rx="10" fill="#c2410c" fill-opacity="0.15" stroke="#c2410c" stroke-width="1"/>
+      <text x="676" y="13" text-anchor="middle" fill="#fb923c" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="600">benchmark</text>
     </g>
   </g>
 
-  <!-- Connection lines between Memory and Hardware -->
-  <path d="M 390 365 L 410 365" stroke="#C9D4C7" stroke-width="1" stroke-dasharray="4,2"/>
+  <path d="M430 350v30" stroke="#059669" stroke-width="3" stroke-linecap="round" stroke-dasharray="6 4"/>
+  <path d="M430 376l-6 6h12l-6-6Z" fill="#059669"/>
 
-  <!-- Legend -->
-  <g transform="translate(50, 420)">
-    <text x="0" y="0" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#526167">Legend:</text>
-    <rect x="60" y="-8" width="12" height="12" rx="2" fill="url(#nvidiaGreen)"/>
-    <text x="78" y="0" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#526167">Performance vs NVIDIA libraries</text>
+  <!-- Hardware Layer -->
+  <g transform="translate(56 384)">
+    <rect width="364" height="36" rx="18" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1.5"/>
+    <text x="182" y="22" text-anchor="middle" fill="#166534" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="600">Memory primitives, feature detection, RAII tensor wrappers</text>
+    <rect x="384" width="364" height="36" rx="18" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5"/>
+    <text x="566" y="22" text-anchor="middle" fill="#1e40af" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="600">SM70-SM100 compile-time capabilities</text>
   </g>
-
-  <!-- Footer -->
-  <text x="400" y="480" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#526167">
-    OpenSpec-Driven • Bilingual Docs • Header-Only • Zero-Build Integration
-  </text>
 </svg>

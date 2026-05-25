@@ -3,113 +3,85 @@ layout: home
 
 hero:
   name: TensorCraft-HPC
-  text: Technical Whitepaper & Architecture Showcase
-  tagline: A header-only C++/CUDA project that explains how modern AI kernels are designed, optimized, benchmarked, and reasoned about — from Volta to Blackwell.
+  text: Technical Whitepaper / Kernel Architecture Academy
+  tagline: A header-only C++/CUDA project that explains how modern AI kernels are designed, optimized, benchmarked, and evaluated, with the reader journey shaped like a systems paper instead of a generic docs portal.
   actions:
     - theme: brand
       text: Read the whitepaper
       link: /en/whitepaper/
     - theme: alt
-      text: Review architecture
-      link: /en/architecture
+      text: Enter the academy
+      link: /en/academy/
     - theme: alt
-      text: Benchmark evidence
-      link: /en/benchmarks/
+      text: Inspect evidence
+      link: /en/evidence/
 
 features:
-  - icon: 🎓
-    title: Architecture-first learning
-    details: The project shows why each kernel layer exists, how optimization stages build on each other, and where the design trade-offs live.
-  - icon: ⚡
+  - icon: ⛭
+    title: Architecture as narrative
+    details: The site leads from system model to operator detail, so evaluators can understand why the repository is organized the way it is.
+  - icon: ▣
     title: Evidence over slogans
-    details: Performance claims are backed by benchmark pages, methodology notes, and references to the libraries and papers being compared against.
-  - icon: 🔧
-    title: Header-only kernel library
-    details: The C++ surface stays easy to integrate while still exposing optimization paths, memory primitives, and optional Python bindings.
-  - icon: 🖥️
-    title: Bilingual showcase
-    details: English and Chinese routes mirror the same information architecture so the project reads like one coherent technical artifact.
+    details: Benchmarks, methodology, and references sit next to each claim instead of being buried behind marketing language.
+  - icon: ∿
+    title: Dual-theme diagrams
+    details: Logos, charts, and explanatory graphics are rebuilt to stay legible in both light and dark modes.
 ---
 
-<div class="showcase-band">
-  <div class="showcase-metrics">
-    <div class="showcase-metric">
-      <strong>92%</strong>
-      <span>FP16 GEMM vs cuBLAS on A100</span>
-    </div>
-    <div class="showcase-metric">
-      <strong>SM70–SM100</strong>
-      <span>Compile-time feature detection from Volta to Blackwell</span>
-    </div>
-    <div class="showcase-metric">
-      <strong>Whitepaper + API</strong>
-      <span>Project story, implementation evidence, and operator-level reference</span>
-    </div>
-  </div>
-</div>
+## Read this project like a systems paper
 
-## Start with the path that matches your goal
-
-<div class="showcase-grid">
-  <div class="showcase-card">
-    <p class="showcase-eyebrow">For first-time evaluators</p>
-    <h3>Read the whitepaper</h3>
-    <p>Understand the project motivation, architecture, performance posture, and methodology before diving into the code.</p>
-    <div class="showcase-links">
-      <a href="./whitepaper/">Open whitepaper</a>
-    </div>
-  </div>
-  <div class="showcase-card">
-    <p class="showcase-eyebrow">For system design review</p>
-    <h3>Inspect the architecture</h3>
-    <p>See how the library layers kernel launchers, memory abstractions, compile-time feature detection, and hardware support.</p>
-    <div class="showcase-links">
-      <a href="./architecture">View architecture overview</a>
+<ShowcaseBand
+  eyebrow="Architecture narrative"
+  title="A repository that explains the optimization path"
+  description="Move from why the kernels exist, to how the system is layered, to what evidence supports the performance posture."
+>
+  <div class="tc-home-columns">
+    <ul class="tc-home-list">
+      <li><strong>Whitepaper first.</strong> Understand the project thesis, kernel philosophy, and constraints before reading implementation detail.</li>
+      <li><strong>Evidence second.</strong> Trace performance claims back to methodology and cited work.</li>
+      <li><strong>Atlas third.</strong> Drop into operator-level reference only after the system model is clear.</li>
+    </ul>
+    <div class="tc-band-grid">
+      <div class="tc-metric">
+        <strong>92%</strong>
+        FP16 GEMM relative to cuBLAS on A100
+      </div>
+      <div class="tc-metric">
+        <strong>SM70–SM100</strong>
+        Compile-time coverage from Volta to Blackwell
+      </div>
+      <div class="tc-metric">
+        <strong>Whitepaper + Academy</strong>
+        Reader flow designed for interview and peer review
+      </div>
     </div>
   </div>
-  <div class="showcase-card">
-    <p class="showcase-eyebrow">For technical credibility</p>
-    <h3>Check the evidence</h3>
-    <p>Review benchmark summaries, methodology notes, and source materials instead of relying on ungrounded claims.</p>
-    <div class="showcase-links">
-      <a href="./benchmarks/">Benchmarks</a>
-      <a href="./references/papers">Papers & citations</a>
-    </div>
-  </div>
-  <div class="showcase-card">
-    <p class="showcase-eyebrow">For implementation detail</p>
-    <h3>Browse the kernel atlas</h3>
-    <p>Use the operator reference to trace GEMM, attention, normalization, convolution, sparse, and quantization surfaces.</p>
-    <div class="showcase-links">
-      <a href="./api/gemm">Open kernel atlas</a>
-    </div>
-  </div>
-</div>
+</ShowcaseBand>
 
-## Why this project exists
+<ShowcaseBand
+  eyebrow="Where to start"
+  title="Choose the path that matches what you need to prove"
+  description="Each section has a distinct job in the argument, from conceptual framing to implementation inspection."
+>
+  <ul class="tc-link-list">
+    <li><a href="./whitepaper/">Whitepaper</a></li>
+    <li><a href="./academy/">Academy</a></li>
+    <li><a href="./evidence/">Evidence</a></li>
+    <li><a href="./api/gemm">Kernel Atlas</a></li>
+    <li><a href="./references/papers">References</a></li>
+  </ul>
+</ShowcaseBand>
 
-TensorCraft-HPC is meant to close the gap between "I use CUDA libraries" and "I can explain how a
-modern AI kernel is structured, optimized, and validated." Instead of hiding the project behind a
-generic docs homepage, this site now treats the repository as a technical artifact: part whitepaper,
-part architecture walkthrough, part implementation guide.
+<ShowcaseBand
+  eyebrow="Evaluation lens"
+  title="What makes TensorCraft-HPC worth evaluating"
+  description="The project is designed to surface engineering judgment. The interesting question is not only whether a kernel is fast, but whether the optimization path, system boundaries, and supporting evidence remain legible."
+>
+  <ul class="tc-home-list">
+    <li><strong>Architecture clarity.</strong> Memory abstractions, feature detection, kernel boundaries, and hardware support are explicit design objects.</li>
+    <li><strong>Progressive optimization.</strong> Readers can trace kernels from naive baselines to Tensor Core aware implementations.</li>
+    <li><strong>Research literacy.</strong> The site connects implementation choices to papers, libraries, and competitor surfaces worth studying.</li>
+  </ul>
+</ShowcaseBand>
 
-That matters for two audiences. For interviewers and technical evaluators, the project should make
-engineering judgment visible. For learners and contributors, it should make the optimization path
-and design decisions easier to follow than a production-only library would.
-
-## What makes the project worth evaluating
-
-<div class="showcase-grid">
-  <div class="showcase-card">
-    <h3>Progressive optimization path</h3>
-    <p>The library is organized to show how kernels evolve from naive implementations to tiled, pipelined, and Tensor Core aware variants.</p>
-  </div>
-  <div class="showcase-card">
-    <h3>Evidence-driven presentation</h3>
-    <p>Benchmarks, diagrams, methodology notes, and references are treated as first-class project assets instead of afterthoughts.</p>
-  </div>
-  <div class="showcase-card">
-    <h3>Architecture that teaches</h3>
-    <p>The repository surfaces memory management, feature detection, kernel boundaries, and hardware support as explicit design concerns.</p>
-  </div>
-</div>
+<GPUTimeline />

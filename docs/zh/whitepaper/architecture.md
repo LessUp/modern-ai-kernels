@@ -10,7 +10,7 @@ TensorCraft-HPC 遵循三个核心原则：
 
 1. **可读性优先** — 代码是为阅读而写的，每个内核展示优化演进过程
 2. **仅头文件** — C++ 用户零构建复杂度，直接包含即可使用
-3. **OpenSpec 驱动** — `openspec/specs/` 中的规范是实现的权威依据
+3. **OpenSpec 驱动** — 活动工作从 `openspec/changes/` 开始，而已接受的基线保存在 `openspec/specs/`
 
 ---
 
@@ -81,7 +81,6 @@ modern-ai-kernels/
 │       ├── softmax.hpp        # Softmax variants
 │       ├── conv2d.hpp         # 2D convolution
 │       ├── sparse.hpp         # Sparse operations
-│       ├── fusion.hpp         # Fused kernels
 │       └── fusion.hpp         # Fused operators and quantization helpers
 ├── src/python_ops/            # Python bindings (pybind11)
 ├── tests/                     # Unit tests (GoogleTest)
@@ -112,11 +111,6 @@ flowchart LR
     C -->|"Use Tensor Cores<br/>(WMMA)"| D
     D -->|"Fine-tune<br/>parameters"| E
 
-    style A fill:#F4F7F1,stroke:#2E7D32,color:#1A1A1A
-    style B fill:#F4F7F1,stroke:#2E7D32,color:#1A1A1A
-    style C fill:#F4F7F1,stroke:#2E7D32,color:#1A1A1A
-    style D fill:#2E7D32,stroke:#1B5E20,color:#000
-    style E fill:#2E7D32,stroke:#1B5E20,color:#000
 ```
 
 ### 性能特征
@@ -215,18 +209,18 @@ flowchart LR
 
 ```mermaid
 flowchart TB
-    IDEA["New Idea"] --> PROPOSAL["Create Proposal<br/>openspec/changes/"]
-    PROPOSAL --> REVIEW["Review & Discuss"]
-    REVIEW -->|"Accept"| SPEC["Move to<br/>openspec/specs/"]
-    REVIEW -->|"Reject"| ARCHIVE["Archive with<br/>rationale"]
-    SPEC --> IMPL["Implement"]
-    IMPL --> VERIFY["Verify against Spec"]
-    VERIFY --> DONE["Complete"]
+    IDEA["新想法"] --> PROPOSAL["创建提案<br/>openspec/changes/"]
+    PROPOSAL --> REVIEW["审查和讨论"]
+    REVIEW -->|"开始实现"| IMPL["基于活动变更<br/>实现"]
+    REVIEW -->|"拒绝"| ARCHIVE["归档并<br/>附理由"]
+    IMPL --> VERIFY["按变更验证"]
+    VERIFY -->|"接受"| SPEC["提升为基线并写入<br/>openspec/specs/"]
+    SPEC --> DONE["完成"]
 ```
 
 ### 规范结构
 
-`openspec/specs/` 中的每个规范包含：
+`openspec/specs/` 中的每个已接受基线包含：
 
 - **需求 (Requirements)** — 组件必须做什么
 - **契约 (Contracts)** — API 保证和不变量
@@ -239,11 +233,12 @@ flowchart TB
 ### 添加新内核
 
 1. 在 `openspec/changes/` 创建规范提案
-2. 审核通过后移至 `openspec/specs/`
-3. 在 `include/tensorcraft/kernels/` 实现头文件
-4. 添加 GoogleTest 单元测试
-5. 添加性能基准测试
-6. 更新文档
+2. 在 `include/tensorcraft/kernels/` 实现头文件
+3. 添加 GoogleTest 单元测试
+4. 添加性能基准测试
+5. 更新文档
+6. 围绕该活动变更审查工作
+7. 将已接受的基线写入 `openspec/specs/`
 
 ### 添加 Python 绑定
 

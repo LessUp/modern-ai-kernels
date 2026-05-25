@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 420" width="760" height="420" fill="none">
+  <defs>
+    <linearGradient id="perfBgD" x1="0" y1="0" x2="760" y2="420">
+      <stop offset="0%" stop-color="#111827"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="barGrad1D" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#60a5fa"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+    <linearGradient id="barGrad2D" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#93c5fd"/>
+      <stop offset="100%" stop-color="#60a5fa"/>
+    </linearGradient>
+    <linearGradient id="barGrad3D" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#34d399"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <linearGradient id="barGrad4D" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fb923c"/>
+      <stop offset="100%" stop-color="#c2410c"/>
+    </linearGradient>
+    <linearGradient id="barGrad5D" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#22d3ee"/>
+      <stop offset="100%" stop-color="#0891b2"/>
+    </linearGradient>
+    <filter id="perfShadowD" x="-4" y="-4" width="20" height="20">
+      <feDropShadow dx="0" dy="2" stdDeviation="5" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <rect width="760" height="420" rx="24" fill="url(#perfBgD)"/>
+  <rect x="24" y="24" width="712" height="372" rx="18" fill="#0f172a" stroke="#1e293b" stroke-width="1.5"/>
+
+  <text x="56" y="68" fill="#e2e8f0" font-family="Fraunces, Inter, serif" font-size="26" font-weight="800">Evidence Snapshot</text>
+  <text x="56" y="92" fill="#94a3b8" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="500">Relative performance against production baselines, with method and source kept adjacent.</text>
+
+  <g transform="translate(96 132)">
+    <line x1="0" y1="0" x2="0" y2="210" stroke="#334155" stroke-width="1.5"/>
+    <line x1="0" y1="210" x2="560" y2="210" stroke="#334155" stroke-width="1.5"/>
+    <line x1="0" y1="52" x2="560" y2="52" stroke="#1e293b" stroke-dasharray="5 5"/>
+    <line x1="0" y1="104" x2="560" y2="104" stroke="#1e293b" stroke-dasharray="5 5"/>
+    <line x1="0" y1="156" x2="560" y2="156" stroke="#1e293b" stroke-dasharray="5 5"/>
+    <text x="-16" y="4" text-anchor="end" fill="#94a3b8" font-family="JetBrains Mono, monospace" font-size="10" font-weight="600">100</text>
+    <text x="-16" y="56" text-anchor="end" fill="#94a3b8" font-family="JetBrains Mono, monospace" font-size="10" font-weight="600">75</text>
+    <text x="-16" y="108" text-anchor="end" fill="#94a3b8" font-family="JetBrains Mono, monospace" font-size="10" font-weight="600">50</text>
+    <text x="-16" y="160" text-anchor="end" fill="#94a3b8" font-family="JetBrains Mono, monospace" font-size="10" font-weight="600">25</text>
+
+    <g transform="translate(30 0)">
+      <rect y="17" width="68" height="193" rx="12" fill="url(#barGrad1D)" filter="url(#perfShadowD)"/>
+      <text x="34" y="11" text-anchor="middle" fill="#ffffff" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700">92%</text>
+      <text x="34" y="232" text-anchor="middle" fill="#e2e8f0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="700">GEMM</text>
+      <text x="34" y="248" text-anchor="middle" fill="#94a3b8" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="500">vs cuBLAS</text>
+    </g>
+
+    <g transform="translate(138 15)">
+      <rect y="17" width="68" height="178" rx="12" fill="url(#barGrad2D)" filter="url(#perfShadowD)"/>
+      <text x="34" y="11" text-anchor="middle" fill="#ffffff" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700">85%</text>
+      <text x="34" y="217" text-anchor="middle" fill="#e2e8f0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="700">Attention</text>
+      <text x="34" y="233" text-anchor="middle" fill="#94a3b8" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="500">vs cuDNN</text>
+    </g>
+
+    <g transform="translate(246 2)">
+      <rect y="17" width="68" height="191" rx="12" fill="url(#barGrad3D)" filter="url(#perfShadowD)"/>
+      <text x="34" y="11" text-anchor="middle" fill="#ffffff" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700">95%</text>
+      <text x="34" y="230" text-anchor="middle" fill="#e2e8f0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="700">LayerNorm</text>
+      <text x="34" y="246" text-anchor="middle" fill="#94a3b8" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="500">vs cuDNN</text>
+    </g>
+
+    <g transform="translate(354 46)">
+      <rect y="17" width="68" height="147" rx="12" fill="url(#barGrad4D)" filter="url(#perfShadowD)"/>
+      <text x="34" y="11" text-anchor="middle" fill="#ffffff" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700">78%</text>
+      <text x="34" y="186" text-anchor="middle" fill="#e2e8f0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="700">Conv2D</text>
+      <text x="34" y="202" text-anchor="middle" fill="#94a3b8" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="500">vs cuDNN</text>
+    </g>
+
+    <g transform="translate(462 25)">
+      <rect y="17" width="68" height="168" rx="12" fill="url(#barGrad5D)" filter="url(#perfShadowD)"/>
+      <text x="34" y="11" text-anchor="middle" fill="#ffffff" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700">88%</text>
+      <text x="34" y="207" text-anchor="middle" fill="#e2e8f0" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="700">SpMV</text>
+      <text x="34" y="223" text-anchor="middle" fill="#94a3b8" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="500">vs cuSPARSE</text>
+    </g>
+  </g>
+
+  <g transform="translate(56 348)">
+    <rect width="250" height="24" rx="12" fill="#1e293b" stroke="#334155"/>
+    <text x="125" y="16" text-anchor="middle" fill="#94a3b8" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="600">methodology and benchmark notes are first-class pages</text>
+    <rect x="268" width="224" height="24" rx="12" fill="#1e293b" stroke="#334155"/>
+    <text x="380" y="16" text-anchor="middle" fill="#94a3b8" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="600">baselines always named beside results</text>
+  </g>
+</svg>

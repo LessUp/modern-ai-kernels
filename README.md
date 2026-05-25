@@ -12,15 +12,15 @@
 [![OpenSpec](https://img.shields.io/badge/Workflow-OpenSpec-8ED000)](openspec/)
 
 [Whitepaper](https://aicl-lab.github.io/modern-ai-kernels/en/whitepaper/) •
-[Architecture](https://aicl-lab.github.io/modern-ai-kernels/en/architecture) •
-[Benchmark Evidence](https://aicl-lab.github.io/modern-ai-kernels/en/benchmarks/) •
+[Academy](https://aicl-lab.github.io/modern-ai-kernels/en/academy/) •
+[Evidence](https://aicl-lab.github.io/modern-ai-kernels/en/evidence/) •
 [Kernel Atlas](https://aicl-lab.github.io/modern-ai-kernels/en/api/gemm)
 
 </div>
 
 ---
 
-TensorCraft-HPC is a **header-only C++/CUDA kernel library** and **technical whitepaper / architecture showcase** for learning, validating, and packaging modern AI operators. The repository keeps implementations readable, exposes progressive optimization paths, and presents benchmarks, references, and design rationale as first-class project assets.
+TensorCraft-HPC is a **header-only C++/CUDA kernel library** and **technical whitepaper / architecture showcase** for learning, validating, and packaging modern AI operators. The repository now presents itself as a three-part public surface: a **whitepaper** for the thesis, an **academy** for the learning path, and an **evidence** layer for benchmarks, references, and research framing.
 
 ## ✨ Highlights
 
@@ -108,8 +108,8 @@ output = tc.flash_attention(Q, K, V)
 
 - **Showcase home**: <https://aicl-lab.github.io/modern-ai-kernels/>
 - **Whitepaper**: <https://aicl-lab.github.io/modern-ai-kernels/en/whitepaper/>
-- **Architecture overview**: <https://aicl-lab.github.io/modern-ai-kernels/en/architecture>
-- **Benchmark evidence**: <https://aicl-lab.github.io/modern-ai-kernels/en/benchmarks/>
+- **Academy**: <https://aicl-lab.github.io/modern-ai-kernels/en/academy/>
+- **Evidence**: <https://aicl-lab.github.io/modern-ai-kernels/en/evidence/>
 - **Kernel Atlas / API**: <https://aicl-lab.github.io/modern-ai-kernels/en/api/gemm>
 - **中文文档**: <https://aicl-lab.github.io/modern-ai-kernels/zh/>
 

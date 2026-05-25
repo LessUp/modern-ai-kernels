@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 340" width="940" height="340" fill="none">
+  <defs>
+    <linearGradient id="gemmBgD" x1="0" y1="0" x2="940" y2="340">
+      <stop offset="0%" stop-color="#111827"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="gemmStepGrad1D" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#111827"/>
+    </linearGradient>
+    <linearGradient id="gemmStepGrad2D" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#172554"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="gemmStepGrad3D" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#064e3b"/>
+      <stop offset="100%" stop-color="#111827"/>
+    </linearGradient>
+    <linearGradient id="gemmStepGrad4D" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <filter id="gemmShadowD" x="-4" y="-4" width="20" height="20">
+      <feDropShadow dx="0" dy="2" stdDeviation="5" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <rect width="940" height="340" rx="24" fill="url(#gemmBgD)"/>
+  <rect x="24" y="24" width="892" height="292" rx="18" fill="#0f172a" stroke="#1e293b" stroke-width="1.5"/>
+
+  <text x="56" y="66" fill="#e2e8f0" font-family="Fraunces, Inter, serif" font-size="26" font-weight="800">GEMM Optimization Path</text>
+  <text x="56" y="90" fill="#94a3b8" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="500">From readable baseline to Tensor Core aware implementation, with each step preserving the reasoning chain.</text>
+
+  <line x1="116" y1="146" x2="820" y2="146" stroke="#1e293b" stroke-width="5" stroke-linecap="round"/>
+  <line x1="116" y1="146" x2="820" y2="146" stroke="#60a5fa" stroke-width="5" stroke-linecap="round" stroke-dasharray="176 22 176 22 176 22 176"/>
+
+  <g transform="translate(116 124)">
+    <circle r="14" fill="#111827" stroke="#334155" stroke-width="3"/>
+    <text y="4" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700">1</text>
+    <rect x="-70" y="38" width="140" height="100" rx="14" fill="url(#gemmStepGrad1D)" stroke="#334155" filter="url(#gemmShadowD)"/>
+    <text y="68" text-anchor="middle" fill="#e2e8f0" font-family="Fraunces, serif" font-size="15" font-weight="800">Naive</text>
+    <text y="88" text-anchor="middle" fill="#94a3b8" font-family="Inter, sans-serif" font-size="11" font-weight="500">Direct loops</text>
+    <text y="104" text-anchor="middle" fill="#94a3b8" font-family="Inter, sans-serif" font-size="11" font-weight="500">Global memory bound</text>
+    <text y="122" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700">~5% cuBLAS</text>
+  </g>
+
+  <g transform="translate(344 124)">
+    <circle r="14" fill="#111827" stroke="#3b82f6" stroke-width="3"/>
+    <text y="4" text-anchor="middle" fill="#60a5fa" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700">2</text>
+    <rect x="-70" y="38" width="140" height="100" rx="14" fill="url(#gemmStepGrad2D)" stroke="#1e40af" filter="url(#gemmShadowD)"/>
+    <text y="68" text-anchor="middle" fill="#e2e8f0" font-family="Fraunces, serif" font-size="15" font-weight="800">Tiled</text>
+    <text y="88" text-anchor="middle" fill="#94a3b8" font-family="Inter, sans-serif" font-size="11" font-weight="500">Shared memory reuse</text>
+    <text y="104" text-anchor="middle" fill="#94a3b8" font-family="Inter, sans-serif" font-size="11" font-weight="500">Better data locality</text>
+    <text y="122" text-anchor="middle" fill="#60a5fa" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700">~45% cuBLAS</text>
+  </g>
+
+  <g transform="translate(572 124)">
+    <circle r="14" fill="#111827" stroke="#34d399" stroke-width="3"/>
+    <text y="4" text-anchor="middle" fill="#34d399" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700">3</text>
+    <rect x="-70" y="38" width="140" height="100" rx="14" fill="url(#gemmStepGrad3D)" stroke="#059669" filter="url(#gemmShadowD)"/>
+    <text y="68" text-anchor="middle" fill="#e2e8f0" font-family="Fraunces, serif" font-size="15" font-weight="800">Double Buffer</text>
+    <text y="88" text-anchor="middle" fill="#94a3b8" font-family="Inter, sans-serif" font-size="11" font-weight="500">Pipeline loads &amp; compute</text>
+    <text y="104" text-anchor="middle" fill="#94a3b8" font-family="Inter, sans-serif" font-size="11" font-weight="500">Hide memory latency</text>
+    <text y="122" text-anchor="middle" fill="#34d399" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700">~75% cuBLAS</text>
+  </g>
+
+  <g transform="translate(800 124)">
+    <circle r="14" fill="#2563eb" stroke="#1d4ed8" stroke-width="3"/>
+    <text y="4" text-anchor="middle" fill="#ffffff" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700">4</text>
+    <rect x="-70" y="38" width="140" height="100" rx="14" fill="url(#gemmStepGrad4D)" stroke="#475569" filter="url(#gemmShadowD)"/>
+    <text y="68" text-anchor="middle" fill="#e2e8f0" font-family="Fraunces, serif" font-size="15" font-weight="800">Tensor Core</text>
+    <text y="88" text-anchor="middle" fill="#94a3b8" font-family="Inter, sans-serif" font-size="11" font-weight="500">WMMA &amp; mixed precision</text>
+    <text y="104" text-anchor="middle" fill="#94a3b8" font-family="Inter, sans-serif" font-size="11" font-weight="500">Throughput-first tuning</text>
+    <text y="122" text-anchor="middle" fill="#34d399" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700">~92% cuBLAS</text>
+  </g>
+</svg>

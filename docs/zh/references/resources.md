@@ -111,8 +111,6 @@ flowchart TB
     L1 --> L2
     L2 --> HBM
 
-    style REG fill:#76B900,stroke:#5a9100
-    style SHMEM fill:#76B900,stroke:#5a9100
 ```
 
 ### 执行模型
@@ -144,6 +142,26 @@ flowchart LR
 - **来自 FlashAttention**：围绕 IO 成本展开的叙事与分析方式
 - **来自 Triton**：清晰的 operator 级 benchmark 习惯和紧凑示例
 - **来自 Nsight 工具链**：用证据解释性能，而不是靠直觉猜测
+
+---
+
+## 哪些值得借鉴，哪些应该克制
+
+让仓库变强的方式，不是盲目模仿风格，而是吸收方法。
+
+### 值得借鉴
+
+- 对 tiling、内存流量、硬件能力的严谨术语
+- 会把限制条件和 baseline 一起公开的 benchmark 方法
+- 能和 public API 干净映射的紧凑 operator 示例
+
+### 应该克制
+
+- 把优化路径完全藏起来的生产级抽象
+- 让教学叙事变得模糊的功能膨胀
+- 与工具链、工作负载形状、参考库脱钩的性能结论
+
+这种张力是刻意保留的。TensorCraft-HPC 应该向更强的系统学习，但不应该因此变成另一套难以解释的生产黑盒。
 
 ---
 
